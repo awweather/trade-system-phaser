@@ -13,6 +13,7 @@ import {
   GoldComponent,
   InventoryComponent,
   PickedUpComponent,
+  QuantityComponent,
   ShopWindowComponent,
   ShopkeeperComponent,
   TradeIdComponent,
@@ -226,7 +227,7 @@ class ShopSystem extends System {
     });
   }
 
-  acceptTrade() { }
+  acceptTrade() {}
 
   balanceOffer(actor: string) {
     // First calculate difference between players in play and npcs in play
@@ -446,6 +447,15 @@ class ShopSystem extends System {
       const goldEntity = initializeItem(goldItem);
       addToInventory(entity, goldEntity);
     });
+
+    this.queries!.quantity!.changed!.forEach((entity: GameEntity) => {
+      const quantity = entity.quantity;
+
+      eventEmitter.emit(
+        keys.items.QTY_CHANGED(entity.entityId.value),
+        quantity.value
+      );
+    });
   }
 }
 
@@ -454,6 +464,12 @@ ShopSystem.queries = {
     components: [ShopkeeperComponent, InventoryComponent],
     listen: {
       added: true,
+    },
+  },
+  quantity: {
+    components: [QuantityComponent],
+    listen: {
+      changed: true,
     },
   },
 };

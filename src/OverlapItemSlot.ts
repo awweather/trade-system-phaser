@@ -5,13 +5,14 @@ import { eventEmitter } from "./EventEmitter.ts";
 import { HudContext } from "./HudContext.ts";
 import Item from "./Item";
 import type { AddItemConfig } from "./ItemSlot";
+import { keys } from "./Keys.ts";
 import TradeScene from "./TradeScene.ts";
 
 export default class OverlapItemSlot extends OverlapSizer {
   slotIndex: number;
   item: Item | null;
   slotType: HudContext;
-  qty: any;
+  qty: Phaser.GameObjects.Text;
   hover: string;
   constructor(
     x: number,
@@ -37,13 +38,16 @@ export default class OverlapItemSlot extends OverlapSizer {
 
   removeItem() {
     if (this.item) {
+      if (this.qty) {
+        this.qty.destroy();
+        eventEmitter.off(
+          keys.items.QTY_CHANGED(this.item.entity.entityId.value)
+        );
+      }
+
       this.remove(this.item, true);
       this.item.destroy();
       this.item = null;
-
-      if (this.qty) {
-        this.qty.destroy();
-      }
     }
   }
 
@@ -67,15 +71,24 @@ export default class OverlapItemSlot extends OverlapSizer {
       align: "center",
     } as any);
     if (config.quantity) {
-      this.qty = this.scene.add.text(0, 0, config.quantity.value.toString(), {
-        fontFamily: constants.styles.text.fontFamily,
-        fontSize: `10px`,
-      }).setDepth(202);
+      this.qty = this.scene.add
+        .text(0, 0, config.quantity.value.toString(), {
+          fontFamily: constants.styles.text.fontFamily,
+          fontSize: `10px`,
+        })
+        .setDepth(202);
 
       this.add(this.qty, {
         expand: false,
         align: "right-bottom",
       });
+
+      eventEmitter.on(
+        keys.items.QTY_CHANGED(config.entity.entityId.value),
+        (newQuantity: number) => {
+          this.qty.setText(newQuantity.toString());
+        }
+      );
 
       //   this.qtySubscription = watch(config.quantity.value, (newValue) => {
       //     this.qty.setText(`${newValue}`);

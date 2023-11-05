@@ -13,6 +13,7 @@ export const keys = {
     ADDED: (context: HudContext) => `${context}_itemAdded`,
     DROPPED: (context: HudContext) => `${context}_itemDropped`,
     REMOVED: (context: HudContext) => `${context}_itemRemoved`,
+    QTY_CHANGED: (itemId: string) => `${itemId}.quantity.changed`,
   },
   inventory: {
     MOVED: `${HudContext.inventory}_itemMoved`,

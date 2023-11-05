@@ -1,5 +1,4 @@
 import { GameEntity } from "./GameEntity.ts";
-import ItemSlot from "./ItemSlot.ts";
 import TradeScene from "./TradeScene.ts";
 import {
   DescriptorComponent,
@@ -10,6 +9,7 @@ import {
   ShopWindowComponent,
   TradeIdComponent,
 } from "./components/Components.ts";
+import { ItemSlot } from "./components/Inventory.ts";
 import { playerEntity, world } from "./main.ts";
 
 class ShopViewModel {
@@ -122,6 +122,34 @@ class ShopViewModel {
     let value = 0;
     itemEntities.forEach((item: GameEntity) => {
       if (item.hasComponent(GoldComponent)) value += item.quantity.value;
+    });
+
+    return value;
+  }
+
+  get playerCoinsInPlay(): number {
+    const shopWindow =
+      playerEntity.getComponent<ShopWindowComponent>(ShopWindowComponent)!;
+    let value = 0;
+    shopWindow.inPlay.forEach((itemSlot: ItemSlot) => {
+      if (itemSlot.hasItem()) {
+        const item = world.entityManager.getEntityByName(`${itemSlot.item}`);
+        if (item.hasComponent(GoldComponent)) value += item.quantity.value;
+      }
+    });
+
+    return value;
+  }
+
+  get shopCoinsInPlay(): number {
+    const shopWindow =
+      playerEntity.getComponent<ShopWindowComponent>(ShopWindowComponent)!;
+    let value = 0;
+    shopWindow.npcInPlay.forEach((itemSlot: ItemSlot) => {
+      if (itemSlot.hasItem()) {
+        const item = world.entityManager.getEntityByName(`${itemSlot.item}`);
+        if (item.hasComponent(GoldComponent)) value += item.quantity.value;
+      }
     });
 
     return value;

@@ -88,8 +88,8 @@ export default class ItemSlot extends Sizer {
     this.item?.setScale(2);
 
     this.layout();
-    this.item.setDepth(999);
-    this.setDepth(500);
+    // this.item.setDepth(999);
+    // this.setDepth(500);
     return this.item;
   }
 
