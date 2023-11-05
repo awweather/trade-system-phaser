@@ -28,7 +28,6 @@ class ShopViewModel {
 
   closeShopWindow() {
     this.scene!.shopWindow.close();
-    this.scene?.startTradeText?.setVisible(true);
     this.itemsInPlay = [];
     this.shopItemsInPlay = [];
 
@@ -42,6 +41,7 @@ class ShopViewModel {
 
     playerEntity.removeComponent(ShopWindowComponent);
   }
+
   calculateInPlayValue(itemEntities: GameEntity[]): number {
     let value = 0;
     itemEntities.forEach((entity) => {

@@ -19,7 +19,7 @@ import {
   TradeIdComponent,
 } from "../../components/Components.ts";
 import { ItemSlot, createItemSlots } from "../../components/Inventory.ts";
-import { playerEntity } from "../../main.ts";
+import { playerEntity, shopkeeperEntity } from "../../main.ts";
 import { addToInventory } from "../inventory/InventoryUtilities.ts";
 import {
   balanceOffer,
@@ -214,6 +214,11 @@ class ShopSystem extends System {
       }
 
       executeTrade();
+
+      this.tradeInitiated(
+        playerEntity.entityId.value,
+        shopkeeperEntity.entityId.value
+      );
     });
 
     eventEmitter.on("close_shop_window_clicked", () => {

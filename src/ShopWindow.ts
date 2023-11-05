@@ -1,7 +1,6 @@
 import type Sizer from "phaser3-rex-plugins/templates/ui/sizer/Sizer";
 import { Dialog } from "phaser3-rex-plugins/templates/ui/ui-components";
 import { type Ref } from "vue";
-import { HudContext } from "./HudContext.ts";
 import Item from "./Item.ts";
 import ItemSlot from "./ItemSlot.ts";
 import OverlapItemSlot from "./OverlapItemSlot.ts";
@@ -195,19 +194,6 @@ export default class ShopWindow implements Dialog {
 
   addToShopInventory(itemConfig: any, newslotIndex: number) {
     return this.addToSlot(this.shopInventoryGrid, newslotIndex, itemConfig);
-  }
-  updateItemQuantity(value: number, slotIndex: number, context: HudContext) {
-    // let slot;
-    // if (context === HudContext.playerInPlay) {
-    //   slot = this.playerInPlay.getElement(`${slotIndex}`) as OverlapItemSlot;
-    // } else if (context === HudContext.playerShopInventory) {
-    //   slot = this.playerInventoryGrid.getElement(
-    //     `${slotIndex}`
-    //   ) as OverlapItemSlot;
-    // }
-    // if (slot) {
-    //   slot.qty.setText(`${value}`);
-    // }
   }
 
   removeFromSlot(grid: Sizer, slotIndex: number) {

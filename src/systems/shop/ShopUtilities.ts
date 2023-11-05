@@ -414,7 +414,7 @@ export function transferItemsToPlayer(
       return;
     }
 
-    const playerInventory = playerEntity.inventory;
+    const playerInventory = playerEntity.inventory_mutable;
     const { item } = getItemWithQuantityOfType(
       itemToReceive,
       playerInventory.slots
@@ -424,7 +424,10 @@ export function transferItemsToPlayer(
     if (item) {
       item.quantity_mutable.value += itemToReceive.quantity.value;
 
-      removeFromInventory(shopkeeper, slotIndex);
+      // If it has this component, it exists only in the context of the trade
+      if (!itemToReceive.hasComponent(TradeIdComponent)) {
+        removeFromInventory(playerEntity, slotIndex);
+      }
       return;
     }
 
@@ -516,7 +519,11 @@ export function transferItemsToNpc(
     if (item) {
       item.quantity_mutable.value += itemToReceive.quantity.value;
 
-      removeFromInventory(playerEntity, slotIndex);
+      // If it has this component, it exists only in the context of the trade
+      if (!itemToReceive.hasComponent(TradeIdComponent)) {
+        removeFromInventory(playerEntity, slotIndex);
+      }
+
       return;
     }
 
