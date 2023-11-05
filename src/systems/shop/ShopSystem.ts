@@ -28,10 +28,6 @@ import {
   itemMovedShopInPlay,
   itemMovedToPlayerShopInventory,
   itemMovedToShopInventory,
-  itemRemovedFromPlayerInPlay,
-  itemRemovedFromPlayerInventory,
-  itemRemovedFromShopInPlay,
-  itemRemovedFromShopInventory,
 } from "./ShopUtilities.ts";
 
 class ShopSystem extends System {
@@ -68,104 +64,8 @@ class ShopSystem extends System {
       }
     );
 
-    eventEmitter.on(
-      `${HudContext.shopInventory}_itemAdded`,
-      (message: ItemAdded) => {
-        // this.itemMovedToShopInventory();
-      }
-    );
-
-    eventEmitter.on(
-      `${HudContext.playerInPlay}_itemAdded`,
-      (message: ItemAdded) => {
-        // this.itemMovedInPlay()
-      }
-    );
-
-    eventEmitter.on(
-      `${HudContext.playerInPlay}_itemDropped`,
-      (destinationSlot: number, originalSlotIndex) => {
-        this.networkService.notifyServer(
-          new ItemDroppedOnSlot(
-            originalSlotIndex,
-            destinationSlot,
-            HudContext.playerInPlay
-          )
-        );
-      }
-    );
-
-    eventEmitter.on(
-      `${HudContext.shopInPlay}_itemDropped`,
-      (destinationSlot: number, originalSlotIndex) => {
-        this.networkService.notifyServer(
-          new ItemDroppedOnSlot(
-            originalSlotIndex,
-            destinationSlot,
-            HudContext.shopInPlay
-          )
-        );
-      }
-    );
-
     eventEmitter.on("itemQuantityUpdated", (message) =>
       this.updateItemQuantity(message)
-    );
-
-    eventEmitter.on(
-      `${HudContext.playerShopInventory}_itemMoved`,
-      (message: ItemMoved) => {
-        itemMovedToPlayerShopInventory(message);
-      }
-    );
-
-    eventEmitter.on(
-      `${HudContext.playerInPlay}_itemMoved`,
-      (message: ItemMoved) => {
-        itemMovedInPlay(message);
-      }
-    );
-
-    eventEmitter.on(
-      `${HudContext.playerShopInventory}_itemRemoved`,
-      (message: ItemRemoved) => {
-        itemRemovedFromPlayerInventory(message);
-      }
-    );
-
-    eventEmitter.on(
-      `${HudContext.shopInventory}_itemMoved`,
-      (message: ItemMoved) => {
-        itemMovedToShopInventory(message);
-      }
-    );
-
-    eventEmitter.on(
-      `${HudContext.shopInPlay}_itemMoved`,
-      (message: ItemMoved) => {
-        itemMovedShopInPlay(message);
-      }
-    );
-
-    eventEmitter.on(
-      `${HudContext.shopInventory}_itemRemoved`,
-      (message: ItemRemoved) => {
-        itemRemovedFromShopInventory(message);
-      }
-    );
-
-    eventEmitter.on(
-      `${HudContext.playerInPlay}_itemRemoved`,
-      (message: ItemRemoved) => {
-        itemRemovedFromPlayerInPlay(message);
-      }
-    );
-
-    eventEmitter.on(
-      `${HudContext.shopInPlay}_itemRemoved`,
-      (message: ItemRemoved) => {
-        itemRemovedFromShopInPlay(message);
-      }
     );
 
     eventEmitter.on(

@@ -4,7 +4,6 @@ import { getGold } from "../../Items.ts";
 import { shopViewModel } from "../../ShopViewModel.ts";
 import {
   GoldComponent,
-  ItemIdComponent,
   PickedUpComponent,
   QuantityComponent,
   ShopWindowComponent,
@@ -25,9 +24,12 @@ export function calculateValueDifference(): number {
   return npcValue - playerValue;
 }
 
-export function getPlayerGoldEntities(): GameEntity[] {
+/**
+ *
+ * @returns The gold entities inside of the player's shop inventory
+ */
+export function getPlayerShopGoldEntities(): GameEntity[] {
   const shopwindow = playerEntity.getComponent(ShopWindowComponent);
-  // Assuming gameSystem is accessible in this scope
   return world.entityManager
     .queryComponents([GoldComponent])
     .entities.filter((entity: GameEntity) => {
@@ -38,8 +40,11 @@ export function getPlayerGoldEntities(): GameEntity[] {
     });
 }
 
+/**
+ * @param slots An array of item slots
+ * @returns The gold entities that exist in an array of item slots
+ */
 export function getGoldEntities(slots: ItemSlot[]): GameEntity[] {
-  // Assuming gameSystem is accessible in this scope
   return world.entityManager
     .queryComponents([GoldComponent])
     .entities.filter((entity: GameEntity) => {
@@ -48,9 +53,12 @@ export function getGoldEntities(slots: ItemSlot[]): GameEntity[] {
     });
 }
 
-export function getNpcGoldEntities(): GameEntity[] {
+/**
+ *
+ * @returns The gold entities inside of the npcs shop inventory
+ */
+export function getShopGoldEntities(): GameEntity[] {
   const shopwindow = playerEntity.getComponent(ShopWindowComponent);
-  // Assuming gameSystem is accessible in this scope
   return world.entityManager
     .queryComponents([GoldComponent])
     .entities.filter((entity: GameEntity) => {
@@ -61,8 +69,17 @@ export function getNpcGoldEntities(): GameEntity[] {
     });
 }
 
+/**
+ *
+ * @param goldEntities The array of gold entities
+ * @returns The sum of quantity of the gold. Throws an error if an entity does not have a quantity or gold component
+ */
 export function calculateAvailableGold(goldEntities: GameEntity[]): number {
   return goldEntities.reduce((totalGold, entity) => {
+    if (!entity.hasAllComponents([GoldComponent, QuantityComponent])) {
+      throw new Error("Tried to sum a gold entity without gold or quantity");
+    }
+
     const quantityComponent =
       entity.getComponent<QuantityComponent>(QuantityComponent);
     return totalGold + quantityComponent!.value;
@@ -109,15 +126,19 @@ export function removeItemIfQuantityZero(
 ) {
   if (entity.quantity!.value <= 0) {
     itemRemovedFromPlayerInventory(
-      slots.find((s) => s.item === entity.entityId!.value).slotIndex
+      slots.find((s) => s.item === entity.entityId!.value)!.slotIndex
     );
   }
 }
 
+/**
+ * Attempts to balance the trade using the player's gold.
+ * @param goldItems An array of gold items from the players inventory
+ * @param differenceInValue
+ */
 export function balancePlayerGold(
   goldItems: GameEntity[],
-  differenceInValue: number,
-  shopKeeper: GameEntity
+  differenceInValue: number
 ): void {
   const shopWindow = playerEntity.shopWindow;
 
@@ -126,22 +147,19 @@ export function balancePlayerGold(
     const quantityOfGoldItem = goldItem.quantity.value;
 
     if (differenceInValue - quantityOfGoldItem < 0) {
-      const { item, slot } = getItemWithQuantityOfType(
+      const { itemWithMatchingQuantityType, slot } = getItemWithQuantityOfType(
         goldItem,
         shopWindow.inPlay
       );
 
-      if (item && slot) {
-        item.quantity_mutable.value += differenceInValue;
+      if (itemWithMatchingQuantityType && slot) {
+        itemWithMatchingQuantityType.quantity_mutable.value +=
+          differenceInValue;
         goldItem.quantity_mutable.value -= differenceInValue;
 
         removeItemIfQuantityZero(goldItem, shopWindow.inventory);
       } else {
-        const splitItem = splitGoldStack(
-          goldItem,
-          differenceInValue,
-          shopKeeper
-        );
+        const splitItem = splitGoldStack(goldItem, differenceInValue);
         // Do this so that we can call itemMovedInPlay
         shopWindow.inventory
           .find((i) => !i.hasItem())
@@ -154,16 +172,20 @@ export function balancePlayerGold(
           tradeId: shopWindow.tradingWithEntityId,
         });
         splitItem.addComponent<PickedUpComponent>(PickedUpComponent, {
-          slotIndex: slotToAddTo.slotIndex,
+          slotIndex: slotToAddTo!.slotIndex,
         });
 
         shopViewModel.updateShopWindow();
       }
     } else {
-      const { item } = getItemWithQuantityOfType(goldItem, shopWindow.inPlay);
+      const { itemWithMatchingQuantityType } = getItemWithQuantityOfType(
+        goldItem,
+        shopWindow.inPlay
+      );
 
-      if (item) {
-        item.quantity_mutable.value += quantityOfGoldItem;
+      if (itemWithMatchingQuantityType) {
+        itemWithMatchingQuantityType.quantity_mutable.value +=
+          quantityOfGoldItem;
         goldItem.quantity_mutable.value -= differenceInValue;
 
         removeItemIfQuantityZero(goldItem, shopWindow.inventory);
@@ -176,10 +198,15 @@ export function balancePlayerGold(
   });
 }
 
+/**
+ * Attempts to balance the trade using the npc's gold
+ * @param goldItems An array of gold items from the npc's inventory
+ * @param differenceInValue
+ * @param shopKeeper
+ */
 export function balanceNpcGold(
   goldItems: GameEntity[],
-  differenceInValue: number,
-  shopKeeper: GameEntity
+  differenceInValue: number
 ): void {
   const shopWindow = playerEntity.shopWindow;
 
@@ -188,22 +215,19 @@ export function balanceNpcGold(
     const quantityOfGoldItem = goldItem.quantity.value;
 
     if (differenceInValue - quantityOfGoldItem < 0) {
-      const { item, slot } = getItemWithQuantityOfType(
+      const { itemWithMatchingQuantityType, slot } = getItemWithQuantityOfType(
         goldItem,
         shopWindow.npcInPlay
       );
 
-      if (item && slot) {
-        item.quantity_mutable.value += differenceInValue;
+      if (itemWithMatchingQuantityType && slot) {
+        itemWithMatchingQuantityType.quantity_mutable.value +=
+          differenceInValue;
         goldItem.quantity_mutable.value -= differenceInValue;
 
         removeItemIfQuantityZero(goldItem, shopWindow.inventory);
       } else {
-        const splitItem = splitGoldStack(
-          goldItem,
-          differenceInValue,
-          shopKeeper
-        );
+        const splitItem = splitGoldStack(goldItem, differenceInValue);
 
         shopWindow.npcInventory
           .find((i) => !i.hasItem())
@@ -216,15 +240,19 @@ export function balanceNpcGold(
           tradeId: shopWindow.tradingWithEntityId,
         });
         splitItem.addComponent<PickedUpComponent>(PickedUpComponent, {
-          slotIndex: slotToAddTo.slotIndex,
+          slotIndex: slotToAddTo!.slotIndex,
         });
         shopViewModel.updateShopWindow();
       }
     } else {
-      const { item } = getItemWithQuantityOfType(goldItem, shopWindow.inPlay);
+      const { itemWithMatchingQuantityType } = getItemWithQuantityOfType(
+        goldItem,
+        shopWindow.inPlay
+      );
 
-      if (item) {
-        item.quantity_mutable.value += quantityOfGoldItem;
+      if (itemWithMatchingQuantityType) {
+        itemWithMatchingQuantityType.quantity_mutable.value +=
+          quantityOfGoldItem;
         goldItem.quantity_mutable.value -= differenceInValue;
 
         removeItemIfQuantityZero(goldItem, shopWindow.npcInventory);
@@ -249,7 +277,7 @@ export function itemRemovedFromPlayerInventory(slotIndex: number) {
 
 /**
  * Moves an item to the npc shop in play
- * @param message
+ * @param item The item being moved
  */
 export function itemMovedShopInPlay(item: GameEntity) {
   const shopWindow = playerEntity.shopWindow;
@@ -258,33 +286,22 @@ export function itemMovedShopInPlay(item: GameEntity) {
     (i) => i.item === item.entityId.value
   );
 
-  const removedItem = slot!.removeItem();
+  slot!.removeItem();
 
   const targetSlotIndex = shopWindow.npcInPlay.find(
     (s) => !s.hasItem()
-  ).slotIndex;
+  )!.slotIndex;
 
   shopWindow.npcInPlay[targetSlotIndex].item = item.entityId.value;
 
   shopViewModel.moveItemShopInPlay(item, targetSlotIndex);
-  shopViewModel.removeItemFromShopInventory(slot.slotIndex, removedItem);
-  shopViewModel.updateShopWindow();
-}
-
-/**
- * Removes an item from the npc shop inventory
- * @param message
- */
-export function itemRemovedFromShopInventory(message: ItemRemoved) {
-  const shopWindow = playerEntity.shopWindow;
-  shopWindow.npcInventory[message.slotIndex].item = "";
-  shopViewModel.removeItemFromShopInventory(message.slotIndex);
+  shopViewModel.removeItemFromShopInventory(slot!.slotIndex);
   shopViewModel.updateShopWindow();
 }
 
 /**
  * Moves an item to the player in play
- * @param message
+ * @param item The item being moved
  */
 export function itemMovedInPlay(item: GameEntity) {
   const shopWindow = playerEntity.shopWindow;
@@ -302,33 +319,10 @@ export function itemMovedInPlay(item: GameEntity) {
   shopViewModel.updateShopWindow();
 }
 
-export function itemRemovedFromShopInPlay(message: ItemRemoved) {
-  const shopWindow = playerEntity.shopWindow;
-
-  const removedItem = shopWindow.npcInPlay[message.slotIndex].removeItem();
-
-  shopViewModel.removeItemFromShopInPlay(message.slotIndex, removedItem);
-}
-export function itemRemovedFromPlayerInPlay(message: ItemRemoved) {
-  const shopWindow = playerEntity.shopWindow;
-  const removedItem = shopWindow.inPlay[message.slotIndex].removeItem();
-  shopViewModel.removeItemFromPlayerInPlay(message.slotIndex, removedItem);
-}
-export function itemAddedToShopInventory(message: ItemAdded) {
-  const entity = gameSystem.initializeItem(message.item);
-
-  const shopWindow =
-    gameSystem.player.value.getMutableComponent<ShopWindowComponent>(
-      ShopWindowComponent
-    );
-
-  const pickedUp = entity.getComponent<PickedUpComponent>(PickedUpComponent);
-  // pickedUp.slotIndex = message.targetSlotIndex;
-  shopWindow.npcInventory[pickedUp.slotIndex].item.value =
-    entity.getComponent<ItemIdComponent>(ItemIdComponent).value;
-
-  shopViewModel.moveItemToShopInventory(entity, pickedUp.slotIndex);
-}
+/**
+ * Moves an item to the npc's shop inventory
+ * @param item The item being moved
+ */
 export function itemMovedToShopInventory(item: GameEntity) {
   const shopWindow = playerEntity.shopWindow;
 
@@ -340,14 +334,19 @@ export function itemMovedToShopInventory(item: GameEntity) {
 
   const targetSlotIndex = shopWindow.npcInventory.find(
     (s) => !s.hasItem()
-  ).slotIndex;
+  )!.slotIndex;
 
   shopWindow.npcInventory[targetSlotIndex].item = removedItem;
 
   shopViewModel.moveItemToShopInventory(item, targetSlotIndex);
-  shopViewModel.removeItemFromShopInPlay(slot.slotIndex, removedItem);
+  shopViewModel.removeItemFromShopInPlay(slot!.slotIndex, removedItem);
   shopViewModel.updateShopWindow();
 }
+
+/**
+ * Moves an item to the player's shop inventory
+ * @param item The item being moved
+ */
 export function itemMovedToPlayerShopInventory(item: GameEntity) {
   const shopWindow = playerEntity.shopWindow;
 
@@ -366,6 +365,9 @@ export function itemMovedToPlayerShopInventory(item: GameEntity) {
   shopViewModel.updateShopWindow();
 }
 
+/**
+ * Executes the trade and transfers items and gold between the player and the npc.
+ */
 export function executeTrade() {
   const playerCoinsInPlay = shopViewModel.playerCoinsInPlay;
   const shopCoinsInPlay = shopViewModel.shopCoinsInPlay;
@@ -380,6 +382,11 @@ export function executeTrade() {
   shopViewModel.closeShopWindow();
 }
 
+/**
+ *
+ * @param coinsInPlay The value of the coins in play
+ * @param actor Either the player or the npc
+ */
 export function applyNewGoldValues(coinsInPlay: number, actor: string) {
   if (coinsInPlay > 0) {
     const item = getItemInInventoryWithMinQuantity(coinsInPlay, actor);
@@ -390,6 +397,11 @@ export function applyNewGoldValues(coinsInPlay: number, actor: string) {
   }
 }
 
+/**
+ * Transfers items in the trade from the npc to the player
+ * @param playerItemsToReceive An array of item entities that the player will receive
+ * @param shopkeeperId The id of the shopkeeper
+ */
 export function transferItemsToPlayer(
   playerItemsToReceive: GameEntity[],
   shopkeeperId: string
@@ -415,14 +427,15 @@ export function transferItemsToPlayer(
     }
 
     const playerInventory = playerEntity.inventory_mutable;
-    const { item } = getItemWithQuantityOfType(
+    const { itemWithMatchingQuantityType } = getItemWithQuantityOfType(
       itemToReceive,
       playerInventory.slots
     );
 
     // If it's gold, let's add the quantity to an already existing gold stack (if exists)
-    if (item) {
-      item.quantity_mutable.value += itemToReceive.quantity.value;
+    if (itemWithMatchingQuantityType) {
+      itemWithMatchingQuantityType.quantity_mutable.value +=
+        itemToReceive.quantity.value;
 
       // If it has this component, it exists only in the context of the trade
       if (!itemToReceive.hasComponent(TradeIdComponent)) {
@@ -435,30 +448,31 @@ export function transferItemsToPlayer(
   });
 }
 
-export function balanceOffer(actor: string) {
-  // First calculate difference between players in play and npcs in play
-  // Then, create gold to match the difference
-  // Then, add that gold to the player/npcs in play
-
+/**
+ * Attempts to balance an offer between the player and the npc
+ */
+export function balanceOffer() {
   const playerInPlayValue = shopViewModel.inPlayValue;
   const npcInPlayValue = shopViewModel.shopInPlayValue;
 
   if (playerInPlayValue === npcInPlayValue) return;
 
-  const actorEntity = world.entityManager.getEntityByName(actor);
   if (playerInPlayValue < npcInPlayValue) {
     // balance offer with the players gold
-    balanceOfferWithPlayerGold(actorEntity);
+    balanceOfferWithPlayerGold();
   } else {
-    balanceOfferWithNpcGold(actorEntity);
+    balanceOfferWithNpcGold();
   }
 
   shopViewModel.updateShopWindow();
 }
 
-export function balanceOfferWithPlayerGold(shopKeeper: GameEntity) {
+/**
+ * Attempts to balance the offer using the player's gold
+ */
+export function balanceOfferWithPlayerGold() {
   const differenceInValue = calculateValueDifference();
-  const playerGoldEntities = getPlayerGoldEntities();
+  const playerGoldEntities = getPlayerShopGoldEntities();
   const availableGold = calculateAvailableGold(playerGoldEntities);
 
   if (availableGold < differenceInValue) {
@@ -467,13 +481,16 @@ export function balanceOfferWithPlayerGold(shopKeeper: GameEntity) {
   }
 
   const goldItemsSorted = sortGoldByQuantity(playerGoldEntities);
-  balancePlayerGold(goldItemsSorted, differenceInValue, shopKeeper);
+  balancePlayerGold(goldItemsSorted, differenceInValue);
 }
 
-export function balanceOfferWithNpcGold(shopKeeper: GameEntity) {
+/**
+ *  Attempts to balance the offer using the npc's gold
+ */
+export function balanceOfferWithNpcGold() {
   const differenceInValue =
     shopViewModel.inPlayValue - shopViewModel.shopInPlayValue;
-  const goldEntities = getNpcGoldEntities();
+  const goldEntities = getShopGoldEntities();
   const availableGold = calculateAvailableGold(goldEntities);
 
   if (availableGold < differenceInValue) {
@@ -482,9 +499,14 @@ export function balanceOfferWithNpcGold(shopKeeper: GameEntity) {
   }
 
   const goldItemsSorted = sortGoldByQuantity(goldEntities);
-  balanceNpcGold(goldItemsSorted, differenceInValue, shopKeeper);
+  balanceNpcGold(goldItemsSorted, differenceInValue);
 }
 
+/**
+ * Transfers items in the trade from the player to the npc
+ * @param npcItemsToReceive An array of item entities that the npc will receive
+ * @param shopkeeperId The id of the shopkeeper
+ */
 export function transferItemsToNpc(
   npcItemsToReceive: GameEntity[],
   shopkeeperId: string
@@ -510,14 +532,15 @@ export function transferItemsToNpc(
     }
 
     const npcInventory = shopkeeper.inventory;
-    const { item } = getItemWithQuantityOfType(
+    const { itemWithMatchingQuantityType } = getItemWithQuantityOfType(
       itemToReceive,
       npcInventory.slots
     );
 
     // If it's gold, let's add the quantity to an already existing gold stack (if exists)
-    if (item) {
-      item.quantity_mutable.value += itemToReceive.quantity.value;
+    if (itemWithMatchingQuantityType) {
+      itemWithMatchingQuantityType.quantity_mutable.value +=
+        itemToReceive.quantity.value;
 
       // If it has this component, it exists only in the context of the trade
       if (!itemToReceive.hasComponent(TradeIdComponent)) {
@@ -531,6 +554,10 @@ export function transferItemsToNpc(
   });
 }
 
+/**
+ * Gets the array of items that will be transferred to the npc
+ * @returns The array of items that will be transferred to the npc
+ */
 export function getNpcItemsToReceive(): GameEntity[] {
   const shopWindow = playerEntity.shopWindow;
 
@@ -546,6 +573,10 @@ export function getNpcItemsToReceive(): GameEntity[] {
   return npcItemsToReceive;
 }
 
+/**
+ * Gets the array of items that will be transferred to the player
+ * @returns The array of items that will be transferred to the player
+ */
 export function getPlayerItemsToReceive(): GameEntity[] {
   const shopWindow = playerEntity.shopWindow;
 
@@ -569,9 +600,12 @@ export function getPlayerItemsToReceive(): GameEntity[] {
 export const getItemWithQuantityOfType = (
   itemToAdd: GameEntity,
   slotsToCheck: ItemSlot[]
-): { item: GameEntity | undefined; slot: ItemSlot | undefined } => {
-  let itemToReturn: GameEntity = null;
-  let itemSlot: ItemSlot = null;
+): {
+  itemWithMatchingQuantityType: GameEntity | null;
+  slot: ItemSlot | null;
+} => {
+  let itemToReturn: GameEntity | null = null;
+  let itemSlot: ItemSlot | null = null;
   slotsToCheck.find((s) => {
     if (!s.item) return false;
 
@@ -587,5 +621,5 @@ export const getItemWithQuantityOfType = (
     }
   });
 
-  return { item: itemToReturn, slot: itemSlot };
+  return { itemWithMatchingQuantityType: itemToReturn, slot: itemSlot };
 };
