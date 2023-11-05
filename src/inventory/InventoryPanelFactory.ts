@@ -61,14 +61,7 @@ export default class InventoryPanelFactory {
           width: 32,
           height: 32,
           overlapChildren: [],
-          background: scene.rexUI!.add.roundRectangle(
-            0,
-            0,
-            45,
-            45,
-            2,
-            0x221c1a
-          ),
+          background: scene.rexUI.add.roundRectangle(0, 0, 45, 45, 2, 0x221c1a),
         },
         scene,
         context
@@ -103,8 +96,8 @@ export default class InventoryPanelFactory {
   }
 
   static createPanel(scene: TradeScene, slots: ItemSlot[], config: any) {
-    const sizer = scene
-      .rexUI!.add.sizer({
+    const sizer = scene.rexUI.add
+      .sizer({
         orientation: "y",
       })
       .add(
@@ -120,15 +113,15 @@ export default class InventoryPanelFactory {
   }
 
   static createHeader(scene: TradeScene, text: string) {
-    const title = scene
-      .rexUI!.add.label({
+    const title = scene.rexUI.add
+      .label({
         orientation: "x",
         text: scene.add.text(0, 0, text, constants.styles.text),
       })
       .setDepth(100);
 
-    return scene
-      .rexUI!.add.sizer({
+    return scene.rexUI.add
+      .sizer({
         orientation: "y",
         space: { left: 5, right: 5, top: 10 },
       })
@@ -144,7 +137,7 @@ export default class InventoryPanelFactory {
     columns: number
   ) {
     const cols = Math.ceil(itemSlots.length / rows);
-    const table = scene.rexUI!.add.gridSizer({
+    const table = scene.rexUI.add.gridSizer({
       column: cols,
       row: rows,
       space: { column: 0, row: 0 },

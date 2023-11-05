@@ -9,8 +9,8 @@ import UI from "./UI.ts";
 
 export default class ShopWindowFactory {
   static create(scene: TradeScene): ShopWindow {
-    const verticalSizer = scene.rexUI!.add.sizer({ orientation: "y" });
-    const horizontalSizer = scene.rexUI!.add.sizer({
+    const verticalSizer = scene.rexUI.add.sizer({ orientation: "y" });
+    const horizontalSizer = scene.rexUI.add.sizer({
       orientation: "x",
       width: 824,
       height: 432,
@@ -20,13 +20,13 @@ export default class ShopWindowFactory {
     });
 
     verticalSizer.addBackground(
-      scene.rexUI!.add.roundRectangle(0, 0, 2, 2, 2, 0x141013)
+      scene.rexUI.add.roundRectangle(0, 0, 2, 2, 2, 0x141013)
     );
 
     const rightKey = "tradingWith";
     const leftKey = "player";
 
-    const playerHeader = scene.rexUI!.add.sizer({
+    const playerHeader = scene.rexUI.add.sizer({
       orientation: "x",
       space: {
         item: 40,
@@ -79,7 +79,7 @@ export default class ShopWindowFactory {
       context: HudContext.shopInPlay,
     });
 
-    const npcHeader = scene.rexUI!.add.sizer({
+    const npcHeader = scene.rexUI.add.sizer({
       orientation: "x",
       space: {
         item: 40,
@@ -131,7 +131,7 @@ export default class ShopWindowFactory {
         },
       });
 
-    const actionBar = scene.rexUI!.add.sizer({
+    const actionBar = scene.rexUI.add.sizer({
       orientation: "x",
       height: 55,
       width: 250,

@@ -1,37 +1,31 @@
 import { Sizer } from "phaser3-rex-plugins/templates/ui/ui-components";
-import UI from "../../../../configs/UI";
-import type { GameEntity } from "../../../../ecs/Entities";
+import { eventEmitter } from "../EventEmitter.ts";
+import { HudContext } from "../HudContext.ts";
+import Item from "../Item.ts";
+import UI from "../UI.ts";
+import { GameEntity } from "../ecs/GameEntity.ts";
 import {
   DescriptorComponent,
-  NFTComponent,
   PickedUpComponent,
   QuantityComponent,
   RenderableComponent,
-  SummaryComponent,
   TradeIdComponent,
-} from "../../../../ecs/components/ECSComponents";
-import { gameSystem } from "../../../../ecs/systems/GameSystem";
-import type { HudContext } from "../../../../enums/HudContext";
-import { eventEmitter } from "../../../../utilities/EventEmitter";
-import Item from "../Item";
-import ItemInfoPanel from "./ItemInfoPanel";
+} from "../ecs/components/Components.ts";
 
 export interface AddItemConfig {
   renderable: RenderableComponent;
   descriptor: DescriptorComponent;
   entity: GameEntity;
-  summary: SummaryComponent;
   pickedUp?: PickedUpComponent;
   quantity?: QuantityComponent;
-  nft?: NFTComponent;
   tradeId?: TradeIdComponent;
 }
 
 export default class ItemSlot extends Sizer {
   slotIndex: number;
   slotType: HudContext;
-  item: Item;
-  constructor(config, scene) {
+  item: Item | undefined;
+  constructor(config: any, scene: Phaser.Scene) {
     super(scene, config.x, config.y, config.width, config.height, config);
     this.scene = scene;
     this.slotIndex = config.slotIndex;
@@ -47,13 +41,6 @@ export default class ItemSlot extends Sizer {
       const item = this.item;
       this.item = null;
       this.remove(item, true);
-
-      if (this.item.entity.hasComponent(NFTComponent)) {
-        const el = this.getFirst("nft");
-        if (el) {
-          this.remove(el, true);
-        }
-      }
 
       return item;
     }

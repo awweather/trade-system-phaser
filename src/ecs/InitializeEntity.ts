@@ -4,7 +4,7 @@ import { GameEntity } from "./GameEntity.ts";
 import { EntityIdComponent } from "./components/Components.ts";
 
 export interface RawEntity {
-  components: object;
+  components: any;
   entityID: string;
 }
 

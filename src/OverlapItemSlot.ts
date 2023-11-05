@@ -12,7 +12,7 @@ export default class OverlapItemSlot extends OverlapSizer {
   slotIndex: number;
   item: Item | null;
   slotType: HudContext;
-  qty: Phaser.GameObjects.Text;
+  qty: Phaser.GameObjects.Text | undefined;
   hover: string;
   updateQuantity: (val: number) => void;
   constructor(
@@ -32,12 +32,12 @@ export default class OverlapItemSlot extends OverlapSizer {
 
     this.hover = config.hover;
     this.item = null;
-    config.overlapChildren.forEach((child) => {
+    config.overlapChildren.forEach((child: any) => {
       this.add(child.background, child.config);
     });
 
     this.updateQuantity = function (newQuantity: number) {
-      this.qty.setText(newQuantity.toString());
+      this.qty?.setText(newQuantity.toString());
     };
   }
 
@@ -66,7 +66,6 @@ export default class OverlapItemSlot extends OverlapSizer {
       frame: config.renderable.sprite.frame,
       name: config.descriptor.name,
       description: config.descriptor.description,
-      entityID: config.entity.name,
       entity: config.entity,
     });
 
@@ -197,7 +196,7 @@ export default class OverlapItemSlot extends OverlapSizer {
     }
   }
 
-  handle_pointerOut(scene) {
+  handle_pointerOut(scene: TradeScene) {
     // const me = this as any;
     // me.backgroundChildren[0].setFrame(
     //   this.hover ? UI.itemSlot.potions : UI.itemSlot.base

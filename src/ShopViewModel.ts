@@ -9,26 +9,22 @@ import {
   ShopWindowComponent,
   TradeIdComponent,
 } from "./ecs/components/Components.ts";
-import ItemSlot from "./inventory/ItemSlot.ts";
+import { ItemSlot } from "./ecs/components/Inventory.ts";
 
 import { playerEntity, world } from "./main.ts";
 
 class ShopViewModel {
-  scene: TradeScene | null;
+  scene!: TradeScene;
 
   itemsInPlay: GameEntity[] = [];
   shopItemsInPlay: GameEntity[] = [];
-
-  constructor() {
-    this.scene = null;
-  }
 
   registerScene(tradeScene: TradeScene) {
     this.scene = tradeScene;
   }
 
   closeShopWindow() {
-    this.scene!.shopWindow.close();
+    this.scene!.shopWindow!.close();
     this.itemsInPlay = [];
     this.shopItemsInPlay = [];
 
@@ -94,18 +90,16 @@ class ShopViewModel {
       };
     });
 
-    this.scene!.shopWindow.initialize(
+    this.scene.shopWindow!.initialize(
       shopName,
       playerName,
       shopItems,
       playerItems,
       this.playerCoins,
-      this.shopCoins,
-      this.shopInPlayValue,
-      this.inPlayValue
+      this.shopCoins
     );
-    this.scene!.shopWindow.open();
-    // this.scene.populateItems(shopItems, playerItems);
+
+    this.scene.shopWindow!.open();
   }
 
   get playerCoins(): number {
@@ -207,11 +201,11 @@ class ShopViewModel {
   }
 
   removeItemFromPlayerInventory(slot: number) {
-    this.scene!.shopWindow.removeItemFromPlayerInventory(slot);
+    this.scene.shopWindow!.removeItemFromPlayerInventory(slot);
   }
 
   removeItemFromPlayerInPlay(slotIndex: number, removedItemId: string) {
-    this.scene!.shopWindow.removeItemFromPlayerInPlay(slotIndex);
+    this.scene.shopWindow!.removeItemFromPlayerInPlay(slotIndex);
     this.itemsInPlay = this.itemsInPlay.filter(
       (i: GameEntity) => i.entityId.value === removedItemId
     );
@@ -222,7 +216,7 @@ class ShopViewModel {
     const descriptor =
       entity.getComponent<DescriptorComponent>(DescriptorComponent);
     const quantity = entity.getComponent<QuantityComponent>(QuantityComponent);
-    const item = this.scene!.shopWindow.addToPlayerInPlay(
+    this.scene.shopWindow!.addToPlayerInPlay(
       {
         renderable,
         descriptor,
@@ -240,7 +234,7 @@ class ShopViewModel {
     const descriptor =
       entity.getComponent<DescriptorComponent>(DescriptorComponent);
     const quantity = entity.getComponent<QuantityComponent>(QuantityComponent);
-    const item = this.scene!.shopWindow.addToShopInPlay(
+    this.scene.shopWindow!.addToShopInPlay(
       {
         renderable,
         descriptor,
@@ -253,11 +247,11 @@ class ShopViewModel {
     this.shopItemsInPlay.push(entity);
   }
   removeItemFromShopInventory(slot: number) {
-    this.scene!.shopWindow.removeItemFromShopInventory(slot);
+    this.scene.shopWindow!.removeItemFromShopInventory(slot);
   }
   removeItemFromShopInPlay(slot: number, removedItemId: string) {
-    const item = this.scene!.shopWindow.removeItemFromShopInPlay(slot);
-    this.shopItemsInPlay.value = this.shopItemsInPlay.filter(
+    this.scene.shopWindow!.removeItemFromShopInPlay(slot);
+    this.shopItemsInPlay = this.shopItemsInPlay.filter(
       (i: GameEntity) => i.entityId.value === removedItemId
     );
   }
@@ -266,7 +260,7 @@ class ShopViewModel {
     const descriptor =
       entity.getComponent<DescriptorComponent>(DescriptorComponent);
     const quantity = entity.getComponent<QuantityComponent>(QuantityComponent);
-    const item = this.scene!.shopWindow.addToShopInventory(
+    this.scene.shopWindow!.addToShopInventory(
       {
         renderable,
         descriptor,
@@ -281,7 +275,7 @@ class ShopViewModel {
     const descriptor =
       entity.getComponent<DescriptorComponent>(DescriptorComponent);
     const quantity = entity.getComponent<QuantityComponent>(QuantityComponent);
-    const item = this.scene!.shopWindow.addToPlayerInventory(
+    this.scene.shopWindow!.addToPlayerInventory(
       {
         renderable,
         descriptor,

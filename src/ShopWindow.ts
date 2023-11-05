@@ -1,11 +1,7 @@
 import type Sizer from "phaser3-rex-plugins/templates/ui/sizer/Sizer";
-import { Dialog } from "phaser3-rex-plugins/templates/ui/ui-components";
-import { type Ref } from "vue";
-import Item from "./Item.ts";
 import OverlapItemSlot from "./OverlapItemSlot.ts";
-import ItemSlot from "./inventory/ItemSlot.ts";
 
-export default class ShopWindow implements Dialog {
+export default class ShopWindow {
   playerInventoryGrid: Sizer;
   shopInventoryGrid: Sizer;
   playerInPlay: Sizer;
@@ -13,13 +9,11 @@ export default class ShopWindow implements Dialog {
   coinsInPlay: Phaser.GameObjects.Text;
 
   playerName: Phaser.GameObjects.Text;
-  playerInventoryHeader: Phaser.GameObjects.Text;
   playerCoins: Phaser.GameObjects.Text;
   shopCoins: Phaser.GameObjects.Text;
   shopCoinsInPlay: Phaser.GameObjects.Text;
 
   shopInPlay: Sizer;
-  shopInventoryHeader: Phaser.GameObjects.Text;
   shopName: Phaser.GameObjects.Text;
 
   sizer: Sizer;
@@ -94,30 +88,11 @@ export default class ShopWindow implements Dialog {
     shopItems: any[],
     playerItems: any,
     playerCoins: number,
-    shopCoins: number,
-    shopCoinsInPlay: Ref<number>,
-    coinsInPlay: Ref<number>
+    shopCoins: number
   ): void {
     this.updateShopName(shopName);
     this.updateShopItems(shopItems);
     this.updatePlayerItems(playerItems);
-
-    // watch(playerCoins, (newValue) => {
-    //   this.updatePlayerCoins(newValue);
-    // });
-
-    // watch(shopCoins, (newValue) => {
-    //   this.updateShopCoins(newValue);
-    // });
-
-    // watch(coinsInPlay, (newValue) => {
-    //   this.updateCoinsInPlay(newValue);
-    // });
-
-    // watch(shopCoinsInPlay, (newValue) => {
-    //   this.updateShopCoinsInPlay(newValue);
-    // });
-
     this.updatePlayerCoins(playerCoins);
     this.updateShopCoins(shopCoins);
 
@@ -127,13 +102,6 @@ export default class ShopWindow implements Dialog {
     this.shopInventoryGrid
       .getChildren()
       .forEach((child: any) => child.setDepth(1));
-
-    // this.playerInventoryGrid.setDepth(500);
-    // this.shopInventoryGrid.setDepth(500);
-    // this.shopCoins.setDepth(500);
-    // this.playerCoins.setDepth(500);
-    // this.coinsInPlay.setDepth(500);
-    // this.shopCoinsInPlay.setDepth(500);
   }
 
   updateShopCoins(amount: number) {
@@ -175,8 +143,10 @@ export default class ShopWindow implements Dialog {
   }
 
   addToSlot(grid: Sizer, slotIndex: number, itemConfig: any) {
-    const slot = grid.getElement(`items`)[slotIndex] as ItemSlot;
-
+    const itemGrid = grid.getElement(
+      "items"
+    ) as Phaser.GameObjects.GameObject[];
+    const slot = itemGrid[slotIndex] as OverlapItemSlot;
     if (slot) {
       const item = slot.addItem(itemConfig);
       grid.layout();
@@ -197,7 +167,10 @@ export default class ShopWindow implements Dialog {
   }
 
   removeFromSlot(grid: Sizer, slotIndex: number) {
-    const slot = grid.getElement("items")[slotIndex] as ItemSlot;
+    const itemGrid = grid.getElement(
+      "items"
+    ) as Phaser.GameObjects.GameObject[];
+    const slot = itemGrid[slotIndex] as OverlapItemSlot;
     const item = slot?.removeItem();
     grid.layout();
 
@@ -207,13 +180,13 @@ export default class ShopWindow implements Dialog {
   removeItemFromPlayerInPlay(slotIndex: number) {
     return this.removeFromSlot(this.playerInPlay, slotIndex);
   }
-  removeItemFromPlayerInventory(slotIndex: number): Item {
-    return this.removeFromSlot(this.playerInventoryGrid, slotIndex);
+  removeItemFromPlayerInventory(slotIndex: number) {
+    this.removeFromSlot(this.playerInventoryGrid, slotIndex);
   }
   removeItemFromShopInPlay(slotIndex: any) {
-    return this.removeFromSlot(this.shopInPlay, slotIndex);
+    this.removeFromSlot(this.shopInPlay, slotIndex);
   }
   removeItemFromShopInventory(index: number) {
-    return this.removeFromSlot(this.shopInventoryGrid, index);
+    this.removeFromSlot(this.shopInventoryGrid, index);
   }
 }
