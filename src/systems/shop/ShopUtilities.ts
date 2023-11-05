@@ -432,6 +432,56 @@ export function transferItemsToPlayer(
   });
 }
 
+export function balanceOffer(actor: string) {
+  // First calculate difference between players in play and npcs in play
+  // Then, create gold to match the difference
+  // Then, add that gold to the player/npcs in play
+
+  const playerInPlayValue = shopViewModel.inPlayValue;
+  const npcInPlayValue = shopViewModel.shopInPlayValue;
+
+  if (playerInPlayValue === npcInPlayValue) return;
+
+  const actorEntity = world.entityManager.getEntityByName(actor);
+  if (playerInPlayValue < npcInPlayValue) {
+    // balance offer with the players gold
+    balanceOfferWithPlayerGold(actorEntity);
+  } else {
+    balanceOfferWithNpcGold(actorEntity);
+  }
+
+  shopViewModel.updateShopWindow();
+}
+
+export function balanceOfferWithPlayerGold(shopKeeper: GameEntity) {
+  const differenceInValue = calculateValueDifference();
+  const playerGoldEntities = getPlayerGoldEntities();
+  const availableGold = calculateAvailableGold(playerGoldEntities);
+
+  if (availableGold < differenceInValue) {
+    // Not enough gold to balance the offer
+    return;
+  }
+
+  const goldItemsSorted = sortGoldByQuantity(playerGoldEntities);
+  balancePlayerGold(goldItemsSorted, differenceInValue, shopKeeper);
+}
+
+export function balanceOfferWithNpcGold(shopKeeper: GameEntity) {
+  const differenceInValue =
+    shopViewModel.inPlayValue - shopViewModel.shopInPlayValue;
+  const goldEntities = getNpcGoldEntities();
+  const availableGold = calculateAvailableGold(goldEntities);
+
+  if (availableGold < differenceInValue) {
+    // Not enough gold to balance the offer
+    return;
+  }
+
+  const goldItemsSorted = sortGoldByQuantity(goldEntities);
+  balanceNpcGold(goldItemsSorted, differenceInValue, shopKeeper);
+}
+
 export function transferItemsToNpc(
   npcItemsToReceive: GameEntity[],
   shopkeeperId: string

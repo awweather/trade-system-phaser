@@ -22,13 +22,8 @@ import { ItemSlot, createItemSlots } from "../../components/Inventory.ts";
 import { playerEntity } from "../../main.ts";
 import { addToInventory } from "../inventory/InventoryUtilities.ts";
 import {
-  balanceNpcGold,
-  balancePlayerGold,
-  calculateAvailableGold,
-  calculateValueDifference,
+  balanceOffer,
   executeTrade,
-  getNpcGoldEntities,
-  getPlayerGoldEntities,
   itemMovedInPlay,
   itemMovedShopInPlay,
   itemMovedToPlayerShopInventory,
@@ -37,7 +32,6 @@ import {
   itemRemovedFromPlayerInventory,
   itemRemovedFromShopInPlay,
   itemRemovedFromShopInventory,
-  sortGoldByQuantity,
 } from "./ShopUtilities.ts";
 
 class ShopSystem extends System {
@@ -211,7 +205,7 @@ class ShopSystem extends System {
         playerEntity.getComponent<ShopWindowComponent>(
           ShopWindowComponent
         )!.tradingWithEntityId;
-      this.balanceOffer(tradingWithEntityId);
+      balanceOffer(tradingWithEntityId);
     });
 
     eventEmitter.on(`trade_offer_accepted`, () => {
@@ -228,54 +222,6 @@ class ShopSystem extends System {
   }
 
   acceptTrade() {}
-
-  balanceOffer(actor: string) {
-    // First calculate difference between players in play and npcs in play
-    // Then, create gold to match the difference
-    // Then, add that gold to the player/npcs in play
-
-    const playerInPlayValue = shopViewModel.inPlayValue;
-    const npcInPlayValue = shopViewModel.shopInPlayValue;
-
-    if (playerInPlayValue === npcInPlayValue) return;
-
-    const actorEntity = this.world.entityManager.getEntityByName(actor);
-    if (playerInPlayValue < npcInPlayValue) {
-      // balance offer with the players gold
-      this.balanceOfferWithPlayerGold(actorEntity);
-    } else {
-      this.balanceOfferWithNpcGold(actorEntity);
-    }
-  }
-
-  balanceOfferWithPlayerGold(shopKeeper: GameEntity) {
-    const differenceInValue = calculateValueDifference();
-    const playerGoldEntities = getPlayerGoldEntities();
-    const availableGold = calculateAvailableGold(playerGoldEntities);
-
-    if (availableGold < differenceInValue) {
-      // Not enough gold to balance the offer
-      return;
-    }
-
-    const goldItemsSorted = sortGoldByQuantity(playerGoldEntities);
-    balancePlayerGold(goldItemsSorted, differenceInValue, shopKeeper);
-  }
-
-  balanceOfferWithNpcGold(shopKeeper: GameEntity) {
-    const differenceInValue =
-      shopViewModel.inPlayValue - shopViewModel.shopInPlayValue;
-    const goldEntities = getNpcGoldEntities();
-    const availableGold = calculateAvailableGold(goldEntities);
-
-    if (availableGold < differenceInValue) {
-      // Not enough gold to balance the offer
-      return;
-    }
-
-    const goldItemsSorted = sortGoldByQuantity(goldEntities);
-    balanceNpcGold(goldItemsSorted, differenceInValue, shopKeeper);
-  }
 
   /**
    *

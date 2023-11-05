@@ -14,6 +14,7 @@ export default class OverlapItemSlot extends OverlapSizer {
   slotType: HudContext;
   qty: Phaser.GameObjects.Text;
   hover: string;
+  updateQuantity: (val: number) => void;
   constructor(
     x: number,
     y: number,
@@ -34,6 +35,10 @@ export default class OverlapItemSlot extends OverlapSizer {
     config.overlapChildren.forEach((child) => {
       this.add(child.background, child.config);
     });
+
+    this.updateQuantity = function (newQuantity: number) {
+      this.qty.setText(newQuantity.toString());
+    };
   }
 
   removeItem() {
@@ -41,7 +46,8 @@ export default class OverlapItemSlot extends OverlapSizer {
       if (this.qty) {
         this.qty.destroy();
         eventEmitter.off(
-          keys.items.QTY_CHANGED(this.item.entity.entityId.value)
+          keys.items.QTY_CHANGED(this.item.entity.entityId.value),
+          this.updateQuantity
         );
       }
 
@@ -85,9 +91,8 @@ export default class OverlapItemSlot extends OverlapSizer {
 
       eventEmitter.on(
         keys.items.QTY_CHANGED(config.entity.entityId.value),
-        (newQuantity: number) => {
-          this.qty.setText(newQuantity.toString());
-        }
+        this.updateQuantity,
+        this
       );
 
       //   this.qtySubscription = watch(config.quantity.value, (newValue) => {
