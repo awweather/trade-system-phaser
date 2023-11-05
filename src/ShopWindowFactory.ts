@@ -1,11 +1,10 @@
 import { alignGrid } from "./AlignGrid.ts";
-import { ButtonBuilder } from "./Button.ts";
 import constants from "./Constants.ts";
+import { eventEmitter } from "./EventEmitter.ts";
 import { HudContext } from "./HudContext.ts";
 import InventoryPanelFactory from "./inventory/InventoryPanelFactory.ts";
 import ShopWindow from "./ShopWindow";
 import TradeScene from "./TradeScene.ts";
-import UI from "./UI.ts";
 
 export default class ShopWindowFactory {
   static create(scene: TradeScene): ShopWindow {
@@ -140,23 +139,26 @@ export default class ShopWindowFactory {
       },
     });
 
-    const balanceOfferButton = new ButtonBuilder(scene, 0, 0, 100, 32)
-      .asStandard("A_GUI", UI.buttons.maroon)
-      .withText("Balance")
-      .withPointerDown("balance_offer_button_clicked")
-      .create();
+    const balanceOfferButton = scene.add
+      .text(0, 0, "Balance")
+      .setInteractive()
+      .on("pointerup", () => {
+        eventEmitter.emit("balance_offer_button_clicked");
+      });
 
-    const closeWindowButton = new ButtonBuilder(scene, 0, 0, 100, 32)
-      .asStandard("A_GUI", UI.buttons.maroon)
-      .withText("Close")
-      .withPointerDown("close_shop_window_clicked")
-      .create();
+    const closeWindowButton = scene.add
+      .text(0, 0, "Close")
+      .setInteractive()
+      .on("pointerup", () => {
+        eventEmitter.emit("close_shop_window_clicked");
+      });
 
-    const acceptButton = new ButtonBuilder(scene, 0, 0, 100, 32)
-      .asStandard("A_GUI", UI.buttons.green)
-      .withText("Accept")
-      .withPointerDown("trade_offer_accepted")
-      .create();
+    const acceptButton = scene.add
+      .text(0, 0, "Accept")
+      .setInteractive()
+      .on("pointerup", () => {
+        eventEmitter.emit("trade_offer_accepted");
+      });
 
     actionBar.add(acceptButton).add(balanceOfferButton).add(closeWindowButton);
 
