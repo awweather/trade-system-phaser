@@ -55,14 +55,7 @@ class ShopSystem extends System {
     eventEmitter.on(
       keys.itemSlots.CLICKED(HudContext.playerShopInventory),
       (originalSlotIndex: number, entity: GameEntity) => {
-        itemMovedInPlay({
-          actor: playerEntity.entityId?.value,
-          item: entity,
-          currentSlotIndex: originalSlotIndex,
-          targetSlotIndex: originalSlotIndex,
-          context: HudContext.playerShopInventory,
-          itemId: entity.entityId!.value,
-        });
+        itemMovedInPlay(entity);
       }
     );
 
@@ -233,7 +226,7 @@ class ShopSystem extends System {
     });
   }
 
-  acceptTrade() {}
+  acceptTrade() { }
 
   balanceOffer(actor: string) {
     // First calculate difference between players in play and npcs in play
@@ -443,11 +436,7 @@ class ShopSystem extends System {
       shopkeeper.baseItemIds.forEach((itemId) => {
         const item = ItemGenerator.generateItem(itemId, entity.entityId?.value);
 
-        addToInventory({
-          actor: entity.entityId.value,
-          context: HudContext.inventory,
-          item: item,
-        });
+        addToInventory(entity, item);
       });
 
       const currency =
@@ -455,11 +444,7 @@ class ShopSystem extends System {
       const goldItem = getGold(currency!.gold);
 
       const goldEntity = initializeItem(goldItem);
-      addToInventory({
-        actor: entity.entityId.value,
-        context: HudContext.inventory,
-        item: goldEntity,
-      });
+      addToInventory(entity, goldEntity);
     });
   }
 }

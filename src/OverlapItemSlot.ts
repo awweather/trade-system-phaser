@@ -9,7 +9,7 @@ import TradeScene from "./TradeScene.ts";
 
 export default class OverlapItemSlot extends OverlapSizer {
   slotIndex: number;
-  item: Item;
+  item: Item | null;
   slotType: HudContext;
   qty: any;
   hover: string;
@@ -29,6 +29,7 @@ export default class OverlapItemSlot extends OverlapSizer {
     this.addBackground(config.background);
 
     this.hover = config.hover;
+    this.item = null;
     config.overlapChildren.forEach((child) => {
       this.add(child.background, child.config);
     });
@@ -41,7 +42,6 @@ export default class OverlapItemSlot extends OverlapSizer {
       this.item = null;
 
       if (this.qty) {
-        this.qtySubscription();
         this.qty.destroy();
       }
     }
@@ -70,7 +70,7 @@ export default class OverlapItemSlot extends OverlapSizer {
       this.qty = this.scene.add.text(0, 0, config.quantity.value.toString(), {
         fontFamily: constants.styles.text.fontFamily,
         fontSize: `10px`,
-      });
+      }).setDepth(202);
 
       this.add(this.qty, {
         expand: false,

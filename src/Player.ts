@@ -308,7 +308,6 @@ export default function getPlayer(): RawEntity {
           },
         ],
         items: [
-          "9a3e6907-85e4-4381-aa61-d92d999fb465",
           "e0057ac8-319d-47fb-b86a-aa72aca9cd9b",
           "79aab16f-677d-4624-ba9f-2397d10c2ab3",
           "6dae9405-d7cc-4a80-a59a-73a2ecbc5d4c",

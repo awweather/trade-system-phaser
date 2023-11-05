@@ -2,6 +2,7 @@ import { _Entity } from "ecsy";
 import {
   EntityIdComponent,
   InventoryComponent,
+  PickedUpComponent,
   QuantityComponent,
   RenderableComponent,
   ShopWindowComponent,
@@ -13,6 +14,14 @@ export class GameEntity extends _Entity {
     const component = this.getComponent<EntityIdComponent>(EntityIdComponent);
     if (!component) {
       throw new Error("EntityIdComponent does not exist on this entity.");
+    }
+    return component;
+  }
+
+  get pickedUp(): PickedUpComponent {
+    const component = this.getComponent<PickedUpComponent>(PickedUpComponent);
+    if (!component) {
+      throw new Error("PickedUpComponent does not exist on this entity.");
     }
     return component;
   }
@@ -71,6 +80,14 @@ export class GameEntity extends _Entity {
 
   get inventory(): InventoryComponent {
     const component = this.getComponent<InventoryComponent>(InventoryComponent);
+    if (!component) {
+      throw new Error("InventoryComponent does not exist on this entity.");
+    }
+    return component;
+  }
+
+  get inventory_mutable(): InventoryComponent {
+    const component = this.getMutableComponent<InventoryComponent>(InventoryComponent);
     if (!component) {
       throw new Error("InventoryComponent does not exist on this entity.");
     }

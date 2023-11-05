@@ -13,6 +13,7 @@ import { shopkeeperEntity, world } from "./main.ts";
 export default class TradeScene extends Phaser.Scene {
   shopWindow: ShopWindow | undefined;
   rexUI: RexUIPlugin | undefined;
+  startTradeText: Phaser.GameObjects.Text | undefined;
   controls: Controls;
 
   constructor() {
@@ -37,15 +38,19 @@ export default class TradeScene extends Phaser.Scene {
       this.cameras.main,
       this
     );
-    shopViewModel.registerScene(this);
-    alignGrid.center(this.shopWindow.sizer);
 
-    this.time.delayedCall(2000, () => {
+    this.startTradeText = this.add.text(0, 0, "Start Trade").setInteractive().on("pointerup", () => {
       eventEmitter.emit(
         keys.menu.CLICKED("trade"),
         shopkeeperEntity.entityId?.value
       );
+
+      this.startTradeText!.setVisible(false);
     });
+
+    alignGrid.center(this.startTradeText);
+    shopViewModel.registerScene(this);
+
   }
 
   update(time: number, delta: number): void {

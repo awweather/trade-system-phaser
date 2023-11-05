@@ -27,7 +27,8 @@ class ShopViewModel {
   }
 
   closeShopWindow() {
-    // this.scene!.shopWindow.close();
+    this.scene!.shopWindow.close();
+    this.scene?.startTradeText?.setVisible(true);
     this.itemsInPlay = [];
     this.shopItemsInPlay = [];
 
@@ -37,7 +38,9 @@ class ShopViewModel {
       item.renderable!.tradeModel?.destroy(true);
     });
 
-    // gameSystem.player.value.removeComponent(ShopWindowComponent);
+    this.updateShopWindow();
+
+    playerEntity.removeComponent(ShopWindowComponent);
   }
   calculateInPlayValue(itemEntities: GameEntity[]): number {
     let value = 0;
@@ -55,6 +58,8 @@ class ShopViewModel {
   }
 
   updateShopWindow() {
+    this.scene?.shopWindow?.updatePlayerCoins(this.playerCoins);
+    this.scene?.shopWindow?.updateShopCoins(this.shopCoins);
     this.scene?.shopWindow?.updateCoinsInPlay(this.inPlayValue);
     this.scene?.shopWindow?.updateShopCoinsInPlay(this.shopInPlayValue);
   }

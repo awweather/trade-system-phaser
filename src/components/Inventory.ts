@@ -1,10 +1,18 @@
 import { Component, Types } from "ecsy";
 
 export class ItemSlot {
-  constructor(public item: string, public slotIndex: number) {}
+  constructor(public item: string, public slotIndex: number) { }
 
   hasItem() {
     return this.item && this.item !== "00000000-0000-0000-0000-000000000000";
+  }
+
+  addItem(item: string) {
+    if (this.item) {
+      throw new Error("ItemSlot already has an item")
+    }
+
+    this.item = item;
   }
 
   removeItem(): string {
@@ -29,7 +37,7 @@ export const createItemSlots = (num: number): ItemSlot[] => {
   return slots;
 };
 
-interface InventoryProps {}
+interface InventoryProps { }
 class Inventory extends Component<InventoryProps> {
   items: string[];
   slots: ItemSlot[];

@@ -1,3 +1,4 @@
+import { alignGrid } from "./AlignGrid.ts";
 import { ButtonBuilder } from "./Button.ts";
 import constants from "./Constants.ts";
 import { HudContext } from "./HudContext.ts";
@@ -64,10 +65,6 @@ export default class ShopWindowFactory {
       context: HudContext.playerInPlay,
     });
 
-    // leftSizer.grid.setDepth(501);
-
-    // middleLeft.grid.setDepth(501);
-
     const npcCoinsInPlay = scene.add.text(0, 0, "0g", {
       fontFamily: constants.styles.text.fontFamily,
       fontSize: `12px`,
@@ -81,8 +78,6 @@ export default class ShopWindowFactory {
       header: npcCoinsInPlay,
       context: HudContext.shopInPlay,
     });
-
-    // middleRight.grid.setDepth(501);
 
     const npcHeader = scene.rexUI!.add.sizer({
       orientation: "x",
@@ -110,7 +105,6 @@ export default class ShopWindowFactory {
       context: HudContext.shopInventory,
     });
 
-    // rightSizer.grid.setDepth(501);
     horizontalSizer
       .add(leftSizer.sizer, {
         key: leftKey,
@@ -137,7 +131,6 @@ export default class ShopWindowFactory {
         },
       });
 
-    // horizontalSizer.layout();
     const actionBar = scene.rexUI!.add.sizer({
       orientation: "x",
       height: 55,
@@ -170,6 +163,7 @@ export default class ShopWindowFactory {
     verticalSizer.add(horizontalSizer);
     verticalSizer.add(actionBar);
 
+    verticalSizer.setVisible(false);
     verticalSizer.layout();
 
     const shopWindow = new ShopWindow(
@@ -186,6 +180,8 @@ export default class ShopWindowFactory {
       npcCoinsInPlay
     );
 
+
+    alignGrid.center(shopWindow.sizer);
     return shopWindow;
   }
 }
