@@ -4,9 +4,9 @@ import constants from "./Constants.ts";
 import { eventEmitter } from "./EventEmitter.ts";
 import { HudContext } from "./HudContext.ts";
 import Item from "./Item";
-import type { AddItemConfig } from "./ItemSlot";
 import { keys } from "./Keys.ts";
 import TradeScene from "./TradeScene.ts";
+import type { AddItemConfig } from "./inventory/ItemSlot.ts";
 
 export default class OverlapItemSlot extends OverlapSizer {
   slotIndex: number;

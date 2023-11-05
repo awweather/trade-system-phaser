@@ -1,5 +1,5 @@
-import { initializeEntity } from "./InitializeEntity.ts";
-import initializeWorld from "./InitializeWorld.ts";
+import { initializeEntity } from "./ecs/InitializeEntity.ts";
+import initializeWorld from "./ecs/InitializeWorld.ts";
 import { config } from "./PhaserConfig.ts";
 import getPlayer, { getPlayerItems } from "./Player.ts";
 import getShopkeeper from "./Shopkeeper.ts";

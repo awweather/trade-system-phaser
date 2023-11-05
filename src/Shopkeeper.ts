@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { RawEntity } from "./InitializeEntity.ts";
+import { RawEntity } from "./ecs/InitializeEntity.ts";
 export default function getShopkeeper(): RawEntity {
   const id = uuidv4();
   return {

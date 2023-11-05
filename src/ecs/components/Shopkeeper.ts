@@ -1,16 +1,14 @@
 import { Component, Types } from "ecsy";
+import { ItemKey } from "../../Items.ts";
 
 interface ShopkeeperProps {
   baseItemIds: string[];
-  startingGold: number;
 }
 class Shopkeeper extends Component<ShopkeeperProps> {
-  baseItemIds: string[];
-  startingGold: number;
+  baseItemIds: ItemKey[] = [];
 }
 Shopkeeper.schema = {
   baseItemIds: { type: Types.Array },
-  startingGold: { type: Types.Number },
 };
 
 export default Shopkeeper;

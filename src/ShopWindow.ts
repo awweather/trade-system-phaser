@@ -2,8 +2,8 @@ import type Sizer from "phaser3-rex-plugins/templates/ui/sizer/Sizer";
 import { Dialog } from "phaser3-rex-plugins/templates/ui/ui-components";
 import { type Ref } from "vue";
 import Item from "./Item.ts";
-import ItemSlot from "./ItemSlot.ts";
 import OverlapItemSlot from "./OverlapItemSlot.ts";
+import ItemSlot from "./inventory/ItemSlot.ts";
 
 export default class ShopWindow implements Dialog {
   playerInventoryGrid: Sizer;

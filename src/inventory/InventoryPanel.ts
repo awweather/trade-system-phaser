@@ -1,5 +1,5 @@
 import type Sizer from "phaser3-rex-plugins/templates/ui/sizer/Sizer";
-import Item from "./Item.ts";
+import Item from "../Item.ts";
 import ItemSlot from "./ItemSlot.ts";
 
 export default class InventoryPanel {

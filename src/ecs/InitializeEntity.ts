@@ -1,7 +1,7 @@
+import { world } from "../main.ts";
+import { componentLookup } from "././ecs/components/Components.tsokup.ts";
 import { GameEntity } from "./GameEntity.ts";
-import { componentLookup } from "./components/ComponentLookup.ts";
 import { EntityIdComponent } from "./components/Components.ts";
-import { world } from "./main.ts";
 
 export interface RawEntity {
   components: object;

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
-import { initializeItem } from "./InitializeItem.ts";
 import { ItemKey, itemPresets } from "./Items.ts";
+import { initializeItem } from "./ecs/InitializeItem.ts";
 
 export default class ItemGenerator {
   public static generateItem(baseItemId: ItemKey, actor: string) {

@@ -1,12 +1,12 @@
-import { GameEntity } from "../../GameEntity.ts";
+import { GameEntity } from "../ecs/GameEntity.ts";
 import {
   GoldComponent,
   InventoryComponent,
   PickedUpComponent,
   QuantityComponent,
-} from "../../components/Components.ts";
-import { ItemSlot } from "../../components/Inventory.ts";
-import { playerEntity, world } from "../../main.ts";
+} from "../ecs/components/Components.ts";
+import { ItemSlot } from "../ecs/components/Inventory.ts";
+import { playerEntity, world } from "../main.ts";
 import { getGoldEntities, getShopGoldEntities } from "../shop/ShopUtilities.ts";
 
 export function getPlayerInventoryGoldEntities(): GameEntity[] {
@@ -97,7 +97,7 @@ export const addToInventory = (actor: GameEntity, item: GameEntity) => {
 
   const slot = hasPickedUp
     ? item.pickedUp.slotIndex
-    : inventory.firstAvailableSlot().slotIndex;
+    : inventory.firstAvailableSlot()!.slotIndex;
   if (!hasPickedUp) {
     item.addComponent<PickedUpComponent>(PickedUpComponent, {
       slotIndex: slot,

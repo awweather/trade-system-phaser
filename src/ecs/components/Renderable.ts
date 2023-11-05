@@ -11,11 +11,10 @@ export interface ISprite {
 
 interface RenderableSchemaProps {}
 class Renderable extends Component<RenderableSchemaProps> {
-  sprite: ISprite;
-  scale: number;
-  model: Phaser.GameObjects.Sprite;
-  tradeModel: Phaser.GameObjects.Sprite;
-  spriteKey: string;
+  sprite!: ISprite;
+  model: Phaser.GameObjects.Sprite | undefined;
+  tradeModel: Phaser.GameObjects.Sprite | undefined;
+  spriteKey!: string;
 }
 Renderable.schema = {
   sprite: { type: Types.Ref },

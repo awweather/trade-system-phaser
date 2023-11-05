@@ -1,21 +1,22 @@
-import { GameEntity } from "../../GameEntity.ts";
-import { initializeItem } from "../../InitializeItem.ts";
-import { getGold } from "../../Items.ts";
-import { shopViewModel } from "../../ShopViewModel.ts";
+import { getGold } from "../Items.ts";
+import { shopViewModel } from "../ShopViewModel.ts";
+import { GameEntity } from "../ecs/GameEntity.ts";
+import { initializeItem } from "../ecs/InitializeItem.ts";
 import {
   GoldComponent,
   PickedUpComponent,
   QuantityComponent,
   ShopWindowComponent,
   TradeIdComponent,
-} from "../../components/Components.ts";
-import { ItemSlot } from "../../components/Inventory.ts";
-import { playerEntity, world } from "../../main.ts";
+} from "../ecs/components/Components.ts";
+import { ItemSlot } from "../ecs/components/Inventory.ts";
+
 import {
   addToInventory,
   getItemInInventoryWithMinQuantity,
   removeFromInventory,
 } from "../inventory/InventoryUtilities.ts";
+import { playerEntity, world } from "../main.ts";
 
 export function calculateValueDifference(): number {
   // Assuming shopViewModel is accessible in this scope
@@ -70,7 +71,7 @@ export function getShopGoldEntities(): GameEntity[] {
 }
 
 /**
- *
+ * Calculates the sum of an array of gold
  * @param goldEntities The array of gold entities
  * @returns The sum of quantity of the gold. Throws an error if an entity does not have a quantity or gold component
  */

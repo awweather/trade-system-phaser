@@ -1,4 +1,4 @@
-import { RawEntity } from "./InitializeEntity.ts";
+import { RawEntity } from "./ecs/InitializeEntity.ts";
 
 export default function getPlayer(): RawEntity {
   return {

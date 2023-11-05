@@ -13,7 +13,7 @@ import {
 import { gameSystem } from "../../../../ecs/systems/GameSystem";
 import type { HudContext } from "../../../../enums/HudContext";
 import { eventEmitter } from "../../../../utilities/EventEmitter";
-import Item from "./Item";
+import Item from "../Item";
 import ItemInfoPanel from "./ItemInfoPanel";
 
 export interface AddItemConfig {

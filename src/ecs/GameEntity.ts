@@ -1,11 +1,13 @@
 import { _Entity } from "ecsy";
 import {
+  DescriptorComponent,
   EntityIdComponent,
   InventoryComponent,
   PickedUpComponent,
   QuantityComponent,
   RenderableComponent,
   ShopWindowComponent,
+  ShopkeeperComponent,
   ValuableComponent,
 } from "./components/Components.ts";
 
@@ -87,9 +89,28 @@ export class GameEntity extends _Entity {
   }
 
   get inventory_mutable(): InventoryComponent {
-    const component = this.getMutableComponent<InventoryComponent>(InventoryComponent);
+    const component =
+      this.getMutableComponent<InventoryComponent>(InventoryComponent);
     if (!component) {
       throw new Error("InventoryComponent does not exist on this entity.");
+    }
+    return component;
+  }
+
+  get descriptor(): DescriptorComponent {
+    const component =
+      this.getComponent<DescriptorComponent>(DescriptorComponent);
+    if (!component) {
+      throw new Error("DescriptorComponent does not exist on this entity.");
+    }
+    return component;
+  }
+
+  get shopkeeper(): ShopkeeperComponent {
+    const component =
+      this.getComponent<ShopkeeperComponent>(ShopkeeperComponent);
+    if (!component) {
+      throw new Error("ShopkeeperComponent does not exist on this entity.");
     }
     return component;
   }

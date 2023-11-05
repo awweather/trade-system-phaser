@@ -2,7 +2,7 @@ import { alignGrid } from "./AlignGrid.ts";
 import { ButtonBuilder } from "./Button.ts";
 import constants from "./Constants.ts";
 import { HudContext } from "./HudContext.ts";
-import InventoryPanelFactory from "./InventoryPanelFactory.ts";
+import InventoryPanelFactory from "./inventory/InventoryPanelFactory.ts";
 import ShopWindow from "./ShopWindow";
 import TradeScene from "./TradeScene.ts";
 import UI from "./UI.ts";
@@ -179,7 +179,6 @@ export default class ShopWindowFactory {
       npcName,
       npcCoinsInPlay
     );
-
 
     alignGrid.center(shopWindow.sizer);
     return shopWindow;

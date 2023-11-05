@@ -1,12 +1,22 @@
-import { System } from "ecsy";
+import { Entity, System } from "ecsy";
 import { eventEmitter } from "../../EventEmitter.ts";
-import { GameEntity } from "../../GameEntity.ts";
 import { HudContext } from "../../HudContext.ts";
-import { initializeItem } from "../../InitializeItem.ts";
 import ItemGenerator from "../../ItemGenerator.ts";
 import { getGold } from "../../Items.ts";
 import { keys } from "../../Keys.ts";
 import { shopViewModel } from "../../ShopViewModel.ts";
+import { addToInventory } from "../../inventory/InventoryUtilities.ts";
+import { playerEntity, shopkeeperEntity } from "../../main.ts";
+import {
+  balanceOffer,
+  executeTrade,
+  itemMovedInPlay,
+  itemMovedShopInPlay,
+  itemMovedToPlayerShopInventory,
+  itemMovedToShopInventory,
+} from "../../shop/ShopUtilities.ts";
+import { GameEntity } from "../GameEntity.ts";
+import { initializeItem } from "../InitializeItem.ts";
 import {
   CurrencyComponent,
   DescriptorComponent,
@@ -17,23 +27,13 @@ import {
   ShopWindowComponent,
   ShopkeeperComponent,
   TradeIdComponent,
-} from "../../components/Components.ts";
-import { ItemSlot, createItemSlots } from "../../components/Inventory.ts";
-import { playerEntity, shopkeeperEntity } from "../../main.ts";
-import { addToInventory } from "../inventory/InventoryUtilities.ts";
-import {
-  balanceOffer,
-  executeTrade,
-  itemMovedInPlay,
-  itemMovedShopInPlay,
-  itemMovedToPlayerShopInventory,
-  itemMovedToShopInventory,
-} from "./ShopUtilities.ts";
+} from "../components/Components.ts";
+import { ItemSlot, createItemSlots } from "../components/Inventory.ts";
 
 class ShopSystem extends System {
   init() {
-    eventEmitter.on(keys.menu.CLICKED("trade"), (entityId: string) => {
-      this.tradeInitiated(playerEntity.entityId!.value, entityId);
+    eventEmitter.on(keys.menu.CLICKED("trade"), (shopkeeperId: string) => {
+      this.tradeInitiated(shopkeeperId);
     });
 
     eventEmitter.on(
@@ -59,53 +59,13 @@ class ShopSystem extends System {
 
     eventEmitter.on(
       keys.itemSlots.CLICKED(HudContext.shopInPlay),
-      (originalSlotIndex, entity: GameEntity) => {
+      (originalSlotIndex: number, entity: GameEntity) => {
         itemMovedToShopInventory(entity);
       }
     );
 
-    eventEmitter.on("itemQuantityUpdated", (message) =>
-      this.updateItemQuantity(message)
-    );
-
-    eventEmitter.on(
-      `${HudContext.playerShopInventory}_returnToSlot`,
-      (itemEntity: GameEntity, slotIndex: number) => {
-        shopViewModel.removeItemFromPlayerInventory(slotIndex);
-        shopViewModel.moveItemToPlayerInventory(itemEntity, slotIndex);
-      }
-    );
-
-    eventEmitter.on(
-      `${HudContext.playerInPlay}_returnToSlot`,
-      (itemEntity: GameEntity, slotIndex: number) => {
-        shopViewModel.removeItemFromPlayerInPlay(slotIndex);
-        shopViewModel.moveItemInPlay(itemEntity, slotIndex);
-      }
-    );
-
-    eventEmitter.on(
-      `${HudContext.shopInPlay}_returnToSlot`,
-      (itemEntity: GameEntity, slotIndex: number) => {
-        shopViewModel.removeItemFromShopInPlay(slotIndex);
-        shopViewModel.moveItemShopInPlay(itemEntity, slotIndex);
-      }
-    );
-
-    eventEmitter.on(
-      `${HudContext.shopInventory}_returnToSlot`,
-      (itemEntity: GameEntity, slotIndex: number) => {
-        shopViewModel.removeItemFromShopInventory(slotIndex);
-        shopViewModel.moveItemToShopInventory(itemEntity, slotIndex);
-      }
-    );
-
     eventEmitter.on("balance_offer_button_clicked", () => {
-      const tradingWithEntityId =
-        playerEntity.getComponent<ShopWindowComponent>(
-          ShopWindowComponent
-        )!.tradingWithEntityId;
-      balanceOffer(tradingWithEntityId);
+      balanceOffer();
     });
 
     eventEmitter.on(`trade_offer_accepted`, () => {
@@ -115,10 +75,7 @@ class ShopSystem extends System {
 
       executeTrade();
 
-      this.tradeInitiated(
-        playerEntity.entityId.value,
-        shopkeeperEntity.entityId.value
-      );
+      this.tradeInitiated(shopkeeperEntity.entityId.value);
     });
 
     eventEmitter.on("close_shop_window_clicked", () => {
@@ -126,47 +83,8 @@ class ShopSystem extends System {
     });
   }
 
-  acceptTrade() {}
-
-  /**
-   *
-   * @param baseItem the gold item to split
-   * @param amount the amount to split off the base item
-   * @param actor the player who's inventory the gold is in
-   * @returns the split out gold amount
-   */
-  splitGoldStack(
-    baseItem: GameEntity,
-    amount: number,
-    actor: GameEntity
-  ): GameEntity {
-    baseItem.quantity.value -= amount;
-
-    const splitItem = getGold(amount);
-    const entity = initializeItem(splitItem);
-
-    return entity;
-  }
-
-  updateItemQuantity(message) {
-    const entity = this.world.entityManager.getEntityByName(
-      `item_${message.item}`
-    );
-
-    entity.quantity.value = message.quantity;
-  }
-
-  refreshInventory(entities): void {
-    const clientItemEntities = entities.map((item) => {
-      return this.world.entityManager.getEntityByName(`item_${item.entityID}`);
-    });
-
-    shopViewModel.updateShopWindow(clientItemEntities);
-  }
-
-  tradeInitiated(actor: string, shopKeeper: string) {
-    const playerInventory =
-      playerEntity.getComponent<InventoryComponent>(InventoryComponent);
+  tradeInitiated(shopKeeper: string) {
+    const playerInventory = playerEntity.inventory;
 
     const tradingWith = this.world.entityManager.getEntityByName(shopKeeper);
 
@@ -177,10 +95,7 @@ class ShopSystem extends System {
       (s: ItemSlot) => {
         let itemId = "";
         if (!s.hasItem()) {
-          return {
-            slotIndex: s.slotIndex,
-            item: itemId,
-          };
+          return new ItemSlot(itemId, s.slotIndex);
         }
 
         const item = this.world.entityManager.getEntityByName(s.item);
@@ -201,10 +116,7 @@ class ShopSystem extends System {
           itemId = clonedGoldEntity.entityId!.value;
         }
 
-        return {
-          slotIndex: s.slotIndex,
-          item: itemId,
-        };
+        return new ItemSlot(itemId, s.slotIndex);
       }
     );
 
@@ -212,10 +124,7 @@ class ShopSystem extends System {
       (s: ItemSlot) => {
         let itemId = "";
         if (!s.hasItem()) {
-          return {
-            slotIndex: s.slotIndex,
-            item: itemId,
-          };
+          return new ItemSlot(itemId, s.slotIndex);
         }
 
         const item = this.world.entityManager.getEntityByName(s.item);
@@ -237,10 +146,7 @@ class ShopSystem extends System {
           itemId = clonedGoldEntity.entityId.value;
         }
 
-        return {
-          slotIndex: s.slotIndex,
-          item: itemId,
-        };
+        return new ItemSlot(itemId, s.slotIndex);
       }
     );
 
@@ -258,11 +164,10 @@ class ShopSystem extends System {
     const tradingWithName =
       tradingWith.getComponent<DescriptorComponent>(DescriptorComponent).name;
 
-    const playerName =
-      playerEntity.getComponent<DescriptorComponent>(DescriptorComponent).name;
+    const playerName = playerEntity.descriptor.name;
 
-    const shopWindow =
-      playerEntity.getComponent<ShopWindowComponent>(ShopWindowComponent);
+    const shopWindow = playerEntity.shopWindow;
+
     const shopItemEntities = shopWindow.npcInventory
       .filter((s: ItemSlot) => s.hasItem())
       .map((s: ItemSlot) => this.world.entityManager.getEntityByName(s.item));
@@ -281,14 +186,17 @@ class ShopSystem extends System {
   }
 
   execute() {
-    this.queries!.shopkeeper!.added!.forEach((entity: GameEntity) => {
-      const shopkeeper =
-        entity.getComponent<ShopkeeperComponent>(ShopkeeperComponent)!;
+    this.queries.shopkeeper.added!.forEach((entity: Entity) => {
+      const gameEntity = entity as GameEntity;
+      const shopkeeper = gameEntity.shopkeeper;
 
       shopkeeper.baseItemIds.forEach((itemId) => {
-        const item = ItemGenerator.generateItem(itemId, entity.entityId?.value);
+        const item = ItemGenerator.generateItem(
+          itemId,
+          gameEntity.entityId?.value
+        );
 
-        addToInventory(entity, item);
+        addToInventory(gameEntity, item);
       });
 
       const currency =
@@ -296,14 +204,15 @@ class ShopSystem extends System {
       const goldItem = getGold(currency!.gold);
 
       const goldEntity = initializeItem(goldItem);
-      addToInventory(entity, goldEntity);
+      addToInventory(gameEntity, goldEntity);
     });
 
-    this.queries!.quantity!.changed!.forEach((entity: GameEntity) => {
-      const quantity = entity.quantity;
+    this.queries.quantity.changed!.forEach((entity: Entity) => {
+      const gameEntity = entity as GameEntity;
+      const quantity = gameEntity.quantity;
 
       eventEmitter.emit(
-        keys.items.QTY_CHANGED(entity.entityId.value),
+        keys.items.QTY_CHANGED(gameEntity.entityId.value),
         quantity.value
       );
     });

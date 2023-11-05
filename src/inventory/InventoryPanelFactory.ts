@@ -1,10 +1,11 @@
 import type { ScrollablePanel } from "phaser3-rex-plugins/templates/ui/ui-components";
-import { alignGrid } from "./AlignGrid.ts";
-import constants from "./Constants.ts";
-import { HudContext } from "./HudContext.ts";
+import { alignGrid } from "../AlignGrid.ts";
+import constants from "../Constants.ts";
+import { HudContext } from "../HudContext.ts";
+import OverlapItemSlot from "../OverlapItemSlot.ts";
+import TradeScene from "../TradeScene.ts";
 import InventoryPanel from "./InventoryPanel.ts";
-import OverlapItemSlot from "./OverlapItemSlot.ts";
-import TradeScene from "./TradeScene.ts";
+import ItemSlot from "./ItemSlot.ts";
 export default class InventoryPanelFactory {
   static create(scene: any, config: any = {}): InventoryPanel {
     const slots = this.createSlots(
@@ -22,11 +23,8 @@ export default class InventoryPanelFactory {
         },
       },
       space: {
-        // header: 10,
-        // footer: 10,
         top: 0,
         right: 0,
-        // bottom: 10,
       },
       expand: {
         header: false,
@@ -41,12 +39,6 @@ export default class InventoryPanelFactory {
       scrollMode: 0,
       width: config.columns ? config.columns * 50 : 206,
       height: config.height ?? 400,
-      // slider: {
-      //   track: scene.rexUI.add
-      //     .roundRectangle(0, 0, 2, 2, 2, constants.styles.colors.primaryGrey)
-      //     .setDepth(205),
-      //   thumb: scene.add.image(0, 0, "A_GUI", "LOM_GUI_16.png").setDepth(205),
-      // },
     }) as ScrollablePanel;
 
     sizer.layout();
@@ -110,9 +102,9 @@ export default class InventoryPanelFactory {
     return slots;
   }
 
-  static createPanel(scene, slots, config: any) {
-    const sizer = scene.rexUI.add
-      .sizer({
+  static createPanel(scene: TradeScene, slots: ItemSlot[], config: any) {
+    const sizer = scene
+      .rexUI!.add.sizer({
         orientation: "y",
       })
       .add(
@@ -127,16 +119,16 @@ export default class InventoryPanelFactory {
     return sizer;
   }
 
-  static createHeader(scene, text) {
-    const title = scene.rexUI.add
-      .label({
+  static createHeader(scene: TradeScene, text: string) {
+    const title = scene
+      .rexUI!.add.label({
         orientation: "x",
         text: scene.add.text(0, 0, text, constants.styles.text),
       })
       .setDepth(100);
 
-    return scene.rexUI.add
-      .sizer({
+    return scene
+      .rexUI!.add.sizer({
         orientation: "y",
         space: { left: 5, right: 5, top: 10 },
       })
@@ -145,9 +137,14 @@ export default class InventoryPanelFactory {
       );
   }
 
-  static createTable(scene, itemSlots, rows, columns) {
+  static createTable(
+    scene: TradeScene,
+    itemSlots: ItemSlot[],
+    rows: number,
+    columns: number
+  ) {
     const cols = Math.ceil(itemSlots.length / rows);
-    const table = scene.rexUI.add.gridSizer({
+    const table = scene.rexUI!.add.gridSizer({
       column: cols,
       row: rows,
       space: { column: 0, row: 0 },

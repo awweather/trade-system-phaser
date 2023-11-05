@@ -1,5 +1,5 @@
 import Phaser, { Scene } from "phaser";
-import type { GameEntity } from "../../../../ecs/Entities";
+import { GameEntity } from "./ecs/GameEntity.ts";
 
 export interface ItemConfig {
   scene: Scene;
@@ -17,9 +17,9 @@ export default class Item extends Phaser.GameObjects.Sprite {
   entityID: number;
   entity: GameEntity;
   description: string;
-  slotIndex: number;
+  slotIndex: number = 0;
   drag: any;
-  constructor(config) {
+  constructor(config: ItemConfig) {
     super(config.scene, config.x, config.y, config.texture, config.frame);
 
     this.entityID = config.entityID;
