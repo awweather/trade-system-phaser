@@ -1,13 +1,14 @@
-import * as components from "./Components.ts";
+import { components } from "./Components.ts";
+
 class ComponentLookup {
   private indexedComponents: Map<string, any>;
   constructor() {
     this.indexedComponents = new Map<string, any>();
-
+    let comps = components as any;
     Object.keys(components).forEach((componentKey: string) => {
       this.indexedComponents.set(
         componentKey.toLowerCase(),
-        components[componentKey] as any
+        comps[componentKey]
       );
     });
   }

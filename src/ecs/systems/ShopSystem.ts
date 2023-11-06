@@ -2,10 +2,13 @@ import { Entity, System } from "ecsy";
 import { eventEmitter } from "../../EventEmitter.ts";
 import { HudContext } from "../../HudContext.ts";
 import ItemGenerator from "../../ItemGenerator.ts";
-import { getGold } from "../../prefabs/Items.ts";
 import { keys } from "../../config/Keys.ts";
-import { addToInventory } from "../../inventory/InventoryUtilities.ts";
+import {
+  addToInventory,
+  getItemsFromSlots,
+} from "../../inventory/InventoryUtilities.ts";
 import { playerEntity, shopkeeperEntity } from "../../main.ts";
+import { getGold } from "../../prefabs/Items.ts";
 import {
   balanceOffer,
   executeTrade,
@@ -13,20 +16,17 @@ import {
   itemMovedShopInPlay,
   itemMovedToPlayerShopInventory,
   itemMovedToShopInventory,
+  mapInventorySlot,
 } from "../../shop/ShopUtilities.ts";
 import { shopViewModel } from "../../shop/ShopViewModel.ts";
 import { GameEntity } from "../GameEntity.ts";
-import { initializeItem } from "../InitializeItem.ts";
+import { initializeEntity } from "../InitializeEntity.ts";
 import {
   CurrencyComponent,
-  DescriptorComponent,
-  GoldComponent,
   InventoryComponent,
-  PickedUpComponent,
   QuantityComponent,
   ShopWindowComponent,
   ShopkeeperComponent,
-  TradeIdComponent,
 } from "../components/Components.ts";
 import { ItemSlot, createItemSlots } from "../components/Inventory.ts";
 
@@ -83,104 +83,53 @@ class ShopSystem extends System {
     });
   }
 
-  tradeInitiated(shopKeeper: string) {
-    const playerInventory = playerEntity.inventory;
+  tradeInitiated(shopKeeperId: string) {
+    const tradingWith = this.world.entityManager.getEntityByName(shopKeeperId);
 
-    const tradingWith = this.world.entityManager.getEntityByName(shopKeeper);
-
-    const tradingWithInventory =
-      tradingWith.getComponent<InventoryComponent>(InventoryComponent);
-
-    const playerShopInventorySlots = playerInventory.slots.map(
+    // Clone player inventory slots
+    const playerShopInventorySlots = playerEntity.inventory.slots.map(
       (s: ItemSlot) => {
-        let itemId = "";
-        if (!s.hasItem()) {
-          return new ItemSlot(itemId, s.slotIndex);
-        }
-
-        const item = this.world.entityManager.getEntityByName(s.item);
-        itemId = item.entityId.value;
-
-        // Clone the gold so that we are not modifying the state of the actual players inventory
-        if (item.hasComponent(GoldComponent)) {
-          const clonedGold = getGold(item.quantity.value);
-          const clonedGoldEntity = initializeItem(clonedGold);
-          clonedGoldEntity.addComponent<TradeIdComponent>(TradeIdComponent, {
-            tradeId: shopKeeper,
-          });
-
-          clonedGoldEntity.addComponent<PickedUpComponent>(PickedUpComponent, {
-            slotIndex:
-              item.getComponent<PickedUpComponent>(PickedUpComponent).slotIndex,
-          });
-          itemId = clonedGoldEntity.entityId!.value;
-        }
-
-        return new ItemSlot(itemId, s.slotIndex);
+        return mapInventorySlot(s, shopKeeperId);
       }
     );
 
-    const npcShopInventorySlots = tradingWithInventory.slots.map(
+    // Clone npc inventory slots
+    const npcShopInventorySlots = tradingWith.inventory.slots.map(
       (s: ItemSlot) => {
-        let itemId = "";
-        if (!s.hasItem()) {
-          return new ItemSlot(itemId, s.slotIndex);
-        }
-
-        const item = this.world.entityManager.getEntityByName(s.item);
-        itemId = item.entityId.value;
-
-        // Clone the gold so that we are not modifying the state of the actual npcs inventory
-        if (item.hasComponent(GoldComponent)) {
-          const clonedGold = getGold(item.quantity.value);
-          const clonedGoldEntity = initializeItem(clonedGold);
-          clonedGoldEntity.addComponent<TradeIdComponent>(TradeIdComponent, {
-            tradeId: shopKeeper,
-          });
-
-          clonedGoldEntity.addComponent<PickedUpComponent>(PickedUpComponent, {
-            slotIndex:
-              item.getComponent<PickedUpComponent>(PickedUpComponent).slotIndex,
-          });
-
-          itemId = clonedGoldEntity.entityId.value;
-        }
-
-        return new ItemSlot(itemId, s.slotIndex);
+        return mapInventorySlot(s, shopKeeperId);
       }
     );
 
+    // Initialize in play slots
     const playerInPlaySlots = createItemSlots(10);
     const shopInPlaySlots = createItemSlots(10);
 
+    // Adds the shop window component to the player to track the state of the shop window
     playerEntity.addComponent<ShopWindowComponent>(ShopWindowComponent, {
       inventory: playerShopInventorySlots,
       inPlay: playerInPlaySlots,
       npcInPlay: shopInPlaySlots,
       npcInventory: npcShopInventorySlots,
-      tradingWithEntityId: shopKeeper,
+      tradingWithEntityId: shopKeeperId,
     });
 
-    const tradingWithName =
-      tradingWith.getComponent<DescriptorComponent>(DescriptorComponent).name;
+    // Get all item entities from the npc's inventory
+    const shopItemEntities = getItemsFromSlots(
+      playerEntity.shopWindow.npcInventory
+    );
 
-    const playerName = playerEntity.descriptor.name;
+    // Get all item entities from the player's inventory
+    const playerItemEntities = getItemsFromSlots(
+      playerEntity.shopWindow.inventory
+    );
 
-    const shopWindow = playerEntity.shopWindow;
-
-    const shopItemEntities = shopWindow.npcInventory
-      .filter((s: ItemSlot) => s.hasItem())
-      .map((s: ItemSlot) => this.world.entityManager.getEntityByName(s.item));
-    const playerItemEntities = shopWindow.inventory
-      .filter((s: ItemSlot) => s.hasItem())
-      .map((s: ItemSlot) => this.world.entityManager.getEntityByName(s.item));
-
+    // Initialize shop window
     shopViewModel.showShopWindow(
-      tradingWithInventory,
-      tradingWithName,
+      tradingWith.inventory,
+      tradingWith.descriptor.name,
       shopItemEntities,
-      playerName,
-      playerInventory,
+      playerEntity.descriptor.name,
+      playerEntity.inventory,
       playerItemEntities
     );
   }
@@ -203,7 +152,7 @@ class ShopSystem extends System {
         entity.getComponent<CurrencyComponent>(CurrencyComponent);
       const goldItem = getGold(currency!.gold);
 
-      const goldEntity = initializeItem(goldItem);
+      const goldEntity = initializeEntity(goldItem);
       addToInventory(gameEntity, goldEntity);
     });
 

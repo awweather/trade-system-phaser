@@ -1,11 +1,11 @@
 import type { ScrollablePanel } from "phaser3-rex-plugins/templates/ui/ui-components";
-import { alignGrid } from "../AlignGrid.ts";
+import { alignGrid } from "../AlignGrid.js";
 import { HudContext } from "../HudContext.ts";
-import OverlapItemSlot from "./OverlapItemSlot.ts";
-import TradeScene from "../scenes/TradeScene.ts";
 import constants from "../config/Constants.ts";
+import TradeScene from "../scenes/TradeScene.ts";
 import InventoryPanel from "./InventoryPanel.ts";
 import ItemSlot from "./ItemSlot.ts";
+import OverlapItemSlot from "./OverlapItemSlot.ts";
 export default class InventoryPanelFactory {
   static create(scene: any, config: any = {}): InventoryPanel {
     const slots = this.createSlots(

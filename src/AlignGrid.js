@@ -1,3 +1,5 @@
+import { game } from "./main.ts";
+
 class AlignGrid {
   constructor() {}
 
@@ -14,10 +16,10 @@ class AlignGrid {
       config.cols = 5;
     }
     if (!config.height) {
-      config.height = window.game.config.height;
+      config.height = game.config.height;
     }
     if (!config.width) {
-      config.width = window.game.config.width;
+      config.width = game.config.width;
     }
 
     this.scene = config.scene;
@@ -76,26 +78,26 @@ class AlignGrid {
   }
 
   scaleToGameW(obj, per) {
-    obj.displayWidth = window.game.config.width * per;
+    obj.displayWidth = game.config.width * per;
     obj.scaleY = obj.scaleX;
   }
   centerH(obj) {
-    obj.x = window.game.config.width / 2 - obj.displayWidth / 2;
+    obj.x = game.config.width / 2 - obj.displayWidth / 2;
   }
   centerV(obj) {
-    obj.y = window.game.config.height / 2 - obj.displayHeight / 2;
+    obj.y = game.config.height / 2 - obj.displayHeight / 2;
   }
   center2(obj) {
-    obj.x = window.game.config.width / 2 - obj.displayWidth / 2;
-    obj.y = window.game.config.height / 2 - obj.displayHeight / 2;
+    obj.x = game.config.width / 2 - obj.displayWidth / 2;
+    obj.y = game.config.height / 2 - obj.displayHeight / 2;
   }
   center(obj) {
     if (obj.x && obj.y) {
-      obj.x = window.game.config.width / 2;
-      obj.y = window.game.config.height / 2;
+      obj.x = game.config.width / 2;
+      obj.y = game.config.height / 2;
     } else if (obj.setX && obj.setY) {
-      obj.setX(window.game!.config.width / 2);
-      obj.setY(window.game.config.height / 2);
+      obj.setX(game.config.width / 2);
+      obj.setY(game.config.height / 2);
     }
 
     return this;

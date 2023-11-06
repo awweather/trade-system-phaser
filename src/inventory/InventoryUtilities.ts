@@ -123,3 +123,9 @@ export const removeFromInventory = (actor: GameEntity, index: number): void => {
     inventory.items = inventory.items.filter((item) => item !== itemToRemove);
   }
 };
+
+export function getItemsFromSlots(slots: ItemSlot[]) {
+  return slots
+    .filter((s) => s.hasItem())
+    .map((s) => world.entityManager.getEntityByName(s.item));
+}

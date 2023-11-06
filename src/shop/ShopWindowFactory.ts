@@ -1,9 +1,9 @@
-import { alignGrid } from "../AlignGrid.ts";
+import { alignGrid } from "../AlignGrid.js";
 import { eventEmitter } from "../EventEmitter.ts";
 import { HudContext } from "../HudContext.ts";
-import TradeScene from "../scenes/TradeScene.ts";
 import constants from "../config/Constants.ts";
 import InventoryPanelFactory from "../inventory/InventoryPanelFactory.ts";
+import TradeScene from "../scenes/TradeScene.ts";
 import ShopWindow from "./ShopWindow";
 
 export default class ShopWindowFactory {

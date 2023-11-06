@@ -1,4 +1,3 @@
-import { getGold } from "../prefabs/Items.ts";
 import { GameEntity } from "../ecs/GameEntity.ts";
 import { initializeItem } from "../ecs/InitializeItem.ts";
 import {
@@ -9,8 +8,10 @@ import {
   TradeIdComponent,
 } from "../ecs/components/Components.ts";
 import { ItemSlot } from "../ecs/components/Inventory.ts";
+import { getGold } from "../prefabs/Items.ts";
 import { shopViewModel } from "./ShopViewModel.ts";
 
+import { initializeEntity } from "../ecs/InitializeEntity.ts";
 import {
   addToInventory,
   getItemInInventoryWithMinQuantity,
@@ -624,3 +625,39 @@ export const getItemWithQuantityOfType = (
 
   return { itemWithMatchingQuantityType: itemToReturn, slot: itemSlot };
 };
+
+/**
+ * This will clone an item slot and return a new instance.
+ * If the item in the slot is gold, it will clone the gold, and insert into the slot.
+ * This is so that modifying the quantity of the gold only happens within the context of the trade
+ * @param s The item slot to clone
+ * @param tradeId The id of the trade
+ * @returns a new item slot
+ */
+export function mapInventorySlot(s: ItemSlot, tradeId: string) {
+  let itemId = "";
+  if (!s.hasItem()) {
+    return new ItemSlot(itemId, s.slotIndex);
+  }
+
+  const item = world.entityManager.getEntityByName(s.item);
+  itemId = item.entityId.value;
+
+  // Clone the gold so that we are not modifying the state of the actual npcs inventory
+  if (item.hasComponent(GoldComponent)) {
+    const clonedGold = getGold(item.quantity.value);
+    const clonedGoldEntity = initializeEntity(clonedGold);
+    clonedGoldEntity.addComponent<TradeIdComponent>(TradeIdComponent, {
+      tradeId: tradeId,
+    });
+
+    clonedGoldEntity.addComponent<PickedUpComponent>(PickedUpComponent, {
+      slotIndex:
+        item.getComponent<PickedUpComponent>(PickedUpComponent).slotIndex,
+    });
+
+    itemId = clonedGoldEntity.entityId.value;
+  }
+
+  return new ItemSlot(itemId, s.slotIndex);
+}

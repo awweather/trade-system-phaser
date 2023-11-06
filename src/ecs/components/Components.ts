@@ -26,3 +26,19 @@ export {
   TradeIdComponent,
   ValuableComponent,
 };
+
+export const components = {
+  CurrencyComponent,
+  DescriptorComponent,
+  EntityIdComponent,
+  GoldComponent,
+  InventoryComponent,
+  ItemIdComponent,
+  PickedUpComponent,
+  QuantityComponent,
+  RenderableComponent,
+  ShopWindowComponent,
+  ShopkeeperComponent,
+  TradeIdComponent,
+  ValuableComponent,
+};
