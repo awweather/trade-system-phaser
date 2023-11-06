@@ -75,6 +75,7 @@ export default class ItemSlot extends OverlapSizer {
   }
 
   addItem(config: AddItemConfig) {
+    // Creates a new item sprite based on the item's configuration
     this.item = new Item({
       scene: this.scene,
       x: this.x,
@@ -87,11 +88,15 @@ export default class ItemSlot extends OverlapSizer {
     });
 
     this.item.slotIndex = this.slotIndex;
+
+    // Add the new sprite to the scene
     this.scene.add.existing(this.item);
+
+    // Add the new sprite to the item slot sizer
     this.add(this.item, {
       expand: false,
       align: "center",
-    } as any);
+    });
 
     // If the item has a quantity, render the quantity text
     if (config.quantity) {
@@ -128,89 +133,89 @@ export default class ItemSlot extends OverlapSizer {
   }
 
   handle_pointerOver(scene: TradeScene, position: string = "below") {
-    this.backgroundChildren[0].setStrokeStyle(1, 0xa08662);
-    // const me = this as any;
-    // me.backgroundChildren[0].setFrame(this.hover || UI.itemSlot.hover);
+    // The typings for the UI plugin don't include this.backgroundChildren
+    const anyHack = this as any;
+    anyHack.backgroundChildren[0].setStrokeStyle(1, 0xa08662);
+
     if (this.item) {
+      // Create the item info panel, store it on the scene so it can be removed on pointer out
       scene.itemInfoPanel = ItemInfoPanel.create(
         scene,
-        this.item.entity,
-        this.slotType
+        this.item.entity
       ).layout();
+
       const y =
         position && position === "above"
           ? this.y - this.height / 2 - scene.itemInfoPanel.height / 2
           : this.y + this.height / 2 + scene.itemInfoPanel.height / 2;
+
       scene.itemInfoPanel.setX(this.x).setY(y).setDepth(205);
     }
   }
 
   handle_pointerDown(scene: TradeScene, pointer: Phaser.Input.Pointer) {
-    // If shift is down, return early
-    // The rest of this method handles dragging
+    // If no item is in this slot, return
+    if (!this.item) return;
+
+    // If the right mouse button is down, return
+    if (pointer.rightButtonDown()) return;
+
+    // If shift is down, return
     if (
       scene.controls.shift.isDown ||
       scene.controls.justDown(scene.controls.shift)
     )
       return;
 
-    if (this.item) {
-      if (!pointer.rightButtonDown()) {
-        const plugin = scene.plugins.get("dragPlugin") as DragPlugin;
-        this.item.drag = plugin.add(this.item);
-        this.item.drag.drag();
-        this.item.on(
-          "dragend",
-          (
-            pointer: Phaser.Input.Pointer,
-            dragX: number,
-            dragY: number,
-            dropped: boolean
-          ) => {
-            if (!dropped) {
-              this.item!.x = this.input!.dragStartX;
-              this.item!.y = this.input!.dragStartY;
-
-              eventEmitter.emit(
-                `${this.slotType}_returnToSlot`,
-                this.item!.entity,
-                this.slotIndex
-              );
-            }
-          }
-        );
-
-        const currentSlot = this;
-        this.item.on(
-          "drop",
-          function (pointer: Phaser.Input.Pointer, gameObject: ItemSlot) {
-            if (
-              (gameObject.slotIndex === currentSlot.slotIndex &&
-                gameObject.slotType === currentSlot.slotType) ||
-              gameObject.item
-            ) {
-              gameObject.x = gameObject.input!.dragStartX;
-              gameObject.y = gameObject.input!.dragStartY;
-            } else {
-              eventEmitter.emit(
-                `${gameObject.slotType}_itemDropped`,
-                gameObject.item!.entity,
-                gameObject.slotIndex
-              );
-            }
-          }
-        );
-      } else {
-        eventEmitter.emit(keys.itemSlots.CLICKED(this.slotType));
+    // Start drag logic
+    const plugin = scene.plugins.get("dragPlugin") as DragPlugin;
+    this.item.drag = plugin.add(this.item);
+    this.item.drag.drag();
+    this.item.on(
+      "dragend",
+      (
+        pointer: Phaser.Input.Pointer,
+        dragX: number,
+        dragY: number,
+        dropped: boolean
+      ) => {
+        if (!dropped) {
+          this.item!.x = this.input!.dragStartX;
+          this.item!.y = this.input!.dragStartY;
+        }
       }
-    }
+    );
+
+    // Hold temp variable to reference in drag function
+    const currentSlot = this;
+    this.item.on(
+      "drop",
+      function (pointer: Phaser.Input.Pointer, gameObject: ItemSlot) {
+        if (
+          (gameObject.slotIndex === currentSlot.slotIndex &&
+            gameObject.slotType === currentSlot.slotType) ||
+          gameObject.item
+        ) {
+          // If the item is not dropped on a valid target, return it to start
+          gameObject.x = gameObject.input!.dragStartX;
+          gameObject.y = gameObject.input!.dragStartY;
+        } else {
+          // Notify subscribers that the item dropped in a new slot
+          eventEmitter.emit(
+            `${gameObject.slotType}_itemDropped`,
+            gameObject.item!.entity,
+            gameObject.slotIndex
+          );
+        }
+      }
+    );
   }
 
   handle_pointerUp(scene: TradeScene) {
+    if (!this.item) return;
     if (
-      this.item &&
-      (scene.controls.shift.isDown ||
-        scene.controls.justDown(scene.controls.shift))
+      scene.controls.shift.isDown ||
+      scene.controls.justDown(scene.controls.shift)
     ) {
       eventEmitter.emit(
         keys.itemSlots.CLICKED(this.slotType),
@@ -221,7 +226,10 @@ export default class ItemSlot extends OverlapSizer {
   }
 
   handle_pointerOut(scene: TradeScene) {
-    this.backgroundChildren[0].setStrokeStyle(null);
+    // The typings for the UI plugin don't include this.backgroundChildren
+    const anyHack = this as any;
+    anyHack.backgroundChildren[0].setStrokeStyle(null);
+
     scene.itemInfoPanel?.setVisible(false);
     scene.itemInfoPanel?.destroy(true);
   }
