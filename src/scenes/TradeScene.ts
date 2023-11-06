@@ -3,8 +3,6 @@ import type RexUIPlugin from "phaser3-rex-plugins/templates/ui/ui-plugin.js";
 import { alignGrid } from "../AlignGrid.js";
 import Controls from "../Controls.ts";
 import { eventEmitter } from "../EventEmitter.ts";
-import itemsAtlas from "../assets/items.json";
-import itemsImage from "../assets/items.png";
 import { keys } from "../config/Keys.ts";
 import { shopkeeperEntity, world } from "../main.ts";
 import { shopViewModel } from "../shop/ShopViewModel.ts";
@@ -26,7 +24,7 @@ export default class TradeScene extends Phaser.Scene {
     // Quick work around to load asset paths correctly
     // const itemAtlasMeta = itemsAtlas.meta as any;
     // itemAtlasMeta.image = itemsImage;
-    this.load.atlas("icons", itemsImage, itemsAtlas);
+    this.load.atlas("icons", "../assets/icons.png", "../assets/icons.json");
 
     alignGrid.create({
       rows: 20,
