@@ -229,7 +229,7 @@ export function balanceNpcGold(
           differenceInValue;
         goldItem.quantity_mutable.value -= differenceInValue;
 
-        removeItemIfQuantityZero(goldItem, shopWindow.inventory);
+        removeItemIfQuantityZero(goldItem, shopWindow.npcInventory);
       } else {
         const splitItem = splitGoldStack(goldItem, differenceInValue);
 
@@ -251,7 +251,7 @@ export function balanceNpcGold(
     } else {
       const { itemWithMatchingQuantityType } = getItemWithQuantityOfType(
         goldItem,
-        shopWindow.inPlay
+        shopWindow.npcInPlay
       );
 
       if (itemWithMatchingQuantityType) {

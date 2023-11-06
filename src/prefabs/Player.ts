@@ -10,37 +10,37 @@ export default function getPlayer(): RawEntity {
             slotIndex: 0,
             isActive: false,
             isEnabled: true,
-            item: "",
+            item: "e0057ac8-319d-47fb-b86a-aa72aca9cd9b",
           },
           {
             slotIndex: 1,
             isActive: false,
             isEnabled: true,
-            item: "e0057ac8-319d-47fb-b86a-aa72aca9cd9b",
+            item: "79aab16f-677d-4624-ba9f-2397d10c2ab3",
           },
           {
             slotIndex: 2,
             isActive: false,
             isEnabled: true,
-            item: "79aab16f-677d-4624-ba9f-2397d10c2ab3",
+            item: "6dae9405-d7cc-4a80-a59a-73a2ecbc5d4c",
           },
           {
             slotIndex: 3,
             isActive: false,
             isEnabled: true,
-            item: "6dae9405-d7cc-4a80-a59a-73a2ecbc5d4c",
+            item: "5becd911-8b94-4c05-bab4-2ac258ee2d40",
           },
           {
             slotIndex: 4,
             isActive: false,
             isEnabled: true,
-            item: "5becd911-8b94-4c05-bab4-2ac258ee2d40",
+            item: "82693eb2-df70-4b20-ad01-b88518be8dbf",
           },
           {
             slotIndex: 5,
             isActive: false,
             isEnabled: true,
-            item: "82693eb2-df70-4b20-ad01-b88518be8dbf",
+            item: "",
           },
           {
             slotIndex: 6,
@@ -357,7 +357,7 @@ export function getPlayerItems() {
           itemBase: "dagger",
           ownedBy: "30bf1e65-d6e0-4766-867c-b158673cfdc1",
         },
-        PickedUpComponent: { slotIndex: 1 },
+        PickedUpComponent: { slotIndex: 0 },
         RenderableComponent: {
           sprite: {
             height: 35,
@@ -415,7 +415,7 @@ export function getPlayerItems() {
           slotIndex: 0,
           slot: 1,
         },
-        PickedUpComponent: { slotIndex: 2 },
+        PickedUpComponent: { slotIndex: 1 },
         RenderableComponent: {
           sprite: {
             height: 35,
@@ -484,7 +484,7 @@ export function getPlayerItems() {
           ownedBy: "30bf1e65-d6e0-4766-867c-b158673cfdc1",
         },
         MapTemplateComponent: { modifiers: null },
-        PickedUpComponent: { slotIndex: 3 },
+        PickedUpComponent: { slotIndex: 2 },
         RenderableComponent: {
           sprite: {
             height: 35,
@@ -524,7 +524,7 @@ export function getPlayerItems() {
           itemBase: "potionOfHealth",
           ownedBy: "30bf1e65-d6e0-4766-867c-b158673cfdc1",
         },
-        PickedUpComponent: { slotIndex: 4 },
+        PickedUpComponent: { slotIndex: 3 },
         RenderableComponent: {
           sprite: {
             height: 48,
@@ -559,7 +559,7 @@ export function getPlayerItems() {
           ownedBy: "30bf1e65-d6e0-4766-867c-b158673cfdc1",
         },
         GoldComponent: {},
-        PickedUpComponent: { slotIndex: 5 },
+        PickedUpComponent: { slotIndex: 4 },
         QuantityComponent: { value: 27, maxValue: -1 },
         RenderableComponent: {
           sprite: {

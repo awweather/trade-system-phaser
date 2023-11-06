@@ -62,7 +62,7 @@ class ShopSystem extends System {
     );
 
     eventEmitter.on(
-      `${HudContext.playerInPlay}_itemDropped`,
+      keys.items.DROPPED(HudContext.playerInPlay),
       (entity: GameEntity, droppedInSlotIndex: number) => {
         itemMoved(
           entity,
@@ -75,7 +75,7 @@ class ShopSystem extends System {
     );
 
     eventEmitter.on(
-      `${HudContext.shopInPlay}_itemDropped`,
+      keys.items.DROPPED(HudContext.shopInPlay),
       (entity: GameEntity, droppedInSlotIndex: number) => {
         itemMoved(
           entity,
@@ -88,7 +88,7 @@ class ShopSystem extends System {
     );
 
     eventEmitter.on(
-      `${HudContext.playerShopInventory}_itemDropped`,
+      keys.items.DROPPED(HudContext.playerShopInventory),
       (entity: GameEntity, droppedInSlotIndex: number) => {
         itemMoved(
           entity,
@@ -101,7 +101,7 @@ class ShopSystem extends System {
     );
 
     eventEmitter.on(
-      `${HudContext.shopInventory}_itemDropped`,
+      keys.items.DROPPED(HudContext.shopInventory),
       (entity: GameEntity, droppedInSlotIndex: number) => {
         itemMoved(
           entity,
