@@ -2,21 +2,32 @@ import type { ScrollablePanel } from "phaser3-rex-plugins/templates/ui/ui-compon
 import { alignGrid } from "../AlignGrid.js";
 import { HudContext } from "../HudContext.ts";
 import constants from "../config/Constants.ts";
+import { keys } from "../config/Keys.ts";
 import TradeScene from "../scenes/TradeScene.ts";
-import InventoryPanel from "./InventoryPanel.ts";
+import InventoryGrid from "./InventoryGrid.ts";
 import ItemSlot from "./ItemSlot.ts";
-export default class InventoryPanelFactory {
-  static create(scene: any, config: any = {}): InventoryPanel {
-    const slots = this.createSlots(
-      scene,
-      config.slots || 50,
-      config.context || HudContext.inventory
-    );
+
+export interface InventoryGridConfig {
+  slots: number;
+  // The type of slots.  Inventory grids can be used in many different contexts,
+  // including shops, inventory equipment, etc
+  context: HudContext;
+  panelHeader: Phaser.GameObjects.GameObject;
+  columns: number;
+  rows: number;
+  height: number;
+}
+
+export default class InventoryGridFactory {
+  static create(scene: TradeScene, config: InventoryGridConfig): InventoryGrid {
+    const slots = this.createSlots(scene, config.slots, config.context);
+
+    const panel = this.createPanel(scene, slots, config);
 
     const sizer = scene.rexUI.add.scrollablePanel({
       orientation: 1,
       panel: {
-        child: this.createPanel(scene, slots, config),
+        child: panel,
         mask: {
           padding: 1,
         },
@@ -34,7 +45,7 @@ export default class InventoryPanelFactory {
         header: "center",
         footer: "center",
       },
-      header: config.header,
+      header: config.panelHeader,
       scrollMode: 0,
       width: config.columns ? config.columns * 50 : 206,
       height: config.height ?? 400,
@@ -43,7 +54,7 @@ export default class InventoryPanelFactory {
     sizer.layout();
 
     alignGrid.center(sizer);
-    return new InventoryPanel(sizer);
+    return new InventoryGrid(sizer, panel);
   }
 
   static createSlots(scene: TradeScene, amount: number, context: HudContext) {
@@ -90,7 +101,11 @@ export default class InventoryPanelFactory {
     return slots;
   }
 
-  static createPanel(scene: TradeScene, slots: ItemSlot[], config: any) {
+  static createPanel(
+    scene: TradeScene,
+    slots: ItemSlot[],
+    config: InventoryGridConfig
+  ) {
     const sizer = scene.rexUI.add
       .sizer({
         orientation: "y",
@@ -98,7 +113,7 @@ export default class InventoryPanelFactory {
       .add(
         this.createTable(scene, slots, config.rows ?? 5, config.columns ?? 10),
         {
-          key: constants.ui.keys.inventoryPanel,
+          key: keys.ui.inventoryTable,
         }
       );
 
@@ -120,9 +135,7 @@ export default class InventoryPanelFactory {
         orientation: "y",
         space: { left: 5, right: 5, top: 10 },
       })
-      .add(
-        title // child
-      );
+      .add(title);
   }
 
   static createTable(
@@ -170,6 +183,6 @@ export default class InventoryPanelFactory {
         orientation: "y",
         space: { left: 0, right: 0, top: 10, bottom: 10, item: 5 },
       })
-      .add(table, { key: constants.ui.keys.inventoryGrid });
+      .add(table, { key: keys.ui.inventoryGrid });
   }
 }

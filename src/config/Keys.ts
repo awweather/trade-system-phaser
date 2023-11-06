@@ -3,6 +3,10 @@ import { HudContext } from "../HudContext.ts";
 export type MenuTypes = "trade" | "balanceOffer" | "acceptTrade" | "closeShop";
 
 export const keys = {
+  ui: {
+    inventoryTable: "inventoryTable",
+    inventoryGrid: "inventoryGrid",
+  },
   itemSlots: {
     CLICKED: (context: HudContext) => `${context}_slot_clicked`,
     CTRL_CLICK: (context: HudContext) => `${context}_ctrl_slot_clicked`,

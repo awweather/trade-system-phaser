@@ -3,7 +3,7 @@ import { eventEmitter } from "../EventEmitter.ts";
 import { HudContext } from "../HudContext.ts";
 import constants from "../config/Constants.ts";
 import { keys } from "../config/Keys.ts";
-import InventoryPanelFactory from "../inventory/InventoryPanelFactory.ts";
+import InventoryGridFactory from "../inventory/InventoryGridFactory.ts";
 import TradeScene from "../scenes/TradeScene.ts";
 import ShopWindow from "./ShopWindow";
 
@@ -45,10 +45,13 @@ export default class ShopWindowFactory {
 
     playerHeader.add(name).add(playerCoins);
 
-    const leftSizer = InventoryPanelFactory.create(scene, {
-      header: playerHeader,
+    const leftSizer = InventoryGridFactory.create(scene, {
+      panelHeader: playerHeader,
       height: 390,
       context: HudContext.playerShopInventory,
+      rows: 5,
+      columns: 5,
+      slots: 25,
     });
 
     const coinsInPlay = scene.add.text(0, 0, "0g", {
@@ -56,12 +59,12 @@ export default class ShopWindowFactory {
       fontSize: `12px`,
     });
 
-    const middleLeft = InventoryPanelFactory.create(scene, {
+    const middleLeft = InventoryGridFactory.create(scene, {
       height: 390,
       slots: 14,
       rows: 7,
       columns: 2,
-      header: coinsInPlay,
+      panelHeader: coinsInPlay,
       context: HudContext.playerInPlay,
     });
 
@@ -70,12 +73,12 @@ export default class ShopWindowFactory {
       fontSize: `12px`,
     });
 
-    const middleRight = InventoryPanelFactory.create(scene, {
+    const middleRight = InventoryGridFactory.create(scene, {
       height: 390,
       slots: 14,
       rows: 7,
       columns: 2,
-      header: npcCoinsInPlay,
+      panelHeader: npcCoinsInPlay,
       context: HudContext.shopInPlay,
     });
 
@@ -98,33 +101,35 @@ export default class ShopWindowFactory {
 
     npcHeader.add(npcName).add(npcCoins);
 
-    const rightSizer = InventoryPanelFactory.create(scene, {
-      header: npcHeader,
+    const rightSizer = InventoryGridFactory.create(scene, {
+      panelHeader: npcHeader,
       height: 390,
-
+      rows: 5,
+      columns: 5,
+      slots: 25,
       context: HudContext.shopInventory,
     });
 
     horizontalSizer
-      .add(leftSizer.sizer, {
+      .add(leftSizer.scrollableContainer, {
         key: leftKey,
         padding: {
           right: 5,
         },
       })
-      .add(middleLeft.sizer, {
+      .add(middleLeft.scrollableContainer, {
         key: "middleLeft",
         padding: {
           left: 10,
         },
       })
-      .add(middleRight.sizer, {
+      .add(middleRight.scrollableContainer, {
         key: "middleRight",
         padding: {
           left: 5,
         },
       })
-      .add(rightSizer.sizer, {
+      .add(rightSizer.scrollableContainer, {
         key: rightKey,
         padding: {
           left: 15,
