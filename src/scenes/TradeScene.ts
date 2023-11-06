@@ -3,6 +3,7 @@ import { alignGrid } from "../AlignGrid.ts";
 import Controls from "../Controls.ts";
 import { eventEmitter } from "../EventEmitter.ts";
 import itemsAtlas from "../assets/items.json";
+import itemsImage from "../assets/items.png";
 import { keys } from "../config/Keys.ts";
 import { shopkeeperEntity, world } from "../main.ts";
 import { shopViewModel } from "../shop/ShopViewModel.ts";
@@ -12,7 +13,7 @@ import ShopWindowFactory from "../shop/ShopWindowFactory.ts";
 export default class TradeScene extends Phaser.Scene {
   shopWindow: ShopWindow | undefined;
   rexUI!: RexUIPlugin;
-  startTradeText: Phaser.GameObjects.Text | undefined;
+  startTradeText!: Phaser.GameObjects.Text;
   controls!: Controls;
 
   constructor() {
@@ -24,8 +25,8 @@ export default class TradeScene extends Phaser.Scene {
     this.load.atlas("icons", itemsImage, itemsAtlas);
 
     alignGrid.create({
-      rows: 10,
-      cols: 10,
+      rows: 20,
+      cols: 20,
       scene: this,
     });
   }
@@ -47,7 +48,7 @@ export default class TradeScene extends Phaser.Scene {
           shopkeeperEntity.entityId?.value
         );
 
-        this.startTradeText!.setVisible(false);
+        this.startTradeText.setVisible(false);
       });
 
     alignGrid.center(this.startTradeText);
