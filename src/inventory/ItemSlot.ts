@@ -182,6 +182,8 @@ export default class ItemSlot extends OverlapSizer {
         if (!dropped) {
           this.item!.x = this.input!.dragStartX;
           this.item!.y = this.input!.dragStartY;
+
+          currentSlot.layout();
         }
       }
     );
@@ -197,13 +199,12 @@ export default class ItemSlot extends OverlapSizer {
           gameObject.item
         ) {
           // If the item is not dropped on a valid target, return it to start
-          gameObject.x = gameObject.input!.dragStartX;
-          gameObject.y = gameObject.input!.dragStartY;
+          this.x = this.input!.dragStartX;
+          this.y = this.input!.dragStartY;
         } else {
-          // Notify subscribers that the item dropped in a new slot
           eventEmitter.emit(
             `${gameObject.slotType}_itemDropped`,
-            gameObject.item!.entity,
+            this.entity,
             gameObject.slotIndex
           );
         }

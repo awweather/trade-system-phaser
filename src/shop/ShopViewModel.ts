@@ -1,4 +1,3 @@
-import TradeScene from "../scenes/TradeScene.ts";
 import { GameEntity } from "../ecs/GameEntity.ts";
 import {
   DescriptorComponent,
@@ -10,7 +9,10 @@ import {
   TradeIdComponent,
 } from "../ecs/components/Components.ts";
 import { ItemSlot } from "../ecs/components/Inventory.ts";
+import TradeScene from "../scenes/TradeScene.ts";
 
+import { eventEmitter } from "../EventEmitter.ts";
+import { HudContext } from "../HudContext.ts";
 import { playerEntity, world } from "../main.ts";
 
 class ShopViewModel {
@@ -18,6 +20,51 @@ class ShopViewModel {
 
   itemsInPlay: GameEntity[] = [];
   shopItemsInPlay: GameEntity[] = [];
+
+  constructor() {
+    eventEmitter.on(
+      `${HudContext.shopInPlay}_item_moved`,
+      (item: GameEntity, newSlotIndex: number, previousSlotIndex: number) => {
+        this.moveItemShopInPlay(item, newSlotIndex);
+        this.removeItemFromShopInventory(previousSlotIndex);
+        this.updateShopWindow();
+      }
+    );
+    eventEmitter.on(
+      `${HudContext.playerInPlay}_item_moved`,
+      (item: GameEntity, newSlotIndex: number, previousSlotIndex: number) => {
+        this.moveItemInPlay(item, newSlotIndex);
+        this.removeItemFromPlayerInventory(previousSlotIndex);
+        this.updateShopWindow();
+      }
+    );
+    eventEmitter.on(
+      `${HudContext.shopInventory}_item_moved`,
+      (
+        item: GameEntity,
+        newSlotIndex: number,
+        previousSlotIndex: number,
+        removedItemId: string
+      ) => {
+        this.moveItemToShopInventory(item, newSlotIndex);
+        this.removeItemFromShopInPlay(previousSlotIndex, removedItemId);
+        this.updateShopWindow();
+      }
+    );
+    eventEmitter.on(
+      `${HudContext.playerShopInventory}_item_moved`,
+      (
+        item: GameEntity,
+        newSlotIndex: number,
+        previousSlotIndex: number,
+        removedItemId: string
+      ) => {
+        this.moveItemToPlayerInventory(item, newSlotIndex);
+        this.removeItemFromPlayerInPlay(previousSlotIndex, removedItemId);
+        this.updateShopWindow();
+      }
+    );
+  }
 
   registerScene(tradeScene: TradeScene) {
     this.scene = tradeScene;

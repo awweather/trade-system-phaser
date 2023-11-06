@@ -11,6 +11,8 @@ import { ItemSlot } from "../ecs/components/Inventory.ts";
 import { getGold } from "../prefabs/Items.ts";
 import { shopViewModel } from "./ShopViewModel.ts";
 
+import { eventEmitter } from "../EventEmitter.ts";
+import { HudContext } from "../HudContext.ts";
 import { initializeEntity } from "../ecs/InitializeEntity.ts";
 import {
   addToInventory,
@@ -280,23 +282,39 @@ export function itemRemovedFromPlayerInventory(slotIndex: number) {
 /**
  * Moves an item to the npc shop in play
  * @param item The item being moved
+ * @param targetSlotIndex The target slot index to move the item to.  If undefined, it uses the first empty slot
  */
-export function itemMovedShopInPlay(item: GameEntity) {
+export function itemMovedShopInPlay(
+  item: GameEntity,
+  targetSlotIndex?: number
+) {
   const shopWindow = playerEntity.shopWindow;
 
+  // Get the current slot them item resides in
   const slot = shopWindow.npcInventory.find(
     (i) => i.item === item.entityId.value
   );
 
-  slot!.removeItem();
+  // If slot does not exist, it means you tried to move the item to an invalid slot
+  if (!slot) {
+    console.log("Tried to move an item to an invalid slot");
+    return;
+  }
 
-  const targetSlotIndex = shopWindow.npcInPlay.find(
-    (s) => !s.hasItem()
-  )!.slotIndex;
+  // Remove the item from that slot
+  const removedItem = slot!.removeItem();
 
-  shopWindow.npcInPlay[targetSlotIndex].item = item.entityId.value;
+  // Find the target slot
+  const targetSlot =
+    targetSlotIndex !== undefined
+      ? shopWindow.npcInPlay[targetSlotIndex]
+      : shopWindow.npcInPlay.find((s) => !s.hasItem());
 
-  shopViewModel.moveItemShopInPlay(item, targetSlotIndex);
+  // Add the item to the new slot
+  shopWindow.npcInPlay[targetSlot!.slotIndex].addItem(removedItem);
+
+  // Update UI
+  shopViewModel.moveItemShopInPlay(item, targetSlot!.slotIndex);
   shopViewModel.removeItemFromShopInventory(slot!.slotIndex);
   shopViewModel.updateShopWindow();
 }
@@ -304,18 +322,33 @@ export function itemMovedShopInPlay(item: GameEntity) {
 /**
  * Moves an item to the player in play
  * @param item The item being moved
+ * @param targetSlotIndex The target slot index to move the item to.  If undefined, it uses the first empty slot
  */
-export function itemMovedInPlay(item: GameEntity) {
+export function itemMovedInPlay(item: GameEntity, targetSlotIndex?: number) {
   const shopWindow = playerEntity.shopWindow;
 
+  // Get the current slot them item resides in
   const slot = shopWindow.inventory.find((i) => i.item === item.entityId.value);
 
+  // If slot does not exist, it means you tried to move the item to an invalid slot
+  if (!slot) {
+    console.log("Tried to move an item to an invalid slot");
+    return;
+  }
+
+  // Remove the item from that slot
   const removedItem = slot!.removeItem();
 
-  const targetSlot = shopWindow.inPlay.find((s) => !s.hasItem());
+  // Find the target slot
+  const targetSlot =
+    targetSlotIndex !== undefined
+      ? shopWindow.inPlay[targetSlotIndex]
+      : shopWindow.inPlay.find((s) => !s.hasItem());
 
-  shopWindow.inPlay[targetSlot!.slotIndex].item = removedItem;
+  // Add the item to the new slot
+  shopWindow.inPlay[targetSlot!.slotIndex].addItem(removedItem);
 
+  // Update UI
   shopViewModel.moveItemInPlay(item, targetSlot!.slotIndex);
   shopViewModel.removeItemFromPlayerInventory(slot!.slotIndex);
   shopViewModel.updateShopWindow();
@@ -325,40 +358,104 @@ export function itemMovedInPlay(item: GameEntity) {
  * Moves an item to the npc's shop inventory
  * @param item The item being moved
  */
-export function itemMovedToShopInventory(item: GameEntity) {
+export function itemMovedToShopInventory(
+  item: GameEntity,
+  targetSlotIndex?: number
+) {
   const shopWindow = playerEntity.shopWindow;
 
   const slot = shopWindow.npcInPlay.find((slot) => {
     return slot.item === item.entityId.value;
   });
 
+  // If slot does not exist, it means you tried to move the item to an invalid slot
+  if (!slot) {
+    console.log("Tried to move an item to an invalid slot");
+    return;
+  }
+
   const removedItem = slot!.removeItem();
 
-  const targetSlotIndex = shopWindow.npcInventory.find(
-    (s) => !s.hasItem()
-  )!.slotIndex;
+  // Find the target slot
+  const targetSlot =
+    targetSlotIndex !== undefined
+      ? shopWindow.npcInventory[targetSlotIndex]
+      : shopWindow.npcInventory.find((s) => !s.hasItem());
 
-  shopWindow.npcInventory[targetSlotIndex].item = removedItem;
+  shopWindow.npcInventory[targetSlot!.slotIndex].addItem(removedItem);
 
-  shopViewModel.moveItemToShopInventory(item, targetSlotIndex);
+  shopViewModel.moveItemToShopInventory(item, targetSlot!.slotIndex);
   shopViewModel.removeItemFromShopInPlay(slot!.slotIndex, removedItem);
   shopViewModel.updateShopWindow();
 }
 
 /**
- * Moves an item to the player's shop inventory
+ * Moves an item to the npc's shop inventory
  * @param item The item being moved
  */
-export function itemMovedToPlayerShopInventory(item: GameEntity) {
+export function itemMoved(
+  item: GameEntity,
+  moveFromSlots: ItemSlot[],
+  moveToSlots: ItemSlot[],
+  hudContext: HudContext,
+  targetSlotIndex?: number
+) {
+  const slot = moveFromSlots.find((slot) => {
+    return slot.item === item.entityId.value;
+  });
+
+  // If slot does not exist, it means you tried to move the item to an invalid slot
+  if (!slot) {
+    console.log("Tried to move an item to an invalid slot");
+    return;
+  }
+
+  const removedItem = slot!.removeItem();
+
+  // Find the target slot
+  const targetSlot =
+    targetSlotIndex !== undefined
+      ? moveToSlots[targetSlotIndex]
+      : moveToSlots.find((s) => !s.hasItem());
+
+  moveToSlots[targetSlot!.slotIndex].addItem(removedItem);
+
+  eventEmitter.emit(
+    `${hudContext}_item_moved`,
+    item,
+    targetSlot!.slotIndex,
+    slot!.slotIndex,
+    removedItem
+  );
+}
+
+/**
+ * Moves an item to the player's shop inventory
+ * @param item The item being moved
+ * @param targetSlotIndex The target slot index to move the item to.  If undefined, it uses the first empty slot
+ */
+export function itemMovedToPlayerShopInventory(
+  item: GameEntity,
+  targetSlotIndex?: number
+) {
   const shopWindow = playerEntity.shopWindow;
 
   const slot = shopWindow.inPlay.find((slot) => {
     return slot.item === item.entityId.value;
   });
 
+  // If slot does not exist, it means you tried to move the item to an invalid slot
+  if (!slot) {
+    console.log("Tried to move an item to an invalid slot");
+    return;
+  }
+
   const removedItem = slot!.removeItem();
 
-  const targetSlot = shopWindow.inventory.find((s) => !s.hasItem());
+  const targetSlot =
+    targetSlotIndex !== undefined
+      ? shopWindow.inPlay[targetSlotIndex]
+      : shopWindow.inventory.find((s) => !s.hasItem());
 
   shopWindow.inventory[targetSlot!.slotIndex].item = removedItem;
 
@@ -661,3 +758,5 @@ export function mapInventorySlot(s: ItemSlot, tradeId: string) {
 
   return new ItemSlot(itemId, s.slotIndex);
 }
+
+export function assert() {}

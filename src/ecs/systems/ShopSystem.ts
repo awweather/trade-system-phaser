@@ -12,6 +12,7 @@ import { getGold } from "../../prefabs/Items.ts";
 import {
   balanceOffer,
   executeTrade,
+  itemMoved,
   itemMovedInPlay,
   itemMovedShopInPlay,
   itemMovedToPlayerShopInventory,
@@ -57,6 +58,58 @@ class ShopSystem extends System {
       keys.itemSlots.CLICKED(HudContext.shopInPlay),
       (entity: GameEntity) => {
         itemMovedToShopInventory(entity);
+      }
+    );
+
+    eventEmitter.on(
+      `${HudContext.playerInPlay}_itemDropped`,
+      (entity: GameEntity, droppedInSlotIndex: number) => {
+        itemMoved(
+          entity,
+          playerEntity.shopWindow.inventory,
+          playerEntity.shopWindow.inPlay,
+          HudContext.playerInPlay,
+          droppedInSlotIndex
+        );
+      }
+    );
+
+    eventEmitter.on(
+      `${HudContext.shopInPlay}_itemDropped`,
+      (entity: GameEntity, droppedInSlotIndex: number) => {
+        itemMoved(
+          entity,
+          playerEntity.shopWindow.npcInventory,
+          playerEntity.shopWindow.npcInPlay,
+          HudContext.shopInPlay,
+          droppedInSlotIndex
+        );
+      }
+    );
+
+    eventEmitter.on(
+      `${HudContext.playerShopInventory}_itemDropped`,
+      (entity: GameEntity, droppedInSlotIndex: number) => {
+        itemMoved(
+          entity,
+          playerEntity.shopWindow.inPlay,
+          playerEntity.shopWindow.inventory,
+          HudContext.playerShopInventory,
+          droppedInSlotIndex
+        );
+      }
+    );
+
+    eventEmitter.on(
+      `${HudContext.shopInventory}_itemDropped`,
+      (entity: GameEntity, droppedInSlotIndex: number) => {
+        itemMoved(
+          entity,
+          playerEntity.shopWindow.npcInPlay,
+          playerEntity.shopWindow.npcInventory,
+          HudContext.shopInventory,
+          droppedInSlotIndex
+        );
       }
     );
 
