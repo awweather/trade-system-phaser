@@ -1,4 +1,4 @@
-import { getGold } from "../Items.ts";
+import { getGold } from "../prefabs/Items.ts";
 import { GameEntity } from "../ecs/GameEntity.ts";
 import { initializeItem } from "../ecs/InitializeItem.ts";
 import {

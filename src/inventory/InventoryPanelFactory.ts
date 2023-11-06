@@ -1,8 +1,8 @@
 import type { ScrollablePanel } from "phaser3-rex-plugins/templates/ui/ui-components";
 import { alignGrid } from "../AlignGrid.ts";
 import { HudContext } from "../HudContext.ts";
-import OverlapItemSlot from "../OverlapItemSlot.ts";
-import TradeScene from "../TradeScene.ts";
+import OverlapItemSlot from "./OverlapItemSlot.ts";
+import TradeScene from "../scenes/TradeScene.ts";
 import constants from "../config/Constants.ts";
 import InventoryPanel from "./InventoryPanel.ts";
 import ItemSlot from "./ItemSlot.ts";

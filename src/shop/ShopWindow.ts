@@ -1,5 +1,5 @@
 import type Sizer from "phaser3-rex-plugins/templates/ui/sizer/Sizer";
-import OverlapItemSlot from "../OverlapItemSlot.ts";
+import OverlapItemSlot from "../inventory/OverlapItemSlot.ts";
 
 export default class ShopWindow {
   playerInventoryGrid: Sizer;

@@ -1,15 +1,8 @@
 export enum HudContext {
   inventory,
-  equipment,
-  socketEditorStage,
-  socketEdtiorSocket,
-  actionBar,
-  potionBar,
   shopInventory,
   playerShopInventory,
   playerInPlay,
   shopInPlay,
-  socketEditorInventory,
-  mintSlot,
   insignia,
 }

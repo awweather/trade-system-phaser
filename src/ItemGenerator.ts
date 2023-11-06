@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { ItemKey, itemPresets } from "./Items.ts";
+import { ItemKey, itemPresets } from "./prefabs/Items.ts";
 import { initializeItem } from "./ecs/InitializeItem.ts";
 
 export default class ItemGenerator {

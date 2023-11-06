@@ -1,4 +1,4 @@
-import TradeScene from "../TradeScene.ts";
+import TradeScene from "../scenes/TradeScene.ts";
 import { GameEntity } from "../ecs/GameEntity.ts";
 import {
   DescriptorComponent,

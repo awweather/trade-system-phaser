@@ -1,8 +1,8 @@
 import { initializeEntity } from "./ecs/InitializeEntity.ts";
 import initializeWorld from "./ecs/InitializeWorld.ts";
-import { config } from "./PhaserConfig.ts";
-import getPlayer, { getPlayerItems } from "./Player.ts";
-import getShopkeeper from "./Shopkeeper.ts";
+import { config } from "./config/PhaserConfig.ts";
+import getPlayer, { getPlayerItems } from "./prefabs/Player.ts";
+import getShopkeeper from "./prefabs/Shopkeeper.ts";
 import "./style.css";
 
 const game = new Phaser.Game(config);

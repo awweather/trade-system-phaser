@@ -1,5 +1,5 @@
 import { Component, Types } from "ecsy";
-import { ItemKey } from "../../Items.ts";
+import { ItemKey } from "../../prefabs/Items.ts";
 
 interface ShopkeeperProps {
   baseItemIds: string[];

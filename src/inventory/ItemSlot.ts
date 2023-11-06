@@ -1,7 +1,7 @@
 import { Sizer } from "phaser3-rex-plugins/templates/ui/ui-components";
 import { eventEmitter } from "../EventEmitter.ts";
 import { HudContext } from "../HudContext.ts";
-import Item from "../Item.ts";
+import Item from "./Item.ts";
 import UI from "../UI.ts";
 import { GameEntity } from "../ecs/GameEntity.ts";
 import {
