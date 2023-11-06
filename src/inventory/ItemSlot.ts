@@ -1,8 +1,9 @@
-import { Sizer } from "phaser3-rex-plugins/templates/ui/ui-components";
+import DragPlugin from "phaser3-rex-plugins/plugins/drag-plugin";
+import OverlapSizer from "phaser3-rex-plugins/templates/ui/overlapsizer/OverlapSizer";
 import { eventEmitter } from "../EventEmitter.ts";
 import { HudContext } from "../HudContext.ts";
-import Item from "./Item.ts";
-import UI from "../UI.ts";
+import constants from "../config/Constants.ts";
+import { keys } from "../config/Keys.ts";
 import { GameEntity } from "../ecs/GameEntity.ts";
 import {
   DescriptorComponent,
@@ -11,6 +12,9 @@ import {
   RenderableComponent,
   TradeIdComponent,
 } from "../ecs/components/Components.ts";
+import TradeScene from "../scenes/TradeScene.ts";
+import Item from "./Item.ts";
+import ItemInfoPanel from "./ItemInfoPanel.ts";
 
 export interface AddItemConfig {
   renderable: RenderableComponent;
@@ -21,34 +25,56 @@ export interface AddItemConfig {
   tradeId?: TradeIdComponent;
 }
 
-export default class ItemSlot extends Sizer {
+/**
+ * This class contains the UI logic for the ItemSlot
+ * Used for all inventory grids
+ */
+export default class ItemSlot extends OverlapSizer {
   slotIndex: number;
-  slotType: HudContext;
   item: Item | undefined;
-  constructor(config: any, scene: Phaser.Scene) {
-    super(scene, config.x, config.y, config.width, config.height, config);
-    this.scene = scene;
+  slotType: HudContext;
+  qty: Phaser.GameObjects.Text | undefined;
+  updateQuantity: (val: number) => void;
+
+  constructor(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    config: any,
+    scene: TradeScene,
+    slotType: HudContext
+  ) {
+    super(scene, x, y, width, height, config);
+
+    this.slotType = slotType;
     this.slotIndex = config.slotIndex;
     this.addBackground(config.background);
+
+    this.updateQuantity = function (newQuantity: number) {
+      this.qty?.setText(newQuantity.toString());
+    };
   }
 
-  hasItem() {
-    return this.item;
-  }
-
-  removeItem(): Item {
+  removeItem() {
     if (this.item) {
-      const item = this.item;
-      this.item = null;
-      this.remove(item, true);
+      // If the item has quantity
+      // Destroy the quantity text and turn off the event listener
+      if (this.qty) {
+        this.qty.destroy();
+        eventEmitter.off(
+          keys.items.QTY_CHANGED(this.item.entity.entityId.value),
+          this.updateQuantity
+        );
+      }
 
-      return item;
+      this.remove(this.item, true);
+      this.item.destroy();
+      this.item = undefined;
     }
-
-    return null;
   }
 
-  addItem(config: AddItemConfig): Item {
+  addItem(config: AddItemConfig) {
     this.item = new Item({
       scene: this.scene,
       x: this.x,
@@ -56,10 +82,40 @@ export default class ItemSlot extends Sizer {
       texture: "icons",
       frame: config.renderable.sprite.frame,
       name: config.descriptor.name,
-      description: config.summary.summaryText,
-      entityID: config.entity.name,
+      description: config.descriptor.description,
       entity: config.entity,
     });
+
+    this.item.slotIndex = this.slotIndex;
+    this.scene.add.existing(this.item);
+    this.add(this.item, {
+      expand: false,
+      align: "center",
+    } as any);
+
+    // If the item has a quantity, render the quantity text
+    if (config.quantity) {
+      this.qty = this.scene.add
+        .text(0, 0, config.quantity.value.toString(), {
+          fontFamily: constants.styles.text.fontFamily,
+          fontSize: `10px`,
+        })
+        .setDepth(202);
+
+      this.add(this.qty, {
+        expand: false,
+        align: "right-bottom",
+      });
+
+      // Update quantity when quantity changes
+      eventEmitter.on(
+        keys.items.QTY_CHANGED(config.entity.entityId.value),
+        this.updateQuantity,
+        this
+      );
+
+      this.layout();
+    }
 
     // If the item is involved in a trade, create a separate sprite
     if (config.tradeId) {
@@ -68,26 +124,18 @@ export default class ItemSlot extends Sizer {
       config.renderable.model = this.item;
     }
 
-    this.item.slotIndex = this.slotIndex;
-    this.scene.add.existing(this.item);
-    this.add(this.item);
-
-    this.item?.setScale(2);
-
-    this.layout();
-    // this.item.setDepth(999);
-    // this.setDepth(500);
     return this.item;
   }
 
-  handle_pointerOver(scene, position): void {
-    const me = this as any;
-    me.backgroundChildren[0].setFrame(UI.itemSlot.hover);
-
+  handle_pointerOver(scene: TradeScene, position: string = "below") {
+    this.backgroundChildren[0].setStrokeStyle(1, 0xa08662);
+    // const me = this as any;
+    // me.backgroundChildren[0].setFrame(this.hover || UI.itemSlot.hover);
     if (this.item) {
       scene.itemInfoPanel = ItemInfoPanel.create(
         scene,
-        this.item.entity
+        this.item.entity,
+        this.slotType
       ).layout();
       const y =
         position && position === "above"
@@ -97,50 +145,84 @@ export default class ItemSlot extends Sizer {
     }
   }
 
-  handle_pointerDown(scene): void {
-    if (gameSystem.getActiveScene().controls.shift.isDown) return;
+  handle_pointerDown(scene: TradeScene, pointer: Phaser.Input.Pointer) {
+    // If shift is down, return early
+    // The rest of this method handles dragging
+    if (
+      scene.controls.shift.isDown ||
+      scene.controls.justDown(scene.controls.shift)
+    )
+      return;
 
+    if (this.item) {
+      if (!pointer.rightButtonDown()) {
+        const plugin = scene.plugins.get("dragPlugin") as DragPlugin;
+        this.item.drag = plugin.add(this.item);
+        this.item.drag.drag();
+        this.item.on(
+          "dragend",
+          (
+            pointer: Phaser.Input.Pointer,
+            dragX: number,
+            dragY: number,
+            dropped: boolean
+          ) => {
+            if (!dropped) {
+              this.item!.x = this.input!.dragStartX;
+              this.item!.y = this.input!.dragStartY;
+
+              eventEmitter.emit(
+                `${this.slotType}_returnToSlot`,
+                this.item!.entity,
+                this.slotIndex
+              );
+            }
+          }
+        );
+
+        const currentSlot = this;
+        this.item.on(
+          "drop",
+          function (pointer: Phaser.Input.Pointer, gameObject: ItemSlot) {
+            if (
+              (gameObject.slotIndex === currentSlot.slotIndex &&
+                gameObject.slotType === currentSlot.slotType) ||
+              gameObject.item
+            ) {
+              gameObject.x = gameObject.input!.dragStartX;
+              gameObject.y = gameObject.input!.dragStartY;
+            } else {
+              eventEmitter.emit(
+                `${gameObject.slotType}_itemDropped`,
+                gameObject.item!.entity,
+                gameObject.slotIndex
+              );
+            }
+          }
+        );
+      } else {
+        eventEmitter.emit(keys.itemSlots.CLICKED(this.slotType));
+      }
+    }
+  }
+
+  handle_pointerUp(scene: TradeScene) {
     if (
       this.item &&
-      !gameSystem
-        .getActiveScene()
-        .controls.justDown(gameSystem.getActiveScene().controls.shift)
+      (scene.controls.shift.isDown ||
+        scene.controls.justDown(scene.controls.shift))
     ) {
-      this.item.drag = scene.plugins.get("dragPlugin").add(this.item);
-
-      this.item.drag.drag();
-      this.item.on("dragstart", function () {
-        console.log("dragstart");
-      });
-      this.item.on("drag", function () {
-        console.log("drag");
-      });
-      this.item.on("dragend", function (pointer, gameObject, dropped) {
-        if (!dropped) {
-          gameObject.x = gameObject.input.dragStartX;
-          gameObject.y = gameObject.input.dragStartY;
-        }
-      });
-      this.item.on("drop", (pointer, gameObject) => {
-        gameObject.add(this, { align: "center" });
-      });
-    }
-  }
-
-  handle_pointerUp(context): void {
-    if (this.item) {
       eventEmitter.emit(
-        `${this.slotType}_slot_clicked`,
-        context,
-        this.slotIndex,
-        this.item?.entity
+        keys.itemSlots.CLICKED(this.slotType),
+        this.item.entity
       );
+      this.handle_pointerOut(this.scene as TradeScene);
     }
   }
 
-  handle_pointerOut(scene): void {
-    const me = this as any;
-    me.backgroundChildren[0].setFrame(UI.itemSlot.base);
+  handle_pointerOut(scene: TradeScene) {
+    this.backgroundChildren[0].setStrokeStyle(null);
     scene.itemInfoPanel?.setVisible(false);
+    scene.itemInfoPanel?.destroy(true);
   }
 }

@@ -5,7 +5,6 @@ import constants from "../config/Constants.ts";
 import TradeScene from "../scenes/TradeScene.ts";
 import InventoryPanel from "./InventoryPanel.ts";
 import ItemSlot from "./ItemSlot.ts";
-import OverlapItemSlot from "./OverlapItemSlot.ts";
 export default class InventoryPanelFactory {
   static create(scene: any, config: any = {}): InventoryPanel {
     const slots = this.createSlots(
@@ -50,7 +49,7 @@ export default class InventoryPanelFactory {
   static createSlots(scene: TradeScene, amount: number, context: HudContext) {
     const slots = [];
     for (let x = 0; x < amount ?? 50; x++) {
-      const itemSlot = new OverlapItemSlot(
+      const itemSlot = new ItemSlot(
         0,
         0,
         32,
@@ -60,8 +59,7 @@ export default class InventoryPanelFactory {
           slotIndex: x,
           width: 32,
           height: 32,
-          overlapChildren: [],
-          background: scene.rexUI.add.roundRectangle(0, 0, 45, 45, 2, 0x221c1a),
+          background: scene.rexUI.add.roundRectangle(0, 0, 32, 32, 2, 0x221c1a),
         },
         scene,
         context
@@ -70,22 +68,19 @@ export default class InventoryPanelFactory {
       itemSlot
         .setInteractive({
           dropZone: true,
-          hitArea: new Phaser.Geom.Rectangle(0, 0, 45, 45),
+          hitArea: new Phaser.Geom.Rectangle(0, 0, 32, 32),
           hitAreaCallback: Phaser.Geom.Rectangle.Contains,
         })
         .on("pointerover", function () {
-          itemSlot.handle_pointerOver(
-            scene,
-            context !== HudContext.insignia ? "above" : "below"
-          );
+          itemSlot.handle_pointerOver(scene);
         })
         .on("pointerout", function () {
           itemSlot.handle_pointerOut(scene);
         })
-        .on("pointerdown", function (pointer) {
-          itemSlot.handle_pointerDown(scene, pointer, context);
+        .on("pointerdown", function (pointer: Phaser.Input.Pointer) {
+          itemSlot.handle_pointerDown(scene, pointer);
         })
-        .on("pointerup", function (pointer) {
+        .on("pointerup", function () {
           itemSlot.handle_pointerUp(scene);
         });
 
@@ -144,8 +139,6 @@ export default class InventoryPanelFactory {
       name: "table", // Search this name to get table back
     });
 
-    window.table = table;
-
     for (let i = 0; i < itemSlots.length; i++) {
       const item = itemSlots[i];
       const row = i % rows;
@@ -155,6 +148,7 @@ export default class InventoryPanelFactory {
       const bottompadding = row === rows - 1 ? 5 : 0;
 
       item.slotIndex = row * cols + column;
+
       table.add(item, {
         column: column,
         row: row,
@@ -164,9 +158,10 @@ export default class InventoryPanelFactory {
           left: 5,
           bottom: bottompadding,
         },
-        key: item.slotIndex,
+        key: item.slotIndex.toString(),
         align: "center",
       });
+
       scene.add.existing(item);
     }
 
@@ -175,13 +170,6 @@ export default class InventoryPanelFactory {
         orientation: "y",
         space: { left: 0, right: 0, top: 10, bottom: 10, item: 5 },
       })
-      .add(
-        table, // child
-        { key: constants.ui.keys.inventoryGrid }
-        // "center", // align
-        // 0, // paddingConfig
-        // true // expand
-      );
-    // .setDepth(105);
+      .add(table, { key: constants.ui.keys.inventoryGrid });
   }
 }

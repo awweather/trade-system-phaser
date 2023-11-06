@@ -32,43 +32,39 @@ import { ItemSlot, createItemSlots } from "../components/Inventory.ts";
 
 class ShopSystem extends System {
   init() {
-    eventEmitter.on(keys.menu.CLICKED("trade"), (shopkeeperId: string) => {
-      this.tradeInitiated(shopkeeperId);
-    });
-
     eventEmitter.on(
       keys.itemSlots.CLICKED(HudContext.playerInPlay),
-      (originalSlotIndex: number, entity: GameEntity) => {
+      (entity: GameEntity) => {
         itemMovedToPlayerShopInventory(entity);
       }
     );
 
     eventEmitter.on(
       keys.itemSlots.CLICKED(HudContext.playerShopInventory),
-      (originalSlotIndex: number, entity: GameEntity) => {
+      (entity: GameEntity) => {
         itemMovedInPlay(entity);
       }
     );
 
     eventEmitter.on(
       keys.itemSlots.CLICKED(HudContext.shopInventory),
-      (originalSlotIndex: number, entity: GameEntity) => {
+      (entity: GameEntity) => {
         itemMovedShopInPlay(entity);
       }
     );
 
     eventEmitter.on(
       keys.itemSlots.CLICKED(HudContext.shopInPlay),
-      (originalSlotIndex: number, entity: GameEntity) => {
+      (entity: GameEntity) => {
         itemMovedToShopInventory(entity);
       }
     );
 
-    eventEmitter.on("balance_offer_button_clicked", () => {
+    eventEmitter.on(keys.menu.CLICKED("balanceOffer"), () => {
       balanceOffer();
     });
 
-    eventEmitter.on(`trade_offer_accepted`, () => {
+    eventEmitter.on(keys.menu.CLICKED("acceptTrade"), () => {
       if (shopViewModel.inPlayValue < shopViewModel.shopInPlayValue) {
         return;
       }
@@ -78,8 +74,12 @@ class ShopSystem extends System {
       this.tradeInitiated(shopkeeperEntity.entityId.value);
     });
 
-    eventEmitter.on("close_shop_window_clicked", () => {
+    eventEmitter.on(keys.menu.CLICKED("closeShop"), () => {
       shopViewModel.closeShopWindow();
+    });
+
+    eventEmitter.on(keys.menu.CLICKED("trade"), (shopkeeperId: string) => {
+      this.tradeInitiated(shopkeeperId);
     });
   }
 
@@ -135,10 +135,15 @@ class ShopSystem extends System {
   }
 
   execute() {
+    /**
+     * This query runs whenever the shopkeeper component gets added to an entity
+     * This would occur in main.ts getShopkeeper() when the shopkeeper entity is initialized
+     */
     this.queries.shopkeeper.added!.forEach((entity: Entity) => {
       const gameEntity = entity as GameEntity;
       const shopkeeper = gameEntity.shopkeeper;
 
+      // Generate item from baseItemIds
       shopkeeper.baseItemIds.forEach((itemId) => {
         const item = ItemGenerator.generateItem(
           itemId,
@@ -148,18 +153,22 @@ class ShopSystem extends System {
         addToInventory(gameEntity, item);
       });
 
+      // Initialize gold entity from starting gold amount
       const currency =
         entity.getComponent<CurrencyComponent>(CurrencyComponent);
       const goldItem = getGold(currency!.gold);
-
       const goldEntity = initializeEntity(goldItem);
       addToInventory(gameEntity, goldEntity);
     });
 
+    /**
+     * This query runs whenever the quantity component on an item changes
+     */
     this.queries.quantity.changed!.forEach((entity: Entity) => {
       const gameEntity = entity as GameEntity;
       const quantity = gameEntity.quantity;
 
+      // Notify subscribers that quantity value has changed
       eventEmitter.emit(
         keys.items.QTY_CHANGED(gameEntity.entityId.value),
         quantity.value

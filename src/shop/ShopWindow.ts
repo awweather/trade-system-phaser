@@ -1,5 +1,5 @@
 import type Sizer from "phaser3-rex-plugins/templates/ui/sizer/Sizer";
-import OverlapItemSlot from "../inventory/OverlapItemSlot.ts";
+import ItemSlot from "../inventory/ItemSlot.ts";
 
 export default class ShopWindow {
   playerInventoryGrid: Sizer;
@@ -50,29 +50,29 @@ export default class ShopWindow {
     this.sizer.setVisible(false);
 
     this.playerInventoryGrid.getAllChildren().forEach((element) => {
-      if (element instanceof OverlapItemSlot) {
-        const slot = element as OverlapItemSlot;
+      if (element instanceof ItemSlot) {
+        const slot = element as ItemSlot;
         slot.removeItem();
       }
     });
 
     this.shopInventoryGrid.getAllChildren().forEach((element) => {
-      if (element instanceof OverlapItemSlot) {
-        const slot = element as OverlapItemSlot;
+      if (element instanceof ItemSlot) {
+        const slot = element as ItemSlot;
         slot.removeItem();
       }
     });
 
     this.playerInPlay.getAllChildren().forEach((element) => {
-      if (element instanceof OverlapItemSlot) {
-        const slot = element as OverlapItemSlot;
+      if (element instanceof ItemSlot) {
+        const slot = element as ItemSlot;
         slot.removeItem();
       }
     });
 
     this.shopInPlay.getAllChildren().forEach((element) => {
-      if (element instanceof OverlapItemSlot) {
-        const slot = element as OverlapItemSlot;
+      if (element instanceof ItemSlot) {
+        const slot = element as ItemSlot;
         slot.removeItem();
       }
     });
@@ -146,7 +146,7 @@ export default class ShopWindow {
     const itemGrid = grid.getElement(
       "items"
     ) as Phaser.GameObjects.GameObject[];
-    const slot = itemGrid[slotIndex] as OverlapItemSlot;
+    const slot = itemGrid[slotIndex] as ItemSlot;
     if (slot) {
       const item = slot.addItem(itemConfig);
       grid.layout();
@@ -170,7 +170,7 @@ export default class ShopWindow {
     const itemGrid = grid.getElement(
       "items"
     ) as Phaser.GameObjects.GameObject[];
-    const slot = itemGrid[slotIndex] as OverlapItemSlot;
+    const slot = itemGrid[slotIndex] as ItemSlot;
     const item = slot?.removeItem();
     grid.layout();
 

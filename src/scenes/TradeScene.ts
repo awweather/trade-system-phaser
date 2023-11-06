@@ -1,3 +1,4 @@
+import { Sizer } from "phaser3-rex-plugins/templates/ui/ui-components";
 import type RexUIPlugin from "phaser3-rex-plugins/templates/ui/ui-plugin.js";
 import { alignGrid } from "../AlignGrid.js";
 import Controls from "../Controls.ts";
@@ -14,6 +15,7 @@ export default class TradeScene extends Phaser.Scene {
   shopWindow: ShopWindow | undefined;
   rexUI!: RexUIPlugin;
   startTradeText!: Phaser.GameObjects.Text;
+  itemInfoPanel: Sizer;
   controls!: Controls;
 
   constructor() {
@@ -54,6 +56,7 @@ export default class TradeScene extends Phaser.Scene {
       });
 
     alignGrid.center(this.startTradeText);
+
     shopViewModel.registerScene(this);
   }
 

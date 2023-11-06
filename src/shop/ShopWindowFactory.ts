@@ -2,6 +2,7 @@ import { alignGrid } from "../AlignGrid.js";
 import { eventEmitter } from "../EventEmitter.ts";
 import { HudContext } from "../HudContext.ts";
 import constants from "../config/Constants.ts";
+import { keys } from "../config/Keys.ts";
 import InventoryPanelFactory from "../inventory/InventoryPanelFactory.ts";
 import TradeScene from "../scenes/TradeScene.ts";
 import ShopWindow from "./ShopWindow";
@@ -143,21 +144,21 @@ export default class ShopWindowFactory {
       .text(0, 0, "Balance")
       .setInteractive()
       .on("pointerup", () => {
-        eventEmitter.emit("balance_offer_button_clicked");
+        eventEmitter.emit(keys.menu.CLICKED("balanceOffer"));
       });
 
     const closeWindowButton = scene.add
       .text(0, 0, "Close")
       .setInteractive()
       .on("pointerup", () => {
-        eventEmitter.emit("close_shop_window_clicked");
+        eventEmitter.emit(keys.menu.CLICKED("closeShop"));
       });
 
     const acceptButton = scene.add
       .text(0, 0, "Accept")
       .setInteractive()
       .on("pointerup", () => {
-        eventEmitter.emit("trade_offer_accepted");
+        eventEmitter.emit(keys.menu.CLICKED("acceptTrade"));
       });
 
     actionBar.add(acceptButton).add(balanceOfferButton).add(closeWindowButton);

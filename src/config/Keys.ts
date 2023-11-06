@@ -1,6 +1,6 @@
 import { HudContext } from "../HudContext.ts";
 
-export type MenuTypes = "startQuest" | "trade" | "mint" | "Turn it in";
+export type MenuTypes = "trade" | "balanceOffer" | "acceptTrade" | "closeShop";
 
 export const keys = {
   itemSlots: {
