@@ -1,11 +1,11 @@
 import OverlapSizer from "phaser3-rex-plugins/templates/ui/overlapsizer/OverlapSizer";
 
-import constants from "./Constants.ts";
 import { eventEmitter } from "./EventEmitter.ts";
 import { HudContext } from "./HudContext.ts";
 import Item from "./Item";
-import { keys } from "./Keys.ts";
 import TradeScene from "./TradeScene.ts";
+import constants from "./config/Constants.ts";
+import { keys } from "./config/Keys.ts";
 import type { AddItemConfig } from "./inventory/ItemSlot.ts";
 
 export default class OverlapItemSlot extends OverlapSizer {

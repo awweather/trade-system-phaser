@@ -1,5 +1,5 @@
-import TradeScene from "./TradeScene.ts";
-import { GameEntity } from "./ecs/GameEntity.ts";
+import TradeScene from "../TradeScene.ts";
+import { GameEntity } from "../ecs/GameEntity.ts";
 import {
   DescriptorComponent,
   GoldComponent,
@@ -8,10 +8,10 @@ import {
   QuantityComponent,
   ShopWindowComponent,
   TradeIdComponent,
-} from "./ecs/components/Components.ts";
-import { ItemSlot } from "./ecs/components/Inventory.ts";
+} from "../ecs/components/Components.ts";
+import { ItemSlot } from "../ecs/components/Inventory.ts";
 
-import { playerEntity, world } from "./main.ts";
+import { playerEntity, world } from "../main.ts";
 
 class ShopViewModel {
   scene!: TradeScene;

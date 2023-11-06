@@ -2,13 +2,8 @@ import { Component, Types } from "ecsy";
 
 interface QuantityProps {}
 class Quantity extends Component<QuantityProps> {
-  value: number;
+  value: number = 0;
   maxValue?: number;
-
-  constructor() {
-    super();
-    this.value = 0;
-  }
 }
 
 Quantity.schema = {

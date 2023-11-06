@@ -1,4 +1,4 @@
-import constants from "./Constants";
+import constants from "./config/Constants";
 
 export default {
   actionBar: "LOM_GUI_01.png",

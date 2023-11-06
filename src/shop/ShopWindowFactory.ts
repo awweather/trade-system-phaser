@@ -1,10 +1,10 @@
-import { alignGrid } from "./AlignGrid.ts";
-import constants from "./Constants.ts";
-import { eventEmitter } from "./EventEmitter.ts";
-import { HudContext } from "./HudContext.ts";
-import InventoryPanelFactory from "./inventory/InventoryPanelFactory.ts";
+import { alignGrid } from "../AlignGrid.ts";
+import { eventEmitter } from "../EventEmitter.ts";
+import { HudContext } from "../HudContext.ts";
+import TradeScene from "../TradeScene.ts";
+import constants from "../config/Constants.ts";
+import InventoryPanelFactory from "../inventory/InventoryPanelFactory.ts";
 import ShopWindow from "./ShopWindow";
-import TradeScene from "./TradeScene.ts";
 
 export default class ShopWindowFactory {
   static create(scene: TradeScene): ShopWindow {

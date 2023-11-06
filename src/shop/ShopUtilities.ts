@@ -1,5 +1,4 @@
 import { getGold } from "../Items.ts";
-import { shopViewModel } from "../ShopViewModel.ts";
 import { GameEntity } from "../ecs/GameEntity.ts";
 import { initializeItem } from "../ecs/InitializeItem.ts";
 import {
@@ -10,6 +9,7 @@ import {
   TradeIdComponent,
 } from "../ecs/components/Components.ts";
 import { ItemSlot } from "../ecs/components/Inventory.ts";
+import { shopViewModel } from "./ShopViewModel.ts";
 
 import {
   addToInventory,

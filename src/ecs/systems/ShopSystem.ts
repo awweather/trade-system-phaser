@@ -3,8 +3,7 @@ import { eventEmitter } from "../../EventEmitter.ts";
 import { HudContext } from "../../HudContext.ts";
 import ItemGenerator from "../../ItemGenerator.ts";
 import { getGold } from "../../Items.ts";
-import { keys } from "../../Keys.ts";
-import { shopViewModel } from "../../ShopViewModel.ts";
+import { keys } from "../../config/Keys.ts";
 import { addToInventory } from "../../inventory/InventoryUtilities.ts";
 import { playerEntity, shopkeeperEntity } from "../../main.ts";
 import {
@@ -15,6 +14,7 @@ import {
   itemMovedToPlayerShopInventory,
   itemMovedToShopInventory,
 } from "../../shop/ShopUtilities.ts";
+import { shopViewModel } from "../../shop/ShopViewModel.ts";
 import { GameEntity } from "../GameEntity.ts";
 import { initializeItem } from "../InitializeItem.ts";
 import {

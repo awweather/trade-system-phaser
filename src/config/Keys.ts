@@ -1,4 +1,4 @@
-import { HudContext } from "./HudContext.ts";
+import { HudContext } from "../HudContext.ts";
 
 export type MenuTypes = "startQuest" | "trade" | "mint" | "Turn it in";
 
