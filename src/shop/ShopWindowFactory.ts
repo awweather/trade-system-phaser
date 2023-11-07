@@ -45,7 +45,7 @@ export default class ShopWindowFactory {
 
     playerHeader.add(name).add(playerCoins);
 
-    const leftSizer = InventoryGridFactory.create(scene, {
+    const playerShopInventory = InventoryGridFactory.create(scene, {
       panelHeader: playerHeader,
       height: 390,
       context: HudContext.playerShopInventory,
@@ -59,7 +59,7 @@ export default class ShopWindowFactory {
       fontSize: `12px`,
     });
 
-    const middleLeft = InventoryGridFactory.create(scene, {
+    const playerInPlay = InventoryGridFactory.create(scene, {
       height: 390,
       slots: 14,
       rows: 7,
@@ -73,7 +73,7 @@ export default class ShopWindowFactory {
       fontSize: `12px`,
     });
 
-    const middleRight = InventoryGridFactory.create(scene, {
+    const npcInPlay = InventoryGridFactory.create(scene, {
       height: 390,
       slots: 14,
       rows: 7,
@@ -101,7 +101,7 @@ export default class ShopWindowFactory {
 
     npcHeader.add(npcName).add(npcCoins);
 
-    const rightSizer = InventoryGridFactory.create(scene, {
+    const npcShopInventory = InventoryGridFactory.create(scene, {
       panelHeader: npcHeader,
       height: 390,
       rows: 5,
@@ -111,25 +111,25 @@ export default class ShopWindowFactory {
     });
 
     horizontalSizer
-      .add(leftSizer.scrollableContainer, {
+      .add(playerShopInventory.scrollableContainer, {
         key: leftKey,
         padding: {
           right: 5,
         },
       })
-      .add(middleLeft.scrollableContainer, {
+      .add(playerInPlay.scrollableContainer, {
         key: "middleLeft",
         padding: {
           left: 10,
         },
       })
-      .add(middleRight.scrollableContainer, {
+      .add(npcInPlay.scrollableContainer, {
         key: "middleRight",
         padding: {
           left: 5,
         },
       })
-      .add(rightSizer.scrollableContainer, {
+      .add(npcShopInventory.scrollableContainer, {
         key: rightKey,
         padding: {
           left: 15,
@@ -179,10 +179,10 @@ export default class ShopWindowFactory {
       playerCoins,
       name,
       coinsInPlay,
-      leftSizer.grid,
-      middleLeft.grid,
-      middleRight.grid,
-      rightSizer.grid,
+      playerShopInventory.grid,
+      playerInPlay.grid,
+      npcInPlay.grid,
+      npcShopInventory.grid,
       npcCoins,
       npcName,
       npcCoinsInPlay

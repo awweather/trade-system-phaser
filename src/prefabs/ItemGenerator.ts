@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
-import { ItemKey, itemPresets } from "./prefabs/Items.ts";
-import { initializeItem } from "./ecs/InitializeItem.ts";
+import { initializeEntity } from "../ecs/InitializeEntity.ts";
+import { ItemKey, itemPresets } from "./Items.ts";
 
 export default class ItemGenerator {
   public static generateItem(baseItemId: ItemKey, actor: string) {
@@ -8,7 +8,7 @@ export default class ItemGenerator {
 
     const id = uuidv4();
 
-    const item = initializeItem({
+    const item = initializeEntity({
       components: preset,
       entityID: id,
     });

@@ -22,7 +22,6 @@ export default class TradeScene extends Phaser.Scene {
   }
 
   preload() {
-    // Quick work around to load asset paths correctly
     const itemAtlasMeta = itemsAtlas.meta as any;
     itemAtlasMeta.image = itemsImage;
 

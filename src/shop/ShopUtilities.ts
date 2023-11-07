@@ -1,5 +1,4 @@
 import { GameEntity } from "../ecs/GameEntity.ts";
-import { initializeItem } from "../ecs/InitializeItem.ts";
 import {
   GoldComponent,
   PickedUpComponent,
@@ -114,7 +113,7 @@ export function splitGoldStack(
   baseItem.quantity_mutable!.value -= amount;
 
   const splitItem = getGold(amount);
-  const entity = initializeItem(splitItem);
+  const entity = initializeEntity(splitItem);
 
   return entity;
 }
@@ -457,7 +456,7 @@ export function itemMovedToPlayerShopInventory(
       ? shopWindow.inPlay[targetSlotIndex]
       : shopWindow.inventory.find((s) => !s.hasItem());
 
-  shopWindow.inventory[targetSlot!.slotIndex].item = removedItem;
+  shopWindow.inventory[targetSlot!.slotIndex].addItem(removedItem);
 
   shopViewModel.moveItemToPlayerInventory(item, targetSlot!.slotIndex);
   shopViewModel.removeItemFromPlayerInPlay(slot!.slotIndex, removedItem);

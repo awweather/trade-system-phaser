@@ -1,10 +1,12 @@
 import type Sizer from "phaser3-rex-plugins/templates/ui/sizer/Sizer";
+import { GridSizer } from "phaser3-rex-plugins/templates/ui/ui-components";
 import ItemSlot from "../inventory/ItemSlot.ts";
 
 export default class ShopWindow {
-  playerInventoryGrid: Sizer;
-  shopInventoryGrid: Sizer;
-  playerInPlay: Sizer;
+  playerInventoryGrid: GridSizer;
+  shopInventoryGrid: GridSizer;
+  playerInPlay: GridSizer;
+  shopInPlay: GridSizer;
 
   coinsInPlay: Phaser.GameObjects.Text;
 
@@ -13,7 +15,6 @@ export default class ShopWindow {
   shopCoins: Phaser.GameObjects.Text;
   shopCoinsInPlay: Phaser.GameObjects.Text;
 
-  shopInPlay: Sizer;
   shopName: Phaser.GameObjects.Text;
 
   sizer: Sizer;
@@ -23,10 +24,10 @@ export default class ShopWindow {
     playerCoins: Phaser.GameObjects.Text,
     playerName: Phaser.GameObjects.Text,
     coinsInPlay: Phaser.GameObjects.Text,
-    playerInventory: Sizer,
-    playerInPlay: Sizer,
-    npcInPlay: Sizer,
-    npcInventory: Sizer,
+    playerInventory: GridSizer,
+    playerInPlay: GridSizer,
+    npcInPlay: GridSizer,
+    npcInventory: GridSizer,
     npcCoins: Phaser.GameObjects.Text,
     npcName: Phaser.GameObjects.Text,
     npcCoinsInPlay: Phaser.GameObjects.Text
@@ -142,7 +143,7 @@ export default class ShopWindow {
     return this.addToSlot(this.playerInPlay, newslotIndex, itemConfig);
   }
 
-  addToSlot(grid: Sizer, slotIndex: number, itemConfig: any) {
+  addToSlot(grid: GridSizer, slotIndex: number, itemConfig: any) {
     const itemGrid = grid.getElement(
       "items"
     ) as Phaser.GameObjects.GameObject[];
@@ -166,7 +167,7 @@ export default class ShopWindow {
     return this.addToSlot(this.shopInventoryGrid, newslotIndex, itemConfig);
   }
 
-  removeFromSlot(grid: Sizer, slotIndex: number) {
+  removeFromSlot(grid: GridSizer, slotIndex: number) {
     const itemGrid = grid.getElement(
       "items"
     ) as Phaser.GameObjects.GameObject[];

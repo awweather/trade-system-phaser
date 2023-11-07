@@ -7,7 +7,6 @@ import {
 } from "../ecs/components/Components.ts";
 import { ItemSlot } from "../ecs/components/Inventory.ts";
 import { playerEntity, world } from "../main.ts";
-import { getGoldEntities, getShopGoldEntities } from "../shop/ShopUtilities.ts";
 
 export function getPlayerInventoryGoldEntities(): GameEntity[] {
   const inventory = playerEntity.inventory;
@@ -19,51 +18,6 @@ export function getPlayerInventoryGoldEntities(): GameEntity[] {
         (slot) => slot.hasItem() && slot.item === itemId
       );
     });
-}
-
-export function sumPlayerInventoryGoldEntities(): number {
-  let value = 0;
-  const playerGoldEntities = getPlayerInventoryGoldEntities();
-  playerGoldEntities.forEach((entity) => {
-    value += entity.quantity.value;
-  });
-
-  return value;
-}
-
-export function sumInventoryGoldEntities(slots: ItemSlot[]): number {
-  let value = 0;
-  const goldEntities = getGoldEntities(slots);
-  goldEntities.forEach((entity) => {
-    value += entity.quantity.value;
-  });
-
-  return value;
-}
-
-export function sumNpcInventoryGoldEntities(): number {
-  let value = 0;
-  const playerGoldEntities = getShopGoldEntities();
-  playerGoldEntities.forEach((entity) => {
-    value += entity.quantity.value;
-  });
-
-  return value;
-}
-
-export function getItemInSlot(
-  slotIndex: number,
-  actor: string
-): GameEntity | null {
-  const inventory = playerEntity.inventory;
-
-  const slot = inventory.slots[slotIndex];
-
-  if (slot.hasItem()) {
-    return world.entityManager.getEntityByName(slot.item);
-  }
-
-  return null;
 }
 
 export function getItemInInventoryWithMinQuantity(
@@ -105,10 +59,8 @@ export const addToInventory = (actor: GameEntity, item: GameEntity) => {
   }
 
   const itemId = item.entityId.value;
-  inventory.slots[slot].item = itemId;
+  inventory.slots[slot].addItem(itemId);
   inventory.items.push(itemId);
-
-  // if (entity == playerEntity) inventoryViewModel.addItem(itemEntity);
 };
 
 export const removeFromInventory = (actor: GameEntity, index: number): void => {
@@ -117,7 +69,6 @@ export const removeFromInventory = (actor: GameEntity, index: number): void => {
   if (actor == playerEntity) {
     const itemToRemove = inventory.slots[index].removeItem();
     inventory.items = inventory.items.filter((item) => item !== itemToRemove);
-    // inventoryViewModel.removeFromSlot(index);
   } else {
     const itemToRemove = inventory.slots[index].removeItem();
     inventory.items = inventory.items.filter((item) => item !== itemToRemove);

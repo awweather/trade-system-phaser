@@ -1,13 +1,13 @@
 import { Entity, System } from "ecsy";
 import { eventEmitter } from "../../EventEmitter.ts";
 import { HudContext } from "../../HudContext.ts";
-import ItemGenerator from "../../ItemGenerator.ts";
 import { keys } from "../../config/Keys.ts";
 import {
   addToInventory,
   getItemsFromSlots,
 } from "../../inventory/InventoryUtilities.ts";
 import { playerEntity, shopkeeperEntity } from "../../main.ts";
+import ItemGenerator from "../../prefabs/ItemGenerator.ts";
 import { getGold } from "../../prefabs/Items.ts";
 import {
   balanceOffer,

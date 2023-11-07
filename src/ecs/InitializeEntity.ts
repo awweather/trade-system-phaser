@@ -8,6 +8,11 @@ export interface RawEntity {
   entityID: string;
 }
 
+/**
+ * Initializes an entity by taking the javascript object form and turning it into a game entity.
+ * @param rawEntity The raw javascript object
+ * @returns A game entity created from the raw entity
+ */
 export function initializeEntity(rawEntity: RawEntity): GameEntity {
   const entity = world.createEntity(rawEntity.entityID);
 
