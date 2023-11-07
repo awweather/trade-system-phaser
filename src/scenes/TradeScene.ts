@@ -25,7 +25,10 @@ export default class TradeScene extends Phaser.Scene {
     // Quick work around to load asset paths correctly
     const itemAtlasMeta = itemsAtlas.meta as any;
     itemAtlasMeta.image = itemsImage;
-    this.load.atlas("icons", itemsImage, itemsAtlas);
+
+    const imgUrl = new URL("../assets/items.png", import.meta.url).href;
+
+    this.load.atlas("icons", imgUrl, itemsAtlas);
 
     alignGrid.create({
       rows: 20,
