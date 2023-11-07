@@ -171,6 +171,8 @@ export default class ItemSlot extends OverlapSizer {
     const plugin = scene.plugins.get("dragPlugin") as DragPlugin;
     this.item.drag = plugin.add(this.item);
     this.item.drag.drag();
+
+    this.item.setDepth(201);
     this.item.on(
       "dragend",
       (
