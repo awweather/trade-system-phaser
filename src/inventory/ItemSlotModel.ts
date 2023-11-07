@@ -205,12 +205,6 @@ export default class ItemSlotModel extends OverlapSizer {
     this.scene.input.once(
       "pointerup",
       function () {
-        if (isDragging) {
-          // End the drag if it was initiated
-          // ... Your dragend logic here
-        }
-
-        // Remove the pointermove listener since we don't need to track movement anymore
         scene.input.off("pointermove");
       },
       this
