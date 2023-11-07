@@ -16,16 +16,18 @@ export interface RawEntity {
 export function initializeEntity(rawEntity: RawEntity): GameEntity {
   const entity = world.createEntity(rawEntity.entityID);
 
-  Object.keys(rawEntity.components).forEach((componentKey) => {
-    const component = componentLookup.getComponent(componentKey);
-    if (component) {
-      entity.addComponent(component, rawEntity.components[componentKey]);
-    } else {
-      console.log(
-        `${componentKey} was not registered to player because it did not exist`
-      );
-    }
-  });
+  Object.keys(rawEntity.components)
+    .filter((compKey) => rawEntity.components[compKey] !== null)
+    .forEach((componentKey) => {
+      const component = componentLookup.getComponent(componentKey);
+      if (component) {
+        entity.addComponent(component, rawEntity.components[componentKey]);
+      } else {
+        console.log(
+          `${componentKey} was not registered to player because it did not exist`
+        );
+      }
+    });
 
   entity.addComponent<EntityIdComponent>(EntityIdComponent, {
     value: rawEntity.entityID,

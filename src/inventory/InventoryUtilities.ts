@@ -5,8 +5,8 @@ import {
   PickedUpComponent,
   QuantityComponent,
 } from "../ecs/components/Components.ts";
-import { ItemSlot } from "../ecs/components/Inventory.ts";
 import { playerEntity, world } from "../main.ts";
+import { ItemSlot } from "./ItemSlot.ts";
 
 export function getPlayerInventoryGoldEntities(): GameEntity[] {
   const inventory = playerEntity.inventory;

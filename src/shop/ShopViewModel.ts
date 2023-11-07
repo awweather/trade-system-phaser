@@ -8,11 +8,11 @@ import {
   ShopWindowComponent,
   TradeIdComponent,
 } from "../ecs/components/Components.ts";
-import { ItemSlot } from "../ecs/components/Inventory.ts";
 import TradeScene from "../scenes/TradeScene.ts";
 
 import { eventEmitter } from "../EventEmitter.ts";
 import { HudContext } from "../HudContext.ts";
+import { ItemSlot } from "../inventory/ItemSlot.ts";
 import { playerEntity, world } from "../main.ts";
 
 class ShopViewModel {

@@ -19,19 +19,7 @@ export const keys = {
     REMOVED: (context: HudContext) => `${context}_itemRemoved`,
     QTY_CHANGED: (itemId: string) => `${itemId}.quantity.changed`,
   },
-  inventory: {
-    MOVED: `${HudContext.inventory}_itemMoved`,
-    ADDED: `${HudContext.inventory}_itemAdded`,
-    DROPPED: `${HudContext.inventory}_itemDropped`,
-    REMOVED: `${HudContext.inventory}_itemRemoved`,
-  },
-  splitStack: {
-    CLICKED: "split_stack_clicked",
-  },
   menu: {
     CLICKED: (option: MenuTypes) => `menu.${option}.clicked`,
-    button: {
-      CLICKED: "menu.button.clicked",
-    },
   },
 };

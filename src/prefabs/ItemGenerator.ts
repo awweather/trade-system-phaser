@@ -3,7 +3,7 @@ import { initializeEntity } from "../ecs/InitializeEntity.ts";
 import { ItemKey, itemPresets } from "./Items.ts";
 
 export default class ItemGenerator {
-  public static generateItem(baseItemId: ItemKey, actor: string) {
+  public static generateItem(baseItemId: ItemKey) {
     const preset = itemPresets.items[baseItemId];
 
     const id = uuidv4();

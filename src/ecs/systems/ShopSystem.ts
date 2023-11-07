@@ -6,6 +6,7 @@ import {
   addToInventory,
   getItemsFromSlots,
 } from "../../inventory/InventoryUtilities.ts";
+import { ItemSlot, createItemSlots } from "../../inventory/ItemSlot.ts";
 import { playerEntity, shopkeeperEntity } from "../../main.ts";
 import ItemGenerator from "../../prefabs/ItemGenerator.ts";
 import { getGold } from "../../prefabs/Items.ts";
@@ -29,7 +30,6 @@ import {
   ShopWindowComponent,
   ShopkeeperComponent,
 } from "../components/Components.ts";
-import { ItemSlot, createItemSlots } from "../components/Inventory.ts";
 
 class ShopSystem extends System {
   init() {
@@ -198,10 +198,7 @@ class ShopSystem extends System {
 
       // Generate item from baseItemIds
       shopkeeper.baseItemIds.forEach((itemId) => {
-        const item = ItemGenerator.generateItem(
-          itemId,
-          gameEntity.entityId?.value
-        );
+        const item = ItemGenerator.generateItem(itemId);
 
         addToInventory(gameEntity, item);
       });

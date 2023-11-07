@@ -6,7 +6,6 @@ import {
   ShopWindowComponent,
   TradeIdComponent,
 } from "../ecs/components/Components.ts";
-import { ItemSlot } from "../ecs/components/Inventory.ts";
 import { getGold } from "../prefabs/Items.ts";
 import { shopViewModel } from "./ShopViewModel.ts";
 
@@ -18,6 +17,7 @@ import {
   getItemInInventoryWithMinQuantity,
   removeFromInventory,
 } from "../inventory/InventoryUtilities.ts";
+import { ItemSlot } from "../inventory/ItemSlot.ts";
 import { playerEntity, world } from "../main.ts";
 
 export function calculateValueDifference(): number {

@@ -3,7 +3,7 @@ import { RawEntity } from "../ecs/InitializeEntity.ts";
 export default function getPlayer(): RawEntity {
   return {
     components: {
-      InventoryComponent: {
+      inventoryComponent: {
         itemsToAdd: [],
         slots: [
           {
@@ -316,7 +316,7 @@ export default function getPlayer(): RawEntity {
         ],
         coins: 0,
       },
-      DescriptorComponent: {
+      descriptorComponent: {
         name: "Player",
       },
     },
@@ -328,37 +328,23 @@ export function getPlayerItems() {
   return [
     {
       components: {
-        DescriptorComponent: {
+        descriptorComponent: {
           description: "",
           id: null,
           name: "Dagger",
         },
-        EquippableComponent: {
+        equippableComponent: {
           levelRequirement: 1,
           isEquipped: false,
           slotIndex: 0,
           slot: 0,
         },
-        ImplicitModifiersComponent: {
-          modifiersToAdd: [],
-          modifiers: [
-            {
-              minValue: 8,
-              maxValue: 10,
-              description: "8-10",
-              templateId: "Physical Damage",
-              groupDescription: "Physical Damage",
-              groupId: "physicalDamage",
-            },
-          ],
-        },
-        ItemIdComponent: {
-          value: "e0057ac8-319d-47fb-b86a-aa72aca9cd9b",
+
+        itemIdComponent: {
           itemBase: "dagger",
-          ownedBy: "30bf1e65-d6e0-4766-867c-b158673cfdc1",
         },
-        PickedUpComponent: { slotIndex: 0 },
-        RenderableComponent: {
+        pickedUpComponent: { slotIndex: 0 },
+        renderableComponent: {
           sprite: {
             height: 35,
             width: 35,
@@ -370,53 +356,28 @@ export function getPlayerItems() {
           spriteKey: "dagger",
           scale: 0,
         },
-        RequirementsComponent: {
-          levelRequirement: 1,
-          attributeRequirements: [{ attribute: 2, value: 10 }],
-        },
-        SummaryComponent: { summaryText: "" },
-        ValuableComponent: { value: 6 },
-        WithSocketsComponent: {
-          sockets: [
-            {
-              tier: 1,
-              slotIndex: 0,
-              isActive: false,
-              isEnabled: true,
-              item: "00000000-0000-0000-0000-000000000000",
-            },
-            {
-              tier: 1,
-              slotIndex: 1,
-              isActive: false,
-              isEnabled: true,
-              item: "00000000-0000-0000-0000-000000000000",
-            },
-          ],
-        },
+        valuableComponent: { value: 6 },
       },
       entityID: "e0057ac8-319d-47fb-b86a-aa72aca9cd9b",
     },
     {
       components: {
-        DescriptorComponent: {
+        descriptorComponent: {
           description: "An insignia that embues you with power.",
           id: null,
           name: "First Insignia",
         },
-        ItemIdComponent: {
-          value: "79aab16f-677d-4624-ba9f-2397d10c2ab3",
+        itemIdComponent: {
           itemBase: "swordPlunge",
-          ownedBy: "30bf1e65-d6e0-4766-867c-b158673cfdc1",
         },
-        EquippableComponent: {
+        equippableComponent: {
           isEquipped: false,
           levelRequirement: 1,
           slotIndex: 0,
           slot: 1,
         },
-        PickedUpComponent: { slotIndex: 1 },
-        RenderableComponent: {
+        pickedUpComponent: { slotIndex: 1 },
+        renderableComponent: {
           sprite: {
             height: 35,
             width: 35,
@@ -428,64 +389,25 @@ export function getPlayerItems() {
           spriteKey: "sword_plunge_insignia",
           scale: 0,
         },
-        RequirementsComponent: {
+        requirementsComponent: {
           levelRequirement: 1,
           attributeRequirements: [],
         },
-        SkillableComponent: {
-          skillId: 0,
-          manaCost: 999,
-          coolDown: 999,
-          sprite: null,
-          description: null,
-          tier: 3,
-        },
-        SocketableComponent: {
-          isSocketed: false,
-          tier: 1,
-          levelRequirement: 0,
-        },
-        InsigniaComponent: {},
-        RarityComponent: {
-          value: 1,
-        },
-        ItemPrefixesComponent: {
-          prefixes: {
-            forkProjectiles: {
-              description: "100% chance for projectiles to fork into 2",
-              value: 1,
-            },
-          },
-        },
-        ItemSuffixesComponent: {
-          suffixes: {
-            increasedHealth: {
-              description: "+10 health",
-              value: 10,
-            },
-          },
-        },
-        SummaryComponent: { summaryText: "" },
-        ValuableComponent: { value: 4 },
+        valuableComponent: { value: 4 },
       },
       entityID: "79aab16f-677d-4624-ba9f-2397d10c2ab3",
     },
     {
       components: {
-        ConsumableComponent: {
-          attributeModifiers: [],
-          uses: 1,
-          remainingUses: 1,
+        descriptorComponent: {
+          description: "Teleports to a new area",
+          name: "Map",
         },
-        DescriptorComponent: { description: "", id: null, name: "Map" },
-        ItemIdComponent: {
-          value: "6dae9405-d7cc-4a80-a59a-73a2ecbc5d4c",
+        itemIdComponent: {
           itemBase: "mapTemplate",
-          ownedBy: "30bf1e65-d6e0-4766-867c-b158673cfdc1",
         },
-        MapTemplateComponent: { modifiers: null },
-        PickedUpComponent: { slotIndex: 2 },
-        RenderableComponent: {
+        pickedUpComponent: { slotIndex: 2 },
+        renderableComponent: {
           sprite: {
             height: 35,
             width: 35,
@@ -497,35 +419,24 @@ export function getPlayerItems() {
           spriteKey: "map_1",
           scale: 0,
         },
-        RequirementsComponent: {
-          levelRequirement: 1,
-          attributeRequirements: [],
-        },
-        SummaryComponent: { summaryText: "" },
-        ValuableComponent: { value: 5 },
-        ZoneComponent: { value: "Cave", zoneWidthInTiles: 0 },
+        valuableComponent: { value: 5 },
       },
       entityID: "6dae9405-d7cc-4a80-a59a-73a2ecbc5d4c",
     },
     {
       components: {
-        ConsumableComponent: {
-          attributeModifiers: [{ value: 10, type: 0, target: 0 }],
-          uses: 3,
-          remainingUses: 3,
-        },
-        DescriptorComponent: {
+        descriptorComponent: {
           description: "",
           id: null,
           name: "Potion of Health",
         },
-        ItemIdComponent: {
+        itemIdComponent: {
           value: "5becd911-8b94-4c05-bab4-2ac258ee2d40",
           itemBase: "potionOfHealth",
           ownedBy: "30bf1e65-d6e0-4766-867c-b158673cfdc1",
         },
-        PickedUpComponent: { slotIndex: 3 },
-        RenderableComponent: {
+        pickedUpComponent: { slotIndex: 3 },
+        renderableComponent: {
           sprite: {
             height: 48,
             width: 48,
@@ -537,31 +448,24 @@ export function getPlayerItems() {
           spriteKey: "health_potion",
           scale: 0,
         },
-        RequirementsComponent: {
-          levelRequirement: 1,
-          attributeRequirements: [],
-        },
-        SummaryComponent: { summaryText: "" },
-        ValuableComponent: { value: 2 },
+        valuableComponent: { value: 2 },
       },
       entityID: "5becd911-8b94-4c05-bab4-2ac258ee2d40",
     },
     {
       components: {
-        DescriptorComponent: {
+        descriptorComponent: {
           description: "",
           id: null,
           name: "Gold",
         },
-        ItemIdComponent: {
-          value: "82693eb2-df70-4b20-ad01-b88518be8dbf",
+        itemIdComponent: {
           itemBase: "gold",
-          ownedBy: "30bf1e65-d6e0-4766-867c-b158673cfdc1",
         },
-        GoldComponent: {},
-        PickedUpComponent: { slotIndex: 4 },
-        QuantityComponent: { value: 27, maxValue: -1 },
-        RenderableComponent: {
+        goldComponent: {},
+        pickedUpComponent: { slotIndex: 4 },
+        quantityComponent: { value: 27, maxValue: -1 },
+        renderableComponent: {
           sprite: {
             height: 48,
             width: 48,
@@ -573,8 +477,7 @@ export function getPlayerItems() {
           spriteKey: "gold",
           scale: 0,
         },
-        SummaryComponent: { summaryText: "" },
-        ValuableComponent: { value: 1 },
+        valuableComponent: { value: 1 },
       },
       entityID: "82693eb2-df70-4b20-ad01-b88518be8dbf",
     },

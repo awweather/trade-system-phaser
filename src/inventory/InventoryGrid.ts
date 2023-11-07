@@ -5,7 +5,7 @@ import {
 } from "phaser3-rex-plugins/templates/ui/ui-components";
 import { keys } from "../config/Keys.ts";
 import Item from "./Item.ts";
-import ItemSlot from "./ItemSlot.ts";
+import ItemSlotModel from "./ItemSlotModel.ts";
 
 export default class InventoryGrid {
   // The container for the inventory grid
@@ -19,7 +19,7 @@ export default class InventoryGrid {
   }
 
   addItem(itemConfig: any): Item | null {
-    const items = this.grid.getElement("items") as ItemSlot[];
+    const items = this.grid.getElement("items") as ItemSlotModel[];
     const slot = items[itemConfig.pickedUp.slotIndex];
 
     if (slot) {
@@ -32,7 +32,7 @@ export default class InventoryGrid {
   }
 
   removeItem(index: number) {
-    const items = this.grid.getElement("items") as ItemSlot[];
+    const items = this.grid.getElement("items") as ItemSlotModel[];
     const slot = items[index];
     slot?.removeItem();
 

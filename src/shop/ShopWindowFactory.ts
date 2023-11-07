@@ -1,7 +1,6 @@
 import { alignGrid } from "../AlignGrid.js";
 import { eventEmitter } from "../EventEmitter.ts";
 import { HudContext } from "../HudContext.ts";
-import constants from "../config/Constants.ts";
 import { keys } from "../config/Keys.ts";
 import InventoryGridFactory from "../inventory/InventoryGridFactory.ts";
 import TradeScene from "../scenes/TradeScene.ts";
@@ -34,12 +33,10 @@ export default class ShopWindowFactory {
     });
 
     const name = scene.add.text(0, 0, "Player", {
-      fontFamily: constants.styles.text.fontFamily,
       fontSize: `12px`,
     });
 
     const playerCoins = scene.add.text(0, 0, "0g", {
-      fontFamily: constants.styles.text.fontFamily,
       fontSize: `12px`,
     });
 
@@ -55,7 +52,6 @@ export default class ShopWindowFactory {
     });
 
     const coinsInPlay = scene.add.text(0, 0, "0g", {
-      fontFamily: constants.styles.text.fontFamily,
       fontSize: `12px`,
     });
 
@@ -69,7 +65,6 @@ export default class ShopWindowFactory {
     });
 
     const npcCoinsInPlay = scene.add.text(0, 0, "0g", {
-      fontFamily: constants.styles.text.fontFamily,
       fontSize: `12px`,
     });
 
@@ -90,12 +85,10 @@ export default class ShopWindowFactory {
     });
 
     const npcName = scene.add.text(0, 0, "NPC", {
-      fontFamily: constants.styles.text.fontFamily,
       fontSize: `12px`,
     });
 
     const npcCoins = scene.add.text(0, 0, "2,000g", {
-      fontFamily: constants.styles.text.fontFamily,
       fontSize: `12px`,
     });
 

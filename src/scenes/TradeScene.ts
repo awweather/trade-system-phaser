@@ -1,9 +1,10 @@
+import Sizer from "phaser3-rex-plugins/templates/ui/sizer/Sizer";
 import type RexUIPlugin from "phaser3-rex-plugins/templates/ui/ui-plugin.js";
 import { alignGrid } from "../AlignGrid.js";
 import Controls from "../Controls.ts";
 import { eventEmitter } from "../EventEmitter.ts";
 import itemsAtlas from "../assets/items.json";
-import itemsImage from "../assets/items.png";
+// import itemsImage from "../assets/items.png";
 import { keys } from "../config/Keys.ts";
 import { shopkeeperEntity, world } from "../main.ts";
 import { shopViewModel } from "../shop/ShopViewModel.ts";
@@ -14,7 +15,7 @@ export default class TradeScene extends Phaser.Scene {
   shopWindow: ShopWindow | undefined;
   rexUI!: RexUIPlugin;
   startTradeText!: Phaser.GameObjects.Text;
-  itemInfoPanel: Sizer;
+  itemInfoPanel!: Sizer;
   controls!: Controls;
 
   constructor() {
@@ -22,8 +23,8 @@ export default class TradeScene extends Phaser.Scene {
   }
 
   preload() {
-    const itemAtlasMeta = itemsAtlas.meta as any;
-    itemAtlasMeta.image = itemsImage;
+    // const itemAtlasMeta = itemsAtlas.meta as any;
+    // itemAtlasMeta.image = itemsImage;
 
     const imgUrl = new URL("./items.png", import.meta.url).href;
 
@@ -51,6 +52,12 @@ export default class TradeScene extends Phaser.Scene {
         eventEmitter.emit(
           keys.menu.CLICKED("trade"),
           shopkeeperEntity.entityId?.value
+        );
+
+        this.add.text(
+          300,
+          50,
+          "Shift + left click to move items, or click and drag"
         );
 
         this.startTradeText.setVisible(false);

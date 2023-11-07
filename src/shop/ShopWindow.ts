@@ -1,6 +1,6 @@
 import type Sizer from "phaser3-rex-plugins/templates/ui/sizer/Sizer";
 import { GridSizer } from "phaser3-rex-plugins/templates/ui/ui-components";
-import ItemSlot from "../inventory/ItemSlot.ts";
+import ItemSlotModel from "../inventory/ItemSlotModel.ts";
 
 export default class ShopWindow {
   playerInventoryGrid: GridSizer;
@@ -51,29 +51,29 @@ export default class ShopWindow {
     this.sizer.setVisible(false);
 
     this.playerInventoryGrid.getAllChildren().forEach((element) => {
-      if (element instanceof ItemSlot) {
-        const slot = element as ItemSlot;
+      if (element instanceof ItemSlotModel) {
+        const slot = element as ItemSlotModel;
         slot.removeItem();
       }
     });
 
     this.shopInventoryGrid.getAllChildren().forEach((element) => {
-      if (element instanceof ItemSlot) {
-        const slot = element as ItemSlot;
+      if (element instanceof ItemSlotModel) {
+        const slot = element as ItemSlotModel;
         slot.removeItem();
       }
     });
 
     this.playerInPlay.getAllChildren().forEach((element) => {
-      if (element instanceof ItemSlot) {
-        const slot = element as ItemSlot;
+      if (element instanceof ItemSlotModel) {
+        const slot = element as ItemSlotModel;
         slot.removeItem();
       }
     });
 
     this.shopInPlay.getAllChildren().forEach((element) => {
-      if (element instanceof ItemSlot) {
-        const slot = element as ItemSlot;
+      if (element instanceof ItemSlotModel) {
+        const slot = element as ItemSlotModel;
         slot.removeItem();
       }
     });
@@ -147,7 +147,7 @@ export default class ShopWindow {
     const itemGrid = grid.getElement(
       "items"
     ) as Phaser.GameObjects.GameObject[];
-    const slot = itemGrid[slotIndex] as ItemSlot;
+    const slot = itemGrid[slotIndex] as ItemSlotModel;
     if (slot) {
       const item = slot.addItem(itemConfig);
       grid.layout();
@@ -171,7 +171,7 @@ export default class ShopWindow {
     const itemGrid = grid.getElement(
       "items"
     ) as Phaser.GameObjects.GameObject[];
-    const slot = itemGrid[slotIndex] as ItemSlot;
+    const slot = itemGrid[slotIndex] as ItemSlotModel;
     const item = slot?.removeItem();
     grid.layout();
 

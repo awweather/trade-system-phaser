@@ -1,11 +1,10 @@
 import type { ScrollablePanel } from "phaser3-rex-plugins/templates/ui/ui-components";
 import { alignGrid } from "../AlignGrid.js";
 import { HudContext } from "../HudContext.ts";
-import constants from "../config/Constants.ts";
 import { keys } from "../config/Keys.ts";
 import TradeScene from "../scenes/TradeScene.ts";
 import InventoryGrid from "./InventoryGrid.ts";
-import ItemSlot from "./ItemSlot.ts";
+import ItemSlotModel from "./ItemSlotModel.ts";
 
 export interface InventoryGridConfig {
   slots: number;
@@ -60,7 +59,7 @@ export default class InventoryGridFactory {
   static createSlots(scene: TradeScene, amount: number, context: HudContext) {
     const slots = [];
     for (let x = 0; x < amount ?? 50; x++) {
-      const itemSlot = new ItemSlot(
+      const itemSlot = new ItemSlotModel(
         0,
         0,
         32,
@@ -103,7 +102,7 @@ export default class InventoryGridFactory {
 
   static createPanel(
     scene: TradeScene,
-    slots: ItemSlot[],
+    slots: ItemSlotModel[],
     config: InventoryGridConfig
   ) {
     const sizer = scene.rexUI.add
@@ -126,7 +125,7 @@ export default class InventoryGridFactory {
     const title = scene.rexUI.add
       .label({
         orientation: "x",
-        text: scene.add.text(0, 0, text, constants.styles.text),
+        text: scene.add.text(0, 0, text),
       })
       .setDepth(100);
 
@@ -140,7 +139,7 @@ export default class InventoryGridFactory {
 
   static createTable(
     scene: TradeScene,
-    itemSlots: ItemSlot[],
+    itemSlots: ItemSlotModel[],
     rows: number,
     columns: number
   ) {

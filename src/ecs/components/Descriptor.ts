@@ -1,8 +1,8 @@
 import { Component, Types } from "ecsy";
 
-interface DescriptorSchemaProps {}
+interface DescriptorProps {}
 
-class Descriptor extends Component<DescriptorSchemaProps> {
+class Descriptor extends Component<DescriptorProps> {
   description: string = "";
   name: string = "";
 }
