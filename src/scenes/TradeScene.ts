@@ -26,7 +26,7 @@ export default class TradeScene extends Phaser.Scene {
     const itemAtlasMeta = itemsAtlas.meta as any;
     itemAtlasMeta.image = itemsImage;
 
-    const imgUrl = new URL("../assets/items.png", import.meta.url).href;
+    const imgUrl = new URL("./items.png", import.meta.url).href;
 
     this.load.atlas("icons", imgUrl, itemsAtlas);
 
