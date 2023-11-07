@@ -11,6 +11,7 @@ import { shopViewModel } from "./ShopViewModel.ts";
 
 import { eventEmitter } from "../EventEmitter.ts";
 import { HudContext } from "../HudContext.ts";
+import { keys } from "../config/Keys.ts";
 import { initializeEntity } from "../ecs/InitializeEntity.ts";
 import {
   addToInventory,
@@ -388,11 +389,42 @@ export function itemMovedToShopInventory(
   shopViewModel.updateShopWindow();
 }
 
+export function moveItemInSameInventoryGrid(
+  item: GameEntity,
+  itemSlots: ItemSlot[],
+  hudContext: HudContext,
+  targetSlotIndex: number
+) {
+  const slotToRemoveItemFrom = itemSlots.find((slot) => {
+    return slot.item === item.entityId.value;
+  });
+
+  // If slot does not exist, it means you tried to move the item to an invalid slot
+  if (!slotToRemoveItemFrom) {
+    console.log("Tried to move an item to an invalid slot");
+    return;
+  }
+
+  const removedItem = slotToRemoveItemFrom.removeItem();
+
+  // Find the target slot
+  itemSlots[targetSlotIndex].addItem(removedItem);
+
+  eventEmitter.emit(
+    keys.itemSlots.ITEM_ADDED(hudContext),
+    item,
+    targetSlotIndex,
+    slotToRemoveItemFrom.slotIndex,
+    removedItem,
+    true
+  );
+}
+
 /**
  * Moves an item to the npc's shop inventory
  * @param item The item being moved
  */
-export function itemMoved(
+export function moveItem(
   item: GameEntity,
   moveFromSlots: ItemSlot[],
   moveToSlots: ItemSlot[],
@@ -420,7 +452,7 @@ export function itemMoved(
   moveToSlots[targetSlot!.slotIndex].addItem(removedItem);
 
   eventEmitter.emit(
-    `${hudContext}_item_moved`,
+    keys.itemSlots.ITEM_ADDED(hudContext),
     item,
     targetSlot!.slotIndex,
     slot!.slotIndex,

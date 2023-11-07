@@ -12,6 +12,7 @@ import TradeScene from "../scenes/TradeScene.ts";
 
 import { eventEmitter } from "../EventEmitter.ts";
 import { HudContext } from "../HudContext.ts";
+import { keys } from "../config/Keys.ts";
 import { ItemSlot } from "../inventory/ItemSlot.ts";
 import { playerEntity, world } from "../main.ts";
 
@@ -23,44 +24,82 @@ class ShopViewModel {
 
   constructor() {
     eventEmitter.on(
-      `${HudContext.shopInPlay}_item_moved`,
-      (item: GameEntity, newSlotIndex: number, previousSlotIndex: number) => {
-        this.moveItemShopInPlay(item, newSlotIndex);
-        this.removeItemFromShopInventory(previousSlotIndex);
-        this.updateShopWindow();
-      }
-    );
-    eventEmitter.on(
-      `${HudContext.playerInPlay}_item_moved`,
-      (item: GameEntity, newSlotIndex: number, previousSlotIndex: number) => {
-        this.moveItemInPlay(item, newSlotIndex);
-        this.removeItemFromPlayerInventory(previousSlotIndex);
-        this.updateShopWindow();
-      }
-    );
-    eventEmitter.on(
-      `${HudContext.shopInventory}_item_moved`,
+      keys.itemSlots.ITEM_ADDED(HudContext.shopInPlay),
       (
         item: GameEntity,
         newSlotIndex: number,
         previousSlotIndex: number,
-        removedItemId: string
+        removedItemId: string,
+        droppedInSameInventoryGrid: boolean
       ) => {
-        this.moveItemToShopInventory(item, newSlotIndex);
-        this.removeItemFromShopInPlay(previousSlotIndex, removedItemId);
+        if (droppedInSameInventoryGrid) {
+          this.moveItemShopInPlay(item, newSlotIndex);
+          this.removeItemFromShopInPlay(previousSlotIndex, removedItemId);
+        } else {
+          this.moveItemShopInPlay(item, newSlotIndex);
+          this.removeItemFromShopInventory(previousSlotIndex);
+        }
+
         this.updateShopWindow();
       }
     );
     eventEmitter.on(
-      `${HudContext.playerShopInventory}_item_moved`,
+      keys.itemSlots.ITEM_ADDED(HudContext.playerInPlay),
       (
         item: GameEntity,
         newSlotIndex: number,
         previousSlotIndex: number,
-        removedItemId: string
+        removedItemId: string,
+        droppedInSameInventoryGrid: boolean
       ) => {
-        this.moveItemToPlayerInventory(item, newSlotIndex);
-        this.removeItemFromPlayerInPlay(previousSlotIndex, removedItemId);
+        if (droppedInSameInventoryGrid) {
+          this.moveItemInPlay(item, newSlotIndex);
+          this.removeItemFromPlayerInPlay(previousSlotIndex, removedItemId);
+        } else {
+          this.moveItemInPlay(item, newSlotIndex);
+          this.removeItemFromPlayerInventory(previousSlotIndex);
+        }
+
+        this.updateShopWindow();
+      }
+    );
+    eventEmitter.on(
+      keys.itemSlots.ITEM_ADDED(HudContext.shopInventory),
+      (
+        item: GameEntity,
+        newSlotIndex: number,
+        previousSlotIndex: number,
+        removedItemId: string,
+        droppedInSameInventoryGrid: boolean
+      ) => {
+        if (droppedInSameInventoryGrid) {
+          this.moveItemToShopInventory(item, newSlotIndex);
+          this.removeItemFromShopInventory(previousSlotIndex);
+        } else {
+          this.moveItemToShopInventory(item, newSlotIndex);
+          this.removeItemFromShopInPlay(previousSlotIndex, removedItemId);
+        }
+
+        this.updateShopWindow();
+      }
+    );
+    eventEmitter.on(
+      keys.itemSlots.ITEM_ADDED(HudContext.playerShopInventory),
+      (
+        item: GameEntity,
+        newSlotIndex: number,
+        previousSlotIndex: number,
+        removedItemId: string,
+        droppedInSameInventoryGrid: boolean
+      ) => {
+        if (droppedInSameInventoryGrid) {
+          this.moveItemToPlayerInventory(item, newSlotIndex);
+          this.removeItemFromPlayerInventory(previousSlotIndex);
+        } else {
+          this.moveItemToPlayerInventory(item, newSlotIndex);
+          this.removeItemFromPlayerInPlay(previousSlotIndex, removedItemId);
+        }
+
         this.updateShopWindow();
       }
     );

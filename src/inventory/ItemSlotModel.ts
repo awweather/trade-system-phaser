@@ -33,6 +33,7 @@ export default class ItemSlotModel extends OverlapSizer {
   item: Item | undefined;
   slotType: HudContext;
   qty: Phaser.GameObjects.Text | undefined;
+  dragTimer: Phaser.Time.TimerEvent | null = null;
   updateQuantity: (val: number) => void;
 
   constructor(
@@ -165,54 +166,54 @@ export default class ItemSlotModel extends OverlapSizer {
     )
       return;
 
-    // Start drag logic
     const plugin = scene.plugins.get("dragPlugin") as DragPlugin;
-    this.item.drag = plugin.add(this.item);
-    this.item.drag.drag();
 
-    this.item.setDepth(201);
-    this.item.on(
-      "dragend",
-      (
-        pointer: Phaser.Input.Pointer,
-        dragX: number,
-        dragY: number,
-        dropped: boolean
-      ) => {
-        if (!dropped) {
-          this.item!.x = this.input!.dragStartX;
-          this.item!.y = this.input!.dragStartY;
+    // Record the start position of the pointer
+    let dragStartX = pointer.x;
+    let dragStartY = pointer.y;
 
-          currentSlot.layout();
+    // Set a flag to indicate dragging has not started
+    let isDragging = false;
+
+    // Define a threshold for when the drag should start
+    const dragThreshold = 10; // Pixels the pointer needs to move to start the drag
+
+    const currentSlot = this;
+
+    // Add a move event listener to track the pointer movement
+    scene.input.on(
+      "pointermove",
+      function (pointer: Phaser.Input.Pointer) {
+        // Calculate the distance the pointer has moved
+        const distance = Phaser.Math.Distance.Between(
+          dragStartX,
+          dragStartY,
+          pointer.x,
+          pointer.y
+        );
+
+        // If the distance is greater than the threshold and dragging hasn't started, start the drag
+        if (!isDragging && distance > dragThreshold) {
+          isDragging = true; // Set the flag to indicate that dragging has started
+          currentSlot.initiateDrag(scene, plugin);
         }
-      }
+      },
+      this
     );
 
-    // Hold temp variable to reference in drag function
-    const currentSlot = this;
-    this.item.on(
-      "drop",
-      function (
-        this: any,
-        pointer: Phaser.Input.Pointer,
-        gameObject: ItemSlotModel
-      ) {
-        if (
-          (gameObject.slotIndex === currentSlot.slotIndex &&
-            gameObject.slotType === currentSlot.slotType) ||
-          gameObject.item
-        ) {
-          // If the item is not dropped on a valid target, return it to start
-          this.x = this.input!.dragStartX;
-          this.y = this.input!.dragStartY;
-        } else {
-          eventEmitter.emit(
-            `${gameObject.slotType}_itemDropped`,
-            this.entity,
-            gameObject.slotIndex
-          );
+    // Add a pointer up event to stop tracking movement and clean up listeners
+    this.scene.input.once(
+      "pointerup",
+      function () {
+        if (isDragging) {
+          // End the drag if it was initiated
+          // ... Your dragend logic here
         }
-      }
+
+        // Remove the pointermove listener since we don't need to track movement anymore
+        scene.input.off("pointermove");
+      },
+      this
     );
   }
 
@@ -230,6 +231,70 @@ export default class ItemSlotModel extends OverlapSizer {
     }
   }
 
+  initiateDrag(scene: TradeScene, plugin: DragPlugin) {
+    if (!this.item) return;
+
+    this.item.drag = plugin.add(this.item);
+    this.item.drag.drag();
+
+    this.item.setDepth(201);
+    this.item.on(
+      "dragend",
+      (
+        pointer: Phaser.Input.Pointer,
+        dragX: number,
+        dragY: number,
+        dropped: boolean
+      ) => {
+        if (!dropped) {
+          this.item!.x = this.input!.dragStartX;
+          this.item!.y = this.input!.dragStartY;
+
+          currentSlot.layout();
+          this.item!.setDepth(201);
+        }
+      }
+    );
+
+    // Hold temp variable to reference in drag function
+    const currentSlot = this;
+    this.item.on(
+      "drop",
+      function (
+        this: any,
+        pointer: Phaser.Input.Pointer,
+        gameObject: ItemSlotModel
+      ) {
+        let isValidDropTarget = true;
+        isValidDropTarget =
+          isValidDropTarget &&
+          getValidDropTarget(currentSlot.slotType).includes(
+            gameObject.slotType
+          );
+
+        // False if the slot the item was dropped on already has an item
+        isValidDropTarget = isValidDropTarget && !gameObject.item;
+
+        if (!isValidDropTarget) {
+          this.x = this.input!.dragStartX;
+          this.y = this.input!.dragStartY;
+          currentSlot.layout();
+          this.item!.setDepth(205);
+          return;
+        }
+
+        const droppedInSameInventoryGrid =
+          gameObject.slotType === currentSlot.slotType;
+        eventEmitter.emit(
+          `${gameObject.slotType}_itemDropped`,
+          this.entity,
+          gameObject.slotIndex,
+          droppedInSameInventoryGrid
+        );
+      }
+    );
+  }
+
   handle_pointerOut(scene: TradeScene) {
     // The typings for the UI plugin don't include this.backgroundChildren
     const anyHack = this as any;
@@ -237,5 +302,21 @@ export default class ItemSlotModel extends OverlapSizer {
 
     scene.itemInfoPanel?.setVisible(false);
     scene.itemInfoPanel?.destroy(true);
+  }
+}
+
+function getValidDropTarget(context: HudContext) {
+  switch (context) {
+    case HudContext.playerShopInventory:
+      return [HudContext.playerInPlay, HudContext.playerShopInventory];
+
+    case HudContext.playerInPlay:
+      return [HudContext.playerShopInventory, HudContext.playerInPlay];
+    case HudContext.shopInventory:
+      return [HudContext.shopInPlay, HudContext.shopInventory];
+    case HudContext.shopInPlay:
+      return [HudContext.shopInventory, HudContext.shopInPlay];
+    default:
+      return [];
   }
 }

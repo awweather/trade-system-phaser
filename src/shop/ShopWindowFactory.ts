@@ -8,6 +8,8 @@ import ShopWindow from "./ShopWindow";
 
 export default class ShopWindowFactory {
   static create(scene: TradeScene): ShopWindow {
+    const allowedSlotContexts = [];
+
     const verticalSizer = scene.rexUI.add.sizer({ orientation: "y" });
     const horizontalSizer = scene.rexUI.add.sizer({
       orientation: "x",
@@ -46,9 +48,9 @@ export default class ShopWindowFactory {
       panelHeader: playerHeader,
       height: 390,
       context: HudContext.playerShopInventory,
-      rows: 5,
+      rows: 10,
       columns: 5,
-      slots: 25,
+      slots: 50,
     });
 
     const coinsInPlay = scene.add.text(0, 0, "0g", {
@@ -57,8 +59,8 @@ export default class ShopWindowFactory {
 
     const playerInPlay = InventoryGridFactory.create(scene, {
       height: 390,
-      slots: 14,
-      rows: 7,
+      slots: 20,
+      rows: 10,
       columns: 2,
       panelHeader: coinsInPlay,
       context: HudContext.playerInPlay,
@@ -70,8 +72,8 @@ export default class ShopWindowFactory {
 
     const npcInPlay = InventoryGridFactory.create(scene, {
       height: 390,
-      slots: 14,
-      rows: 7,
+      slots: 20,
+      rows: 10,
       columns: 2,
       panelHeader: npcCoinsInPlay,
       context: HudContext.shopInPlay,
@@ -97,9 +99,9 @@ export default class ShopWindowFactory {
     const npcShopInventory = InventoryGridFactory.create(scene, {
       panelHeader: npcHeader,
       height: 390,
-      rows: 5,
+      rows: 10,
       columns: 5,
-      slots: 25,
+      slots: 50,
       context: HudContext.shopInventory,
     });
 

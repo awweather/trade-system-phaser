@@ -13,12 +13,13 @@ import { getGold } from "../../prefabs/Items.ts";
 import {
   balanceOffer,
   executeTrade,
-  itemMoved,
   itemMovedInPlay,
   itemMovedShopInPlay,
   itemMovedToPlayerShopInventory,
   itemMovedToShopInventory,
   mapInventorySlot,
+  moveItem,
+  moveItemInSameInventoryGrid,
 } from "../../shop/ShopUtilities.ts";
 import { shopViewModel } from "../../shop/ShopViewModel.ts";
 import { GameEntity } from "../GameEntity.ts";
@@ -63,8 +64,23 @@ class ShopSystem extends System {
 
     eventEmitter.on(
       keys.items.DROPPED(HudContext.playerInPlay),
-      (entity: GameEntity, droppedInSlotIndex: number) => {
-        itemMoved(
+      (
+        entity: GameEntity,
+        droppedInSlotIndex: number,
+        droppedInSameInventoryGrid: boolean
+      ) => {
+        if (droppedInSameInventoryGrid) {
+          moveItemInSameInventoryGrid(
+            entity,
+            playerEntity.shopWindow.inPlay,
+            HudContext.playerInPlay,
+            droppedInSlotIndex
+          );
+
+          return;
+        }
+
+        moveItem(
           entity,
           playerEntity.shopWindow.inventory,
           playerEntity.shopWindow.inPlay,
@@ -76,8 +92,23 @@ class ShopSystem extends System {
 
     eventEmitter.on(
       keys.items.DROPPED(HudContext.shopInPlay),
-      (entity: GameEntity, droppedInSlotIndex: number) => {
-        itemMoved(
+      (
+        entity: GameEntity,
+        droppedInSlotIndex: number,
+        droppedInSameInventoryGrid: boolean
+      ) => {
+        if (droppedInSameInventoryGrid) {
+          moveItemInSameInventoryGrid(
+            entity,
+            playerEntity.shopWindow.npcInPlay,
+            HudContext.shopInPlay,
+            droppedInSlotIndex
+          );
+
+          return;
+        }
+
+        moveItem(
           entity,
           playerEntity.shopWindow.npcInventory,
           playerEntity.shopWindow.npcInPlay,
@@ -89,8 +120,23 @@ class ShopSystem extends System {
 
     eventEmitter.on(
       keys.items.DROPPED(HudContext.playerShopInventory),
-      (entity: GameEntity, droppedInSlotIndex: number) => {
-        itemMoved(
+      (
+        entity: GameEntity,
+        droppedInSlotIndex: number,
+        droppedInSameInventoryGrid: boolean
+      ) => {
+        if (droppedInSameInventoryGrid) {
+          moveItemInSameInventoryGrid(
+            entity,
+            playerEntity.shopWindow.inventory,
+            HudContext.playerShopInventory,
+            droppedInSlotIndex
+          );
+
+          return;
+        }
+
+        moveItem(
           entity,
           playerEntity.shopWindow.inPlay,
           playerEntity.shopWindow.inventory,
@@ -102,8 +148,22 @@ class ShopSystem extends System {
 
     eventEmitter.on(
       keys.items.DROPPED(HudContext.shopInventory),
-      (entity: GameEntity, droppedInSlotIndex: number) => {
-        itemMoved(
+      (
+        entity: GameEntity,
+        droppedInSlotIndex: number,
+        droppedInSameInventoryGrid: boolean
+      ) => {
+        if (droppedInSameInventoryGrid) {
+          moveItemInSameInventoryGrid(
+            entity,
+            playerEntity.shopWindow.npcInventory,
+            HudContext.shopInventory,
+            droppedInSlotIndex
+          );
+
+          return;
+        }
+        moveItem(
           entity,
           playerEntity.shopWindow.npcInPlay,
           playerEntity.shopWindow.npcInventory,
@@ -154,8 +214,8 @@ class ShopSystem extends System {
     );
 
     // Initialize in play slots
-    const playerInPlaySlots = createItemSlots(10);
-    const shopInPlaySlots = createItemSlots(10);
+    const playerInPlaySlots = createItemSlots(12);
+    const shopInPlaySlots = createItemSlots(12);
 
     // Adds the shop window component to the player to track the state of the shop window
     playerEntity.addComponent<ShopWindowComponent>(ShopWindowComponent, {
