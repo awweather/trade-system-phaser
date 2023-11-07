@@ -245,7 +245,6 @@ export default class ItemSlotModel extends OverlapSizer {
           this.item!.y = this.input!.dragStartY;
 
           currentSlot.layout();
-          this.item!.setDepth(201);
         }
       }
     );
@@ -273,7 +272,7 @@ export default class ItemSlotModel extends OverlapSizer {
           this.x = this.input!.dragStartX;
           this.y = this.input!.dragStartY;
           currentSlot.layout();
-          this.item!.setDepth(205);
+
           return;
         }
 
