@@ -4,7 +4,7 @@ import {
   ScrollablePanel,
 } from "phaser3-rex-plugins/templates/ui/ui-components";
 import { keys } from "../config/Keys.ts";
-import InventoryGridSlot from "./InventoryGridSlot.ts";
+import InventoryGridSlot, { AddItemConfig } from "./InventoryGridSlot.ts";
 import Item from "./Item.ts";
 import ItemGridSlot from "./ItemGridSlot.ts";
 
@@ -24,11 +24,11 @@ export default class InventoryGrid {
     this.grid = inventoryTable.getElement(keys.ui.inventoryGrid) as GridSizer;
   }
 
-  addItem(itemConfig: any, slotIndex: number): Item | null {
+  addItem(itemConfig: AddItemConfig, slotIndex: number): Item | null {
     const slot =
       slotIndex !== undefined
         ? this.slots[slotIndex]
-        : this.slots[itemConfig.pickedUp.slotIndex];
+        : this.slots[itemConfig.pickedUp!.slotIndex];
 
     if (slot) {
       const item = slot.addItem(itemConfig);

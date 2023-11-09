@@ -35,7 +35,7 @@ export default class ShopWindowDragManager implements DragManager {
     this.scene.input.on(
       "pointermove",
       function (pointer: Phaser.Input.Pointer) {
-        dragManager.itemSlot.getItem()?.setDepth(201);
+        dragManager.itemSlot.getItem()?.itemSprite.setDepth(201);
         // Calculate the distance the pointer has moved
         const distance = Phaser.Math.Distance.Between(
           dragStartX,
@@ -68,13 +68,13 @@ export default class ShopWindowDragManager implements DragManager {
 
     const item = this.itemSlot.getItem()!;
 
-    const drag = this.dragPlugin.add(item);
+    const drag = this.dragPlugin.add(item.itemSprite);
     drag.drag();
 
-    const startingX = item.x;
-    const startingY = item.y;
+    const startingX = item.itemSprite.x;
+    const startingY = item.itemSprite.y;
     // this.item.setDepth(201);
-    item.on(
+    item.itemSprite.on(
       "dragend",
       (
         pointer: Phaser.Input.Pointer,
@@ -93,7 +93,7 @@ export default class ShopWindowDragManager implements DragManager {
 
     // Hold temp variable to reference in drag function
     const currentSlot = this.itemSlot;
-    item.on(
+    item.itemSprite.on(
       "drop",
       function (
         this: any,
@@ -120,8 +120,9 @@ export default class ShopWindowDragManager implements DragManager {
 
         currentSlot.events.emit(InventoryGridSlotEvent.DRAG_ENDED, {
           startingSlotIndex: currentSlot.slotIndex,
+          startingSlotContext: currentSlot.slotType,
           landingSlotIndex: gameObject.getData("slotIndex") as number,
-          landingSlotContext: gameObject.getData("slotContext") as number
+          landingSlotContext: gameObject.getData("slotType") as number,
         });
 
         // eventEmitter.emit(

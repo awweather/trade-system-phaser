@@ -163,6 +163,7 @@ class ShopViewModel {
         renderable: item.renderable_mutable,
         quantity: item.getComponent(QuantityComponent),
         tradeId: item.getComponent(TradeIdComponent),
+        itemId: item.entityId.value,
       };
     });
     const playerItems = playerItemEntities.map((item) => {
@@ -173,6 +174,7 @@ class ShopViewModel {
         renderable: item.renderable_mutable,
         quantity: item.getComponent(QuantityComponent),
         tradeId: item.getComponent(TradeIdComponent),
+        itemId: item.entityId.value,
       };
     });
 
@@ -308,6 +310,7 @@ class ShopViewModel {
         descriptor,
         entity,
         quantity,
+        itemId: entity.entityId.value,
       },
       newSlotIndex
     );

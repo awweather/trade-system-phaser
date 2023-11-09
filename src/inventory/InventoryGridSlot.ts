@@ -9,7 +9,10 @@ import {
   RenderableComponent,
   TradeIdComponent,
 } from "../ecs/components/Components.ts";
-import { InventoryGridSlotEventEmitter } from "./InventoryGridSlotEventEmitter.ts";
+import {
+  InventoryGridSlotEvent,
+  InventoryGridSlotEventEmitter,
+} from "./InventoryGridSlotEventEmitter.ts";
 import InventoryGridSlotItemManager from "./InventoryGridSlotItemManager.ts";
 import InventoryGridSlotPointerEventManager from "./InventoryGridSlotPointerEventManager.ts";
 import ItemInfoPanelManager from "./ItemInfoPanelManager.ts";
@@ -21,6 +24,7 @@ export interface AddItemConfig {
   pickedUp?: PickedUpComponent;
   quantity?: QuantityComponent;
   tradeId?: TradeIdComponent;
+  itemId: string;
 }
 
 /**
@@ -46,10 +50,12 @@ export default class InventoryGridSlot {
   addItem(item: AddItemConfig) {
     this.assertInitialized();
 
-    this.itemManager!.addItem(item);
+    const addedItem = this.itemManager!.addItem(item);
     this.slotSprite.layout();
 
-    return this.itemManager?.getItem();
+    this.events.emit(InventoryGridSlotEvent.ITEM_ADDED, addedItem);
+
+    return addedItem;
   }
 
   getItem() {
@@ -89,8 +95,7 @@ export default class InventoryGridSlot {
 
   removeItem() {
     this.assertInitialized();
-    const itemId = this.itemManager!.removeItem();
-    this.quantityManager!.removeQuantity(itemId);
+    this.itemManager!.removeItem();
   }
 
   handleDrag(pointer: Phaser.Input.Pointer) {

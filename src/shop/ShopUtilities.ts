@@ -9,9 +9,7 @@ import {
 import { getGold } from "../prefabs/Items.ts";
 import { shopViewModel } from "./ShopViewModel.ts";
 
-import { eventEmitter } from "../EventEmitter.ts";
 import { HudContext } from "../HudContext.ts";
-import { keys } from "../config/Keys.ts";
 import { initializeEntity } from "../ecs/InitializeEntity.ts";
 import {
   addToInventory,
@@ -19,7 +17,8 @@ import {
   removeFromInventory,
 } from "../inventory/InventoryUtilities.ts";
 import { ItemSlot } from "../inventory/ItemSlot.ts";
-import { playerEntity, world } from "../main.ts";
+import { playerEntity, shopSystem, world } from "../main.ts";
+import { ShopEvent } from "./ShopEventEmitter.ts";
 
 export function calculateValueDifference(): number {
   // Assuming shopViewModel is accessible in this scope
@@ -390,11 +389,12 @@ export function itemMovedToShopInventory(
 }
 
 export function moveItemInSameInventoryGrid(
-  item: GameEntity,
+  itemId: string,
   itemSlots: ItemSlot[],
   hudContext: HudContext,
   targetSlotIndex: number
 ) {
+  const item = world.entityManager.getEntityByName(itemId);
   const slotToRemoveItemFrom = itemSlots.find((slot) => {
     return slot.item === item.entityId.value;
   });
@@ -410,14 +410,23 @@ export function moveItemInSameInventoryGrid(
   // Find the target slot
   itemSlots[targetSlotIndex].addItem(removedItem);
 
-  eventEmitter.emit(
-    keys.itemSlots.ITEM_ADDED(hudContext),
+  // eventEmitter.emit(
+  //   keys.itemSlots.ITEM_ADDED(hudContext),
+  //   item,
+  //   targetSlotIndex,
+  //   slotToRemoveItemFrom.slotIndex,
+  //   removedItem,
+  //   true
+  // );
+
+  shopSystem.events.emit(ShopEvent.ITEM_ADDED, {
     item,
     targetSlotIndex,
-    slotToRemoveItemFrom.slotIndex,
-    removedItem,
-    true
-  );
+    targetSlotContext: hudContext,
+    currentSlotContext: hudContext,
+    currentSlotIndex: slotToRemoveItemFrom.slotIndex,
+    removedItemId: removedItem,
+  });
 }
 
 /**
@@ -425,12 +434,14 @@ export function moveItemInSameInventoryGrid(
  * @param item The item being moved
  */
 export function moveItem(
-  item: GameEntity,
+  itemId: string,
   moveFromSlots: ItemSlot[],
   moveToSlots: ItemSlot[],
-  hudContext: HudContext,
+  targetSlotContext: HudContext,
+  currentSlotContext: HudContext,
   targetSlotIndex?: number
 ) {
+  const item = world.entityManager.getEntityByName(itemId);
   const slot = moveFromSlots.find((slot) => {
     return slot.item === item.entityId.value;
   });
@@ -451,13 +462,14 @@ export function moveItem(
 
   moveToSlots[targetSlot!.slotIndex].addItem(removedItem);
 
-  eventEmitter.emit(
-    keys.itemSlots.ITEM_ADDED(hudContext),
+  shopSystem.events.emit(ShopEvent.ITEM_ADDED, {
     item,
-    targetSlot!.slotIndex,
-    slot!.slotIndex,
-    removedItem
-  );
+    targetSlotIndex: targetSlot!.slotIndex,
+    targetSlotContext,
+    currentSlotContext,
+    currentSlotIndex: slot.slotIndex,
+    removedItemId: removedItem,
+  });
 }
 
 /**
@@ -790,4 +802,32 @@ export function mapInventorySlot(s: ItemSlot, tradeId: string) {
   return new ItemSlot(itemId, s.slotIndex);
 }
 
-export function assert() {}
+export function getGoldValueInSlots(slots: ItemSlot[]) {
+  let value = 0;
+  slots.forEach((slot) => {
+    if (slot.hasItem()) {
+      const item = world.entityManager.getEntityByName(slot.item);
+      if (item.hasComponent(GoldComponent)) value += item.quantity.value;
+    }
+  });
+
+  return value;
+}
+
+export function getValueOfItemsInSlots(slots: ItemSlot[]): number {
+  let value = 0;
+  slots.forEach((slot) => {
+    if (slot.hasItem()) {
+      const item = world.entityManager.getEntityByName(slot.item);
+      const valuable = item.valuable;
+      const qty = item.getComponent<QuantityComponent>(QuantityComponent);
+      if (qty) {
+        value += valuable!.value * qty.value;
+      } else {
+        value += valuable!.value;
+      }
+    }
+  });
+
+  return value;
+}

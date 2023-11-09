@@ -17,11 +17,13 @@ import ItemInfoPanel from "./ItemInfoPanelFactory.ts";
 
 export interface AddItemConfig {
   renderable: RenderableComponent;
+  frame: string;
   descriptor: DescriptorComponent;
   entity: GameEntity;
   pickedUp?: PickedUpComponent;
   quantity?: QuantityComponent;
   tradeId?: TradeIdComponent;
+  itemId: string;
 }
 
 /**
@@ -87,6 +89,7 @@ export default class ItemGridSlot extends OverlapSizer {
       name: config.descriptor.name,
       description: config.descriptor.description,
       entity: config.entity,
+      itemId: config.itemId,
     });
 
     this.item.slotIndex = this.slotIndex;

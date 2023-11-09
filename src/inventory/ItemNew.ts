@@ -10,21 +10,25 @@ export interface ItemConfig {
   itemId: string;
   entity: GameEntity;
   name: string;
+  value: number;
   description: string;
 }
 
-export default class Item extends Phaser.GameObjects.Sprite {
+export default class ItemNew {
+  itemSprite: Phaser.GameObjects.Sprite;
+
   entity: GameEntity;
   description: string;
   itemId: string;
+  value: number;
   slotIndex: number = 0;
   drag: any;
-  constructor(config: ItemConfig) {
-    super(config.scene, config.x, config.y, config.texture, config.frame);
-
+  constructor(itemSprite: Phaser.GameObjects.Sprite, config: ItemConfig) {
+    this.itemSprite = itemSprite;
     this.itemId = config.itemId;
     this.entity = config.entity;
     this.name = config.name;
+    this.value = config.value;
     this.description = config.description;
   }
 }

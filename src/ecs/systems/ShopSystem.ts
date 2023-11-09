@@ -10,6 +10,7 @@ import { ItemSlot, createItemSlots } from "../../inventory/ItemSlot.ts";
 import { playerEntity, shopkeeperEntity } from "../../main.ts";
 import ItemGenerator from "../../prefabs/ItemGenerator.ts";
 import { getGold } from "../../prefabs/Items.ts";
+import { ShopEventEmitter } from "../../shop/ShopEventEmitter.ts";
 import {
   balanceOffer,
   executeTrade,
@@ -33,6 +34,7 @@ import {
 } from "../components/Components.ts";
 
 class ShopSystem extends System {
+  public readonly events: ShopEventEmitter = new ShopEventEmitter();
   init() {
     eventEmitter.on(
       keys.itemSlots.CLICKED(HudContext.playerInPlay),

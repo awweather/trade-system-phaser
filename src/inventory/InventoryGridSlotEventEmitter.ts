@@ -15,6 +15,7 @@ export const enum InventoryGridSlotEvent {
 
 export interface DragEndedProps {
   startingSlotIndex: number;
+  startingSlotContext: HudContext;
   landingSlotIndex: number;
   landingSlotContext: HudContext;
 }

@@ -3,7 +3,8 @@ import { eventEmitter } from "../EventEmitter.ts";
 import { HudContext } from "../HudContext.ts";
 import { keys } from "../config/Keys.ts";
 import InventoryGridFactory from "../inventory/InventoryGridFactoryNew.ts";
-import { InventoryGridManager } from "../inventory/InventoryGridManager.ts";
+import { ShopWindowManager } from "../inventory/ShopWindowManager.ts";
+import { shopSystem } from "../main.ts";
 import TradeScene from "../scenes/TradeScene.ts";
 import ShopWindow from "./ShopWindow";
 
@@ -52,11 +53,6 @@ export default class ShopWindowFactory {
       slots: 50,
     });
 
-    const playerShopInventoryManager = new InventoryGridManager(
-      scene,
-      playerShopInventory
-    );
-
     const coinsInPlay = scene.add.text(0, 0, "0g", {
       fontSize: `12px`,
     });
@@ -69,8 +65,6 @@ export default class ShopWindowFactory {
       panelHeader: coinsInPlay,
       context: HudContext.playerInPlay,
     });
-
-    const pip = new InventoryGridManager(scene, playerInPlay);
 
     const npcCoinsInPlay = scene.add.text(0, 0, "0g", {
       fontSize: `12px`,
@@ -190,6 +184,12 @@ export default class ShopWindowFactory {
     );
 
     alignGrid.center(shopWindow.sizer);
+    const shopWindowManager = new ShopWindowManager(
+      scene,
+      shopWindow,
+      shopSystem
+    );
+
     return shopWindow;
   }
 }
