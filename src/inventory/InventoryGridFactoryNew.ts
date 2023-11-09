@@ -8,7 +8,6 @@ import InventoryGrid from "./InventoryGrid.ts";
 import InventoryGridSlot from "./InventoryGridSlot.ts";
 import InventoryGridSlotItemManager from "./InventoryGridSlotItemManager.ts";
 import InventoryGridSlotPointerEventManager from "./InventoryGridSlotPointerEventManager.ts";
-import ItemGridSlot from "./ItemGridSlot.ts";
 import ItemInfoPanelManager from "./ItemInfoPanelManager.ts";
 
 export interface InventoryGridConfig {
@@ -58,7 +57,14 @@ export default class InventoryGridFactory {
     sizer.layout();
 
     alignGrid.center(sizer);
-    return new InventoryGrid(sizer, panel);
+
+    // We have to sort these because the rexUI plugin adds item slots to the grid column by column, instead of row by row
+    // This ensures that slots[index] gives you the correct item slot as if you were counting from left to right
+    slots.sort((slotA, slotB) => {
+      return slotA.slotIndex - slotB.slotIndex;
+    });
+
+    return new InventoryGrid(sizer, panel, slots);
   }
 
   static createSlots(scene: TradeScene, amount: number, context: HudContext) {
@@ -69,53 +75,22 @@ export default class InventoryGridFactory {
         y: 0,
         width: 32,
         height: 32,
-
       });
 
-      slotSprite.addBackground(scene.rexUI.add.roundRectangle(0, 0, 32, 32, 2, 0x221c1a));
+      slotSprite.addBackground(
+        scene.rexUI.add.roundRectangle(0, 0, 32, 32, 2, 0x221c1a)
+      );
 
       const slot = new InventoryGridSlot(slotSprite, context, x);
 
-      slot.registerManagers(new InventoryGridSlotItemManager(scene, slot), new ShopWindowDragManager(scene, slot), new InventoryGridSlotPointerEventManager(scene, slot), new ItemInfoPanelManager(scene, slot))
-
-    
-
-      const itemSlot = new ItemGridSlot(
-        0,
-        0,
-        32,
-        32,
-        {
-          orientation: "x",
-          slotIndex: x,
-          width: 32,
-          height: 32,
-          background: 
-        },
-        scene,
-        context
+      slot.registerManagers(
+        new InventoryGridSlotItemManager(scene, slot),
+        new ShopWindowDragManager(scene, slot),
+        new InventoryGridSlotPointerEventManager(scene, slot),
+        new ItemInfoPanelManager(scene, slot)
       );
 
-      itemSlot
-        .setInteractive({
-          dropZone: true,
-          hitArea: new Phaser.Geom.Rectangle(0, 0, 32, 32),
-          hitAreaCallback: Phaser.Geom.Rectangle.Contains,
-        })
-        .on("pointerover", function () {
-          itemSlot.handle_pointerOver(scene);
-        })
-        .on("pointerout", function () {
-          itemSlot.handle_pointerOut(scene);
-        })
-        .on("pointerdown", function (pointer: Phaser.Input.Pointer) {
-          itemSlot.handle_pointerDown(scene, pointer);
-        })
-        .on("pointerup", function () {
-          itemSlot.handle_pointerUp(scene);
-        });
-
-      slots.push(itemSlot);
+      slots.push(slot);
     }
 
     return slots;
@@ -123,7 +98,7 @@ export default class InventoryGridFactory {
 
   static createPanel(
     scene: TradeScene,
-    slots: ItemGridSlot[],
+    slots: InventoryGridSlot[],
     config: InventoryGridConfig
   ) {
     const sizer = scene.rexUI.add
@@ -160,7 +135,7 @@ export default class InventoryGridFactory {
 
   static createTable(
     scene: TradeScene,
-    itemSlots: ItemGridSlot[],
+    itemSlots: InventoryGridSlot[],
     rows: number,
     columns: number
   ) {
@@ -173,16 +148,16 @@ export default class InventoryGridFactory {
     });
 
     for (let i = 0; i < itemSlots.length; i++) {
-      const item = itemSlots[i];
+      const itemSlot = itemSlots[i];
       const row = i % rows;
       const column = (i - row) / rows;
 
       const rightPadding = column === columns - 1 ? 5 : 0;
       const bottompadding = row === rows - 1 ? 5 : 0;
 
-      item.slotIndex = row * cols + column;
+      itemSlot.setSlotIndex(row * cols + column);
 
-      table.add(item, {
+      table.add(itemSlot.slotSprite, {
         column: column,
         row: row,
         padding: {
@@ -191,11 +166,9 @@ export default class InventoryGridFactory {
           left: 5,
           bottom: bottompadding,
         },
-        key: item.slotIndex.toString(),
+        key: itemSlot.slotIndex.toString(),
         align: "center",
       });
-
-      scene.add.existing(item);
     }
 
     return scene.rexUI.add

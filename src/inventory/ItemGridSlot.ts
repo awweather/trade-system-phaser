@@ -13,7 +13,7 @@ import {
 } from "../ecs/components/Components.ts";
 import TradeScene from "../scenes/TradeScene.ts";
 import Item from "./Item.ts";
-import ItemInfoPanel from "./ItemInfoPanel.ts";
+import ItemInfoPanel from "./ItemInfoPanelFactory.ts";
 
 export interface AddItemConfig {
   renderable: RenderableComponent;
@@ -28,12 +28,11 @@ export interface AddItemConfig {
  * This class contains the UI logic for the ItemSlot
  * Used for all inventory grids
  */
-export default class ItemSlotModel extends OverlapSizer {
+export default class ItemGridSlot extends OverlapSizer {
   slotIndex: number;
   item: Item | undefined;
   slotType: HudContext;
   qty: Phaser.GameObjects.Text | undefined;
-  dragTimer: Phaser.Time.TimerEvent | null = null;
   updateQuantity: (val: number) => void;
 
   constructor(
@@ -41,7 +40,10 @@ export default class ItemSlotModel extends OverlapSizer {
     y: number,
     width: number,
     height: number,
-    config: any,
+    config: OverlapSizer.IConfig & {
+      slotIndex: number;
+      background: Phaser.GameObjects.Image;
+    },
     scene: TradeScene,
     slotType: HudContext
   ) {
@@ -231,7 +233,9 @@ export default class ItemSlotModel extends OverlapSizer {
     this.item.drag = plugin.add(this.item);
     this.item.drag.drag();
 
-    this.item.setDepth(201);
+    const startingX = this.item.x;
+    const startingY = this.item.y;
+    // this.item.setDepth(201);
     this.item.on(
       "dragend",
       (
@@ -241,8 +245,8 @@ export default class ItemSlotModel extends OverlapSizer {
         dropped: boolean
       ) => {
         if (!dropped) {
-          this.item!.x = this.input!.dragStartX;
-          this.item!.y = this.input!.dragStartY;
+          this.item!.x = startingX;
+          this.item!.y = startingY;
 
           currentSlot.layout();
         }
@@ -256,7 +260,7 @@ export default class ItemSlotModel extends OverlapSizer {
       function (
         this: any,
         pointer: Phaser.Input.Pointer,
-        gameObject: ItemSlotModel
+        gameObject: ItemGridSlot
       ) {
         let isValidDropTarget = true;
         isValidDropTarget =
@@ -295,21 +299,5 @@ export default class ItemSlotModel extends OverlapSizer {
 
     scene.itemInfoPanel?.setVisible(false);
     scene.itemInfoPanel?.destroy(true);
-  }
-}
-
-function getValidDropTarget(context: HudContext) {
-  switch (context) {
-    case HudContext.playerShopInventory:
-      return [HudContext.playerInPlay, HudContext.playerShopInventory];
-
-    case HudContext.playerInPlay:
-      return [HudContext.playerShopInventory, HudContext.playerInPlay];
-    case HudContext.shopInventory:
-      return [HudContext.shopInPlay, HudContext.shopInventory];
-    case HudContext.shopInPlay:
-      return [HudContext.shopInventory, HudContext.shopInPlay];
-    default:
-      return [];
   }
 }

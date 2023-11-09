@@ -1,12 +1,13 @@
 import type Sizer from "phaser3-rex-plugins/templates/ui/sizer/Sizer";
 import { GridSizer } from "phaser3-rex-plugins/templates/ui/ui-components";
-import ItemSlotModel from "../inventory/ItemSlotModel.ts";
+import InventoryGrid from "../inventory/InventoryGrid.ts";
+import ItemGridSlot from "../inventory/ItemGridSlot.ts";
 
 export default class ShopWindow {
-  playerInventoryGrid: GridSizer;
-  shopInventoryGrid: GridSizer;
-  playerInPlay: GridSizer;
-  shopInPlay: GridSizer;
+  playerInventoryGrid: InventoryGrid;
+  shopInventoryGrid: InventoryGrid;
+  playerInPlay: InventoryGrid;
+  shopInPlay: InventoryGrid;
 
   coinsInPlay: Phaser.GameObjects.Text;
 
@@ -24,10 +25,10 @@ export default class ShopWindow {
     playerCoins: Phaser.GameObjects.Text,
     playerName: Phaser.GameObjects.Text,
     coinsInPlay: Phaser.GameObjects.Text,
-    playerInventory: GridSizer,
-    playerInPlay: GridSizer,
-    npcInPlay: GridSizer,
-    npcInventory: GridSizer,
+    playerInventory: InventoryGrid,
+    playerInPlay: InventoryGrid,
+    npcInPlay: InventoryGrid,
+    npcInventory: InventoryGrid,
     npcCoins: Phaser.GameObjects.Text,
     npcName: Phaser.GameObjects.Text,
     npcCoinsInPlay: Phaser.GameObjects.Text
@@ -50,30 +51,30 @@ export default class ShopWindow {
   close(): void {
     this.sizer.setVisible(false);
 
-    this.playerInventoryGrid.getAllChildren().forEach((element) => {
-      if (element instanceof ItemSlotModel) {
-        const slot = element as ItemSlotModel;
+    this.playerInventoryGrid.grid.getAllChildren().forEach((element) => {
+      if (element instanceof ItemGridSlot) {
+        const slot = element as ItemGridSlot;
         slot.removeItem();
       }
     });
 
-    this.shopInventoryGrid.getAllChildren().forEach((element) => {
-      if (element instanceof ItemSlotModel) {
-        const slot = element as ItemSlotModel;
+    this.shopInventoryGrid.grid.getAllChildren().forEach((element) => {
+      if (element instanceof ItemGridSlot) {
+        const slot = element as ItemGridSlot;
         slot.removeItem();
       }
     });
 
-    this.playerInPlay.getAllChildren().forEach((element) => {
-      if (element instanceof ItemSlotModel) {
-        const slot = element as ItemSlotModel;
+    this.playerInPlay.grid.getAllChildren().forEach((element) => {
+      if (element instanceof ItemGridSlot) {
+        const slot = element as ItemGridSlot;
         slot.removeItem();
       }
     });
 
-    this.shopInPlay.getAllChildren().forEach((element) => {
-      if (element instanceof ItemSlotModel) {
-        const slot = element as ItemSlotModel;
+    this.shopInPlay.grid.getAllChildren().forEach((element) => {
+      if (element instanceof ItemGridSlot) {
+        const slot = element as ItemGridSlot;
         slot.removeItem();
       }
     });
@@ -97,10 +98,10 @@ export default class ShopWindow {
     this.updatePlayerCoins(playerCoins);
     this.updateShopCoins(shopCoins);
 
-    this.playerInventoryGrid
+    this.playerInventoryGrid.grid
       .getChildren()
       .forEach((child: any) => child.setDepth(1));
-    this.shopInventoryGrid
+    this.shopInventoryGrid.grid
       .getChildren()
       .forEach((child: any) => child.setDepth(1));
   }
@@ -143,16 +144,13 @@ export default class ShopWindow {
     return this.addToSlot(this.playerInPlay, newslotIndex, itemConfig);
   }
 
-  addToSlot(grid: GridSizer, slotIndex: number, itemConfig: any) {
-    const itemGrid = grid.getElement(
-      "items"
-    ) as Phaser.GameObjects.GameObject[];
-    const slot = itemGrid[slotIndex] as ItemSlotModel;
-    if (slot) {
-      const item = slot.addItem(itemConfig);
-      grid.layout();
-      return item.setDepth(201);
-    }
+  addToSlot(grid: InventoryGrid, slotIndex: number, itemConfig: any) {
+    // const itemGrid = grid.getElement(
+    //   "items"
+    // ) as Phaser.GameObjects.GameObject[];
+    // const slot = itemGrid[slotIndex] as ItemGridSlot;
+
+    grid.addItem(itemConfig, slotIndex);
 
     return null;
   }
@@ -171,7 +169,7 @@ export default class ShopWindow {
     const itemGrid = grid.getElement(
       "items"
     ) as Phaser.GameObjects.GameObject[];
-    const slot = itemGrid[slotIndex] as ItemSlotModel;
+    const slot = itemGrid[slotIndex] as ItemGridSlot;
     const item = slot?.removeItem();
     grid.layout();
 

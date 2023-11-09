@@ -2,14 +2,13 @@ import { alignGrid } from "../AlignGrid.js";
 import { eventEmitter } from "../EventEmitter.ts";
 import { HudContext } from "../HudContext.ts";
 import { keys } from "../config/Keys.ts";
-import InventoryGridFactory from "../inventory/InventoryGridFactory.ts";
+import InventoryGridFactory from "../inventory/InventoryGridFactoryNew.ts";
+import { InventoryGridManager } from "../inventory/InventoryGridManager.ts";
 import TradeScene from "../scenes/TradeScene.ts";
 import ShopWindow from "./ShopWindow";
 
 export default class ShopWindowFactory {
   static create(scene: TradeScene): ShopWindow {
-    const allowedSlotContexts = [];
-
     const verticalSizer = scene.rexUI.add.sizer({ orientation: "y" });
     const horizontalSizer = scene.rexUI.add.sizer({
       orientation: "x",
@@ -53,6 +52,11 @@ export default class ShopWindowFactory {
       slots: 50,
     });
 
+    const playerShopInventoryManager = new InventoryGridManager(
+      scene,
+      playerShopInventory
+    );
+
     const coinsInPlay = scene.add.text(0, 0, "0g", {
       fontSize: `12px`,
     });
@@ -65,6 +69,8 @@ export default class ShopWindowFactory {
       panelHeader: coinsInPlay,
       context: HudContext.playerInPlay,
     });
+
+    const pip = new InventoryGridManager(scene, playerInPlay);
 
     const npcCoinsInPlay = scene.add.text(0, 0, "0g", {
       fontSize: `12px`,
@@ -174,10 +180,10 @@ export default class ShopWindowFactory {
       playerCoins,
       name,
       coinsInPlay,
-      playerShopInventory.grid,
-      playerInPlay.grid,
-      npcInPlay.grid,
-      npcShopInventory.grid,
+      playerShopInventory,
+      playerInPlay,
+      npcInPlay,
+      npcShopInventory,
       npcCoins,
       npcName,
       npcCoinsInPlay

@@ -3,7 +3,7 @@ import { GameEntity } from "../ecs/GameEntity.ts";
 import { QuantityComponent } from "../ecs/components/Components.ts";
 import TradeScene from "../scenes/TradeScene.ts";
 
-export default class ItemInfoPanel {
+export default class ItemInfoPanelFactory {
   static create(scene: TradeScene, item: GameEntity) {
     const container = scene.rexUI.add.sizer({
       orientation: "x",
