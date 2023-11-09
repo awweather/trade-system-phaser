@@ -1,3 +1,5 @@
+import { HudContext } from "../HudContext";
+
 // EventTypes.ts
 export const enum InventoryGridSlotEvent {
   ITEM_ADDED = "item_added",
@@ -12,8 +14,9 @@ export const enum InventoryGridSlotEvent {
 }
 
 export interface DragEndedProps {
-  startingSlot: number;
-  landingSlot: number;
+  startingSlotIndex: number;
+  landingSlotIndex: number;
+  landingSlotContext: HudContext;
 }
 
 export interface InventoryGridSlotEventMap {
@@ -38,6 +41,4 @@ export class InventoryGridSlotEventEmitter extends Phaser.Events.EventEmitter {
   ): this {
     return super.on(event, fn, context);
   }
-
-  // ... Implement 'off', 'once', etc. in a similar strongly-typed manner
 }

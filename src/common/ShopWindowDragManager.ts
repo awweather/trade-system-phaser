@@ -118,12 +118,10 @@ export default class ShopWindowDragManager implements DragManager {
           return;
         }
 
-        const droppedInSameInventoryGrid =
-          gameObject.slotType === currentSlot.slotType;
-
         currentSlot.events.emit(InventoryGridSlotEvent.DRAG_ENDED, {
-          startingSlot: currentSlot.slotIndex,
-          landingSlot: gameObject.getData("slotIndex") as number,
+          startingSlotIndex: currentSlot.slotIndex,
+          landingSlotIndex: gameObject.getData("slotIndex") as number,
+          landingSlotContext: gameObject.getData("slotContext") as number
         });
 
         // eventEmitter.emit(

@@ -19,7 +19,7 @@ export class InventoryGridManager {
   }
 
   handleDragEnded(dragEndedProps: DragEndedProps) {
-    const { startingSlot, landingSlot } = dragEndedProps;
+    const { startingSlotIndex: startingSlot, landingSlotIndex: landingSlot } = dragEndedProps;
 
     const currentSlot = this.inventoryGrid.getSlotAtIndex(startingSlot);
     const landingItemSlot = this.inventoryGrid.getSlotAtIndex(landingSlot);
