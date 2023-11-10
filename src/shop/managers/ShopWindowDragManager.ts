@@ -74,7 +74,7 @@ export default class ShopWindowDragManager implements DragManager {
     const startingX = item.itemSprite.x;
     const startingY = item.itemSprite.y;
 
-    item.itemSprite.setScale(1.1);
+    item.itemSprite.setScale(1.25);
 
     item.itemSprite.on(
       "dragend",
@@ -88,16 +88,6 @@ export default class ShopWindowDragManager implements DragManager {
           item!.itemSprite.x = startingX;
           item!.itemSprite.y = startingY;
           item.itemSprite.setScale(1);
-          this.scene.tweens.add({
-            targets: item,
-            x: {
-              value: "+=10", // Shake by 10 pixels
-              duration: 100,
-              yoyo: true, // Go back and forth
-              ease: "Power2",
-              repeat: 2, // Number of shakes
-            },
-          });
           this.itemSlot.slotSprite.layout();
         }
       }
