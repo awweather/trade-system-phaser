@@ -1,14 +1,14 @@
 import type { ScrollablePanel } from "phaser3-rex-plugins/templates/ui/ui-components";
-import { alignGrid } from "../AlignGrid.js";
-import { HudContext } from "../HudContext.ts";
-import ShopWindowDragManager from "../common/ShopWindowDragManager.ts";
-import { keys } from "../config/Keys.ts";
-import TradeScene from "../scenes/TradeScene.ts";
-import InventoryGridManager from "./InventoryGridManager.ts";
+import { alignGrid } from "../../AlignGrid.js";
+import { HudContext } from "../../HudContext.ts";
+import { keys } from "../../config/Keys.ts";
+import TradeScene from "../../scenes/TradeScene.ts";
+import ShopWindowDragManager from "../../shop/managers/ShopWindowDragManager.ts";
+import InventoryGridManager from "../managers/InventoryGridManager.ts";
+import InventoryGridSlotItemManager from "../managers/InventoryGridSlotItemManager.ts";
+import InventoryGridSlotPointerEventManager from "../managers/InventoryGridSlotPointerEventManager.ts";
+import ItemInfoPanelManager from "../managers/ItemInfoPanelManager.ts";
 import InventoryGridSlot from "./InventoryGridSlot.ts";
-import InventoryGridSlotItemManager from "./InventoryGridSlotItemManager.ts";
-import InventoryGridSlotPointerEventManager from "./InventoryGridSlotPointerEventManager.ts";
-import ItemInfoPanelManager from "./ItemInfoPanelManager.ts";
 
 export interface InventoryGridConfig {
   slots: number;

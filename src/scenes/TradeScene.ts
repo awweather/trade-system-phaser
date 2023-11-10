@@ -7,8 +7,8 @@ import itemsAtlas from "../assets/items.json";
 // import itemsImage from "../assets/items.png";
 import { keys } from "../config/Keys.ts";
 import { shopkeeperEntity, world } from "../main.ts";
-import ShopWindow from "../shop/ShopWindow.ts";
-import ShopWindowFactory from "../shop/ShopWindowFactory.ts";
+import ShopWindow from "../shop/ui/ShopWindow.ts";
+import ShopWindowFactory from "../shop/ui/ShopWindowFactory.ts";
 
 export default class TradeScene extends Phaser.Scene {
   shopWindow: ShopWindow | undefined;

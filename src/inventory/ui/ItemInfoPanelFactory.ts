@@ -1,7 +1,7 @@
 import Sizer from "phaser3-rex-plugins/templates/ui/sizer/Sizer";
-import { GameEntity } from "../ecs/GameEntity.ts";
-import { QuantityComponent } from "../ecs/components/Components.ts";
-import TradeScene from "../scenes/TradeScene.ts";
+import { GameEntity } from "../../ecs/GameEntity.ts";
+import { QuantityComponent } from "../../ecs/components/Components.ts";
+import TradeScene from "../../scenes/TradeScene.ts";
 
 export default class ItemInfoPanelFactory {
   static create(scene: TradeScene, item: GameEntity) {

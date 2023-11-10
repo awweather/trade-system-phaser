@@ -5,12 +5,15 @@ import { keys } from "../../config/Keys.ts";
 import {
   addToInventory,
   getItemsFromSlots,
-} from "../../inventory/InventoryUtilities.ts";
-import { ItemSlot, createItemSlots } from "../../inventory/ItemSlot.ts";
+} from "../../inventory/state/InventoryUtilities.ts";
+import { ItemSlot, createItemSlots } from "../../inventory/state/ItemSlot.ts";
 import { playerEntity, shopkeeperEntity } from "../../main.ts";
 import ItemGenerator from "../../prefabs/ItemGenerator.ts";
 import { getGold } from "../../prefabs/Items.ts";
-import { ShopEvent, ShopEventEmitter } from "../../shop/ShopEventEmitter.ts";
+import {
+  ShopEvent,
+  ShopEventEmitter,
+} from "../../shop/events/ShopEventEmitter.ts";
 import {
   balanceOffer,
   executeTrade,
@@ -20,7 +23,7 @@ import {
   moveItemToShopInPlay,
   moveItemToShopInventory,
   movedItemToPlayerShopInventory,
-} from "../../shop/ShopUtilities.ts";
+} from "../../shop/state/ShopUtilities.ts";
 import { GameEntity } from "../GameEntity.ts";
 import { initializeEntity } from "../InitializeEntity.ts";
 import {

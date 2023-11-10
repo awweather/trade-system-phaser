@@ -1,5 +1,5 @@
-import { HudContext } from "../HudContext.ts";
-import { GameEntity } from "../ecs/GameEntity.ts";
+import { HudContext } from "../../HudContext.ts";
+import { GameEntity } from "../../ecs/GameEntity.ts";
 
 // EventTypes.ts
 export const enum ShopEvent {

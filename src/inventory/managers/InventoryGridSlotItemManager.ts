@@ -1,8 +1,8 @@
-import { eventEmitter } from "../EventEmitter.ts";
-import { keys } from "../config/Keys.ts";
-import InventoryGridSlot, { AddItemConfig } from "./InventoryGridSlot.ts";
-import Item from "./Item.ts";
-import ItemSpriteFactory from "./ItemSpriteFactory.ts";
+import { eventEmitter } from "../../EventEmitter.ts";
+import { keys } from "../../config/Keys.ts";
+import InventoryGridSlot, { AddItemConfig } from "../ui/InventoryGridSlot.ts";
+import Item from "../ui/Item.ts";
+import ItemSpriteFactory from "../ui/ItemSpriteFactory.ts";
 
 export default class InventoryGridSlotItemManager {
   private item: Item | null = null;

@@ -3,9 +3,9 @@ import {
   GridSizer,
   ScrollablePanel,
 } from "phaser3-rex-plugins/templates/ui/ui-components";
-import { keys } from "../config/Keys.ts";
-import InventoryGridSlot, { AddItemConfig } from "./InventoryGridSlot.ts";
-import Item from "./Item.ts";
+import { keys } from "../../config/Keys.ts";
+import InventoryGridSlot, { AddItemConfig } from "../ui/InventoryGridSlot.ts";
+import Item from "../ui/Item.ts";
 import ItemGridSlot from "./ItemGridSlot.ts";
 
 export default class InventoryGridManager {

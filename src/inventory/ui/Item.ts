@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { GameEntity } from "../ecs/GameEntity.js";
+import { GameEntity } from "../../ecs/GameEntity.js";
 import { AddItemConfig } from "./InventoryGridSlot.js";
 
 export default class Item {

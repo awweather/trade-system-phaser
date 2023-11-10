@@ -1,9 +1,9 @@
 import DragPlugin from "phaser3-rex-plugins/plugins/drag-plugin";
 import { OverlapSizer } from "phaser3-rex-plugins/templates/ui/ui-components";
-import { HudContext } from "../HudContext.ts";
-import InventoryGridSlot from "../inventory/InventoryGridSlot.ts";
-import { InventoryGridSlotEvent } from "../inventory/InventoryGridSlotEventEmitter.ts";
-import TradeScene from "../scenes/TradeScene.ts";
+import { HudContext } from "../../HudContext.ts";
+import { InventoryGridSlotEvent } from "../../inventory/events/InventoryGridSlotEventEmitter.ts";
+import InventoryGridSlot from "../../inventory/ui/InventoryGridSlot.ts";
+import TradeScene from "../../scenes/TradeScene.ts";
 
 export interface DragManager {
   handleDrag: (pointer: Phaser.Input.Pointer) => void;
@@ -83,8 +83,8 @@ export default class ShopWindowDragManager implements DragManager {
         dropped: boolean
       ) => {
         if (!dropped) {
-          item!.x = startingX;
-          item!.y = startingY;
+          item!.itemSprite.x = startingX;
+          item!.itemSprite.y = startingY;
 
           this.itemSlot.slotSprite.layout();
         }

@@ -1,23 +1,23 @@
-import { GameEntity } from "../ecs/GameEntity.ts";
+import { GameEntity } from "../../ecs/GameEntity.ts";
 import {
   GoldComponent,
   PickedUpComponent,
   QuantityComponent,
   ShopWindowComponent,
   TradeIdComponent,
-} from "../ecs/components/Components.ts";
-import { getGold } from "../prefabs/Items.ts";
+} from "../../ecs/components/Components.ts";
+import { getGold } from "../../prefabs/Items.ts";
 
-import { HudContext } from "../HudContext.ts";
-import { initializeEntity } from "../ecs/InitializeEntity.ts";
+import { HudContext } from "../../HudContext.ts";
+import { initializeEntity } from "../../ecs/InitializeEntity.ts";
 import {
   addToInventory,
   getItemInInventoryWithMinQuantity,
   removeFromInventory,
-} from "../inventory/InventoryUtilities.ts";
-import { ItemSlot } from "../inventory/ItemSlot.ts";
-import { playerEntity, shopSystem, world } from "../main.ts";
-import { ShopEvent } from "./ShopEventEmitter.ts";
+} from "../../inventory/state/InventoryUtilities.ts";
+import { ItemSlot } from "../../inventory/state/ItemSlot.ts";
+import { playerEntity, shopSystem, world } from "../../main.ts";
+import { ShopEvent } from "../events/ShopEventEmitter.ts";
 
 /**
  *

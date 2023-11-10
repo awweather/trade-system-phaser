@@ -1,5 +1,5 @@
 import { Component, Types } from "ecsy";
-import { ItemSlot } from "../../inventory/ItemSlot.ts";
+import { ItemSlot } from "../../inventory/state/ItemSlot.ts";
 
 interface InventoryProps {}
 class Inventory extends Component<InventoryProps> {

@@ -1,6 +1,6 @@
-import TradeScene from "../scenes/TradeScene.ts";
-import InventoryGridSlot from "./InventoryGridSlot.ts";
-import ItemInfoPanelFactory from "./ItemInfoPanelFactory.ts";
+import TradeScene from "../../scenes/TradeScene.ts";
+import InventoryGridSlot from "../ui/InventoryGridSlot.ts";
+import ItemInfoPanelFactory from "../ui/ItemInfoPanelFactory.ts";
 
 export default class ItemInfoPanelManager {
   constructor(

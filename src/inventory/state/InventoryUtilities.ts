@@ -1,11 +1,11 @@
-import { GameEntity } from "../ecs/GameEntity.ts";
+import { GameEntity } from "../../ecs/GameEntity.ts";
 import {
   GoldComponent,
   InventoryComponent,
   PickedUpComponent,
   QuantityComponent,
-} from "../ecs/components/Components.ts";
-import { playerEntity, world } from "../main.ts";
+} from "../../ecs/components/Components.ts";
+import { playerEntity, world } from "../../main.ts";
 import { ItemSlot } from "./ItemSlot.ts";
 
 export function getPlayerInventoryGoldEntities(): GameEntity[] {

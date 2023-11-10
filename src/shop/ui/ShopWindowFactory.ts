@@ -1,12 +1,12 @@
-import { alignGrid } from "../AlignGrid.js";
-import { eventEmitter } from "../EventEmitter.ts";
-import { HudContext } from "../HudContext.ts";
-import { keys } from "../config/Keys.ts";
-import InventoryGridFactory from "../inventory/InventoryGridFactory.ts";
-import { shopSystem } from "../main.ts";
-import TradeScene from "../scenes/TradeScene.ts";
-import ShopWindow from "./ShopWindow";
-import { ShopWindowManager } from "./ShopWindowManager.ts";
+import { alignGrid } from "../../AlignGrid.js";
+import { eventEmitter } from "../../EventEmitter.ts";
+import { HudContext } from "../../HudContext.ts";
+import { keys } from "../../config/Keys.ts";
+import InventoryGridFactory from "../../inventory/ui/InventoryGridFactory.ts";
+import { shopSystem } from "../../main.ts";
+import TradeScene from "../../scenes/TradeScene.ts";
+import { ShopWindowManager } from "../managers/ShopWindowManager.ts";
+import ShopWindow from "./ShopWindow.ts";
 
 export default class ShopWindowFactory {
   static create(scene: TradeScene): ShopWindow {

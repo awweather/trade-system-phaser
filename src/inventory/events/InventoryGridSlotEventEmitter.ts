@@ -1,6 +1,6 @@
-import { HudContext } from "../HudContext";
-import { GameEntity } from "../ecs/GameEntity.ts";
-import Item from "./Item.ts";
+import { HudContext } from "../../HudContext.ts";
+import { GameEntity } from "../../ecs/GameEntity.ts";
+import Item from "../ui/Item.ts";
 
 // EventTypes.ts
 export const enum InventoryGridSlotEvent {

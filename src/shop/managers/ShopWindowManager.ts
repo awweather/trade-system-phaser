@@ -1,20 +1,20 @@
-import { HudContext } from "../HudContext.ts";
-import { GameEntity } from "../ecs/GameEntity.ts";
+import { HudContext } from "../../HudContext.ts";
+import { GameEntity } from "../../ecs/GameEntity.ts";
 import {
   PickedUpComponent,
   QuantityComponent,
   TradeIdComponent,
-} from "../ecs/components/Components.ts";
-import ShopSystem from "../ecs/systems/ShopSystem.ts";
-import InventoryGridManager from "../inventory/InventoryGridManager.ts";
-import { AddItemConfig } from "../inventory/InventoryGridSlot.ts";
+} from "../../ecs/components/Components.ts";
+import ShopSystem from "../../ecs/systems/ShopSystem.ts";
 import {
   DragEndedProps,
   InventoryGridSlotEvent,
-} from "../inventory/InventoryGridSlotEventEmitter.ts";
-import { playerEntity } from "../main.ts";
-import TradeScene from "../scenes/TradeScene.ts";
-import { ShopEvent } from "./ShopEventEmitter.ts";
+} from "../../inventory/events/InventoryGridSlotEventEmitter.ts";
+import InventoryGridManager from "../../inventory/managers/InventoryGridManager.ts";
+import { AddItemConfig } from "../../inventory/ui/InventoryGridSlot.ts";
+import { playerEntity } from "../../main.ts";
+import TradeScene from "../../scenes/TradeScene.ts";
+import { ShopEvent } from "../events/ShopEventEmitter.ts";
 import {
   getGoldValueInSlots,
   getValueOfItemsInSlots,
@@ -24,8 +24,8 @@ import {
   movedItemToPlayerShopInventory as moveItemToPlayerShopInventory,
   moveItemToShopInPlay,
   moveItemToShopInventory,
-} from "./ShopUtilities.ts";
-import ShopWindow from "./ShopWindow.ts";
+} from "../state/ShopUtilities.ts";
+import ShopWindow from "../ui/ShopWindow.ts";
 
 export class ShopWindowManager {
   constructor(

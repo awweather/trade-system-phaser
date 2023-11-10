@@ -1,5 +1,5 @@
-import TradeScene from "../scenes/TradeScene.ts";
-import InventoryGridSlot from "./InventoryGridSlot.ts";
+import TradeScene from "../../scenes/TradeScene.ts";
+import InventoryGridSlot from "../ui/InventoryGridSlot.ts";
 
 export interface HoverManager {
   handlePointerOver: (pointer: Phaser.Input.Pointer) => void;

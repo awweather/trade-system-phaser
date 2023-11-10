@@ -1,21 +1,21 @@
 import { OverlapSizer } from "phaser3-rex-plugins/templates/ui/ui-components";
-import { HudContext } from "../HudContext.ts";
-import DragManager from "../common/ShopWindowDragManager.ts";
-import { GameEntity } from "../ecs/GameEntity.ts";
+import { HudContext } from "../../HudContext.ts";
+import { GameEntity } from "../../ecs/GameEntity.ts";
 import {
   DescriptorComponent,
   PickedUpComponent,
   QuantityComponent,
   RenderableComponent,
   TradeIdComponent,
-} from "../ecs/components/Components.ts";
+} from "../../ecs/components/Components.ts";
+import DragManager from "../../shop/managers/ShopWindowDragManager.ts";
 import {
   InventoryGridSlotEvent,
   InventoryGridSlotEventEmitter,
-} from "./InventoryGridSlotEventEmitter.ts";
-import InventoryGridSlotItemManager from "./InventoryGridSlotItemManager.ts";
-import InventoryGridSlotPointerEventManager from "./InventoryGridSlotPointerEventManager.ts";
-import ItemInfoPanelManager from "./ItemInfoPanelManager.ts";
+} from "../events/InventoryGridSlotEventEmitter.ts";
+import InventoryGridSlotItemManager from "../managers/InventoryGridSlotItemManager.ts";
+import InventoryGridSlotPointerEventManager from "../managers/InventoryGridSlotPointerEventManager.ts";
+import ItemInfoPanelManager from "../managers/ItemInfoPanelManager.ts";
 
 export interface AddItemConfig {
   renderable: RenderableComponent;
@@ -59,6 +59,11 @@ export default class InventoryGridSlot {
     return addedItem;
   }
 
+  removeItem() {
+    this.assertInitialized();
+    this.itemManager!.removeItem();
+  }
+
   getItem() {
     this.assertInitialized();
 
@@ -94,18 +99,13 @@ export default class InventoryGridSlot {
     this.itemInfoPanelManager = itemInfoPanelManager;
   }
 
-  removeItem() {
-    this.assertInitialized();
-    this.itemManager!.removeItem();
-  }
-
   handleSlotClick() {
     const item = this.itemManager?.getItem();
 
     if (!item) return;
 
     this.events.emit(InventoryGridSlotEvent.ITEM_CLICKED, {
-      slotContext: this.slotType,
+      slotType: this.slotType,
       slotIndex: this.slotIndex,
       item: item.entity,
     });
@@ -114,26 +114,6 @@ export default class InventoryGridSlot {
   handleDrag(pointer: Phaser.Input.Pointer) {
     this.assertInitialized();
     this.dragManager!.handleDrag(pointer);
-  }
-
-  handlePointerOver() {
-    this.assertInitialized();
-    this.pointerEventManager!.handlePointerOver();
-  }
-
-  handlePointerOut() {
-    this.assertInitialized();
-    this.pointerEventManager!.handlePointerOut();
-  }
-
-  handlePointerUp() {
-    this.assertInitialized();
-    this.pointerEventManager!.handlePointerUp();
-  }
-
-  handlePointerDown() {
-    this.assertInitialized();
-    this.pointerEventManager!.handlePointerDown();
   }
 
   assertInitialized() {
