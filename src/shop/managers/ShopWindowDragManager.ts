@@ -109,11 +109,11 @@ export default class ShopWindowDragManager implements DragManager {
             gameObject.getData("slotType")
           );
         item.itemSprite.setScale(1);
+        currentSlot.slotSprite.layout();
 
         if (!isValidDropTarget) {
           this.x = this.input!.dragStartX;
           this.y = this.input!.dragStartY;
-          currentSlot.slotSprite.layout();
 
           return;
         }
