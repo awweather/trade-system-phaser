@@ -14,6 +14,7 @@ import { ShopEvent, ShopEventEmitter } from "../../shop/ShopEventEmitter.ts";
 import {
   balanceOffer,
   executeTrade,
+  getValueOfItemsInSlots,
   mapInventorySlot,
   moveItemInPlay,
   moveItemToShopInPlay,
@@ -177,6 +178,15 @@ class ShopSystem extends System {
     });
 
     eventEmitter.on(keys.menu.CLICKED("acceptTrade"), () => {
+      const inPlayValue = getValueOfItemsInSlots(
+        playerEntity.shopWindow.inPlay
+      );
+      const shopInPlayValue = getValueOfItemsInSlots(
+        playerEntity.shopWindow.npcInPlay
+      );
+
+      if (inPlayValue !== shopInPlayValue) return;
+
       executeTrade();
 
       this.tradeInitiated(shopkeeperEntity.entityId.value);
