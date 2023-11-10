@@ -73,6 +73,8 @@ export default class ShopWindowDragManager implements DragManager {
 
     const startingX = item.itemSprite.x;
     const startingY = item.itemSprite.y;
+
+    item.itemSprite.setScale(1.25);
     // this.item.setDepth(201);
     item.itemSprite.on(
       "dragend",
@@ -82,6 +84,7 @@ export default class ShopWindowDragManager implements DragManager {
         dragY: number,
         dropped: boolean
       ) => {
+        item.itemSprite.setScale(1);
         if (!dropped) {
           item!.itemSprite.x = startingX;
           item!.itemSprite.y = startingY;
@@ -100,6 +103,7 @@ export default class ShopWindowDragManager implements DragManager {
         pointer: Phaser.Input.Pointer,
         gameObject: OverlapSizer
       ) {
+        item.itemSprite.setScale(1);
         let isValidDropTarget = true;
         isValidDropTarget =
           isValidDropTarget &&
@@ -124,13 +128,6 @@ export default class ShopWindowDragManager implements DragManager {
           landingSlotIndex: gameObject.getData("slotIndex") as number,
           landingSlotContext: gameObject.getData("slotType") as number,
         });
-
-        // eventEmitter.emit(
-        //   `${gameObject.getData("slotType")}_itemDropped`,
-        //   this.entity,
-        //   gameObject.getData("slotIndex"),
-        //   droppedInSameInventoryGrid
-        // );
       }
     );
   }
