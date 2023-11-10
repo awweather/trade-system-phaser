@@ -19,7 +19,11 @@ import {
   getGoldValueInSlots,
   getValueOfItemsInSlots,
   moveItem,
+  moveItemInPlay,
   moveItemInSameInventoryGrid,
+  movedItemToPlayerShopInventory as moveItemToPlayerShopInventory,
+  moveItemToShopInPlay,
+  moveItemToShopInventory,
 } from "./ShopUtilities.ts";
 import ShopWindow from "./ShopWindow.ts";
 
@@ -38,11 +42,25 @@ export class ShopWindowManager {
       slot.events.on(InventoryGridSlotEvent.DRAG_ENDED, (dragEndedProps) =>
         this.moveItemFromPlayerInventory(dragEndedProps)
       );
+
+      slot.events.on(
+        InventoryGridSlotEvent.ITEM_CLICKED,
+        (itemClickedProps) => {
+          moveItemInPlay(itemClickedProps.item);
+        }
+      );
     });
 
     playerInPlay.slots.forEach((slot) => {
       slot.events.on(InventoryGridSlotEvent.DRAG_ENDED, (dragEndedProps) =>
         this.moveItemFromPlayerInPlay(dragEndedProps)
+      );
+
+      slot.events.on(
+        InventoryGridSlotEvent.ITEM_CLICKED,
+        (itemClickedProps) => {
+          moveItemToPlayerShopInventory(itemClickedProps.item);
+        }
       );
     });
 
@@ -50,11 +68,25 @@ export class ShopWindowManager {
       slot.events.on(InventoryGridSlotEvent.DRAG_ENDED, (dragEndedProps) =>
         this.moveItemFromShopInventory(dragEndedProps)
       );
+
+      slot.events.on(
+        InventoryGridSlotEvent.ITEM_CLICKED,
+        (itemClickedProps) => {
+          moveItemToShopInPlay(itemClickedProps.item);
+        }
+      );
     });
 
     shopInPlay.slots.forEach((slot) => {
       slot.events.on(InventoryGridSlotEvent.DRAG_ENDED, (dragEndedProps) =>
         this.moveItemFromShopInPlay(dragEndedProps)
+      );
+
+      slot.events.on(
+        InventoryGridSlotEvent.ITEM_CLICKED,
+        (itemClickedProps) => {
+          moveItemToShopInventory(itemClickedProps.item);
+        }
       );
     });
 
@@ -345,6 +377,7 @@ function decomposeItem(item: GameEntity): AddItemConfig {
     pickedUp: item.hasComponent(PickedUpComponent) ? item.pickedUp : undefined,
     descriptor: item.descriptor,
     renderable: item.renderable_mutable,
+    frame: item.renderable.sprite.frame,
     quantity: item.hasComponent(QuantityComponent) ? item.quantity : undefined,
     tradeId: item.getComponent<TradeIdComponent>(TradeIdComponent),
     itemId: item.entityId.value,

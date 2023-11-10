@@ -99,6 +99,18 @@ export default class InventoryGridSlot {
     this.itemManager!.removeItem();
   }
 
+  handleSlotClick() {
+    const item = this.itemManager?.getItem();
+
+    if (!item) return;
+
+    this.events.emit(InventoryGridSlotEvent.ITEM_CLICKED, {
+      slotContext: this.slotType,
+      slotIndex: this.slotIndex,
+      item: item.entity,
+    });
+  }
+
   handleDrag(pointer: Phaser.Input.Pointer) {
     this.assertInitialized();
     this.dragManager!.handleDrag(pointer);

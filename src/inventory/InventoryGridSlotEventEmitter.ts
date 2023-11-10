@@ -1,10 +1,12 @@
 import { HudContext } from "../HudContext";
+import { GameEntity } from "../ecs/GameEntity.ts";
 import Item from "./Item.ts";
 
 // EventTypes.ts
 export const enum InventoryGridSlotEvent {
   ITEM_ADDED = "item_added",
   ITEM_REMOVED = "item_removed",
+  ITEM_CLICKED = "item_clicked",
   DRAG_STARTED = "drag_started",
   DRAG_ENDED = "drag_ended",
   POINTER_OVER = "pointer_over",
@@ -21,10 +23,17 @@ export interface DragEndedProps {
   landingSlotContext: HudContext;
 }
 
+export interface ItemClickedProps {
+  slotIndex: number;
+  slotType: HudContext;
+  item: GameEntity;
+}
+
 export interface InventoryGridSlotEventMap {
   [InventoryGridSlotEvent.ITEM_ADDED]: Item;
   [InventoryGridSlotEvent.ITEM_REMOVED]: string; // Assuming itemId is a string
   [InventoryGridSlotEvent.DRAG_ENDED]: DragEndedProps;
+  [InventoryGridSlotEvent.ITEM_CLICKED]: ItemClickedProps;
   // ... other event payloads
 }
 

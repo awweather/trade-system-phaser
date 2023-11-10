@@ -14,11 +14,11 @@ import { ShopEvent, ShopEventEmitter } from "../../shop/ShopEventEmitter.ts";
 import {
   balanceOffer,
   executeTrade,
-  itemMovedInPlay,
-  itemMovedShopInPlay,
-  itemMovedToPlayerShopInventory,
-  itemMovedToShopInventory,
   mapInventorySlot,
+  moveItemInPlay,
+  moveItemToShopInPlay,
+  moveItemToShopInventory,
+  movedItemToPlayerShopInventory,
 } from "../../shop/ShopUtilities.ts";
 import { GameEntity } from "../GameEntity.ts";
 import { initializeEntity } from "../InitializeEntity.ts";
@@ -36,28 +36,28 @@ class ShopSystem extends System {
     eventEmitter.on(
       keys.itemSlots.CLICKED(HudContext.playerInPlay),
       (entity: GameEntity) => {
-        itemMovedToPlayerShopInventory(entity);
+        movedItemToPlayerShopInventory(entity);
       }
     );
 
     eventEmitter.on(
       keys.itemSlots.CLICKED(HudContext.playerShopInventory),
       (entity: GameEntity) => {
-        itemMovedInPlay(entity);
+        moveItemInPlay(entity);
       }
     );
 
     eventEmitter.on(
       keys.itemSlots.CLICKED(HudContext.shopInventory),
       (entity: GameEntity) => {
-        itemMovedShopInPlay(entity);
+        moveItemToShopInPlay(entity);
       }
     );
 
     eventEmitter.on(
       keys.itemSlots.CLICKED(HudContext.shopInPlay),
       (entity: GameEntity) => {
-        itemMovedToShopInventory(entity);
+        moveItemToShopInventory(entity);
       }
     );
 

@@ -161,7 +161,7 @@ export function balancePlayerGold(
           ?.addItem(splitItem.entityId.value);
         const slotToAddTo = shopWindow.inPlay.find((i) => !i.hasItem());
 
-        itemMovedInPlay(splitItem);
+        moveItemInPlay(splitItem);
 
         splitItem.addComponent(TradeIdComponent, {
           tradeId: shopWindow.tradingWithEntityId,
@@ -185,7 +185,7 @@ export function balancePlayerGold(
 
         removeItemIfQuantityZero(goldItem, shopWindow.inventory);
       } else {
-        itemMovedInPlay(goldItem);
+        moveItemInPlay(goldItem);
       }
     }
 
@@ -229,7 +229,7 @@ export function balanceNpcGold(
           ?.addItem(splitItem.entityId.value);
         const slotToAddTo = shopWindow.npcInPlay.find((i) => !i.hasItem());
 
-        itemMovedShopInPlay(splitItem);
+        moveItemToShopInPlay(splitItem);
 
         splitItem.addComponent(TradeIdComponent, {
           tradeId: shopWindow.tradingWithEntityId,
@@ -252,7 +252,7 @@ export function balanceNpcGold(
 
         removeItemIfQuantityZero(goldItem, shopWindow.npcInventory);
       } else {
-        itemMovedShopInPlay(goldItem);
+        moveItemToShopInPlay(goldItem);
       }
     }
 
@@ -275,7 +275,7 @@ export function itemRemovedFromPlayerInventory(slotIndex: number) {
  * @param item The item being moved
  * @param targetSlotIndex The target slot index to move the item to.  If undefined, it uses the first empty slot
  */
-export function itemMovedShopInPlay(
+export function moveItemToShopInPlay(
   item: GameEntity,
   targetSlotIndex?: number
 ) {
@@ -319,7 +319,7 @@ export function itemMovedShopInPlay(
  * @param item The item being moved
  * @param targetSlotIndex The target slot index to move the item to.  If undefined, it uses the first empty slot
  */
-export function itemMovedInPlay(item: GameEntity, targetSlotIndex?: number) {
+export function moveItemInPlay(item: GameEntity, targetSlotIndex?: number) {
   const shopWindow = playerEntity.shopWindow;
 
   // Get the current slot them item resides in
@@ -357,7 +357,7 @@ export function itemMovedInPlay(item: GameEntity, targetSlotIndex?: number) {
  * Moves an item to the npc's shop inventory
  * @param item The item being moved
  */
-export function itemMovedToShopInventory(
+export function moveItemToShopInventory(
   item: GameEntity,
   targetSlotIndex?: number
 ) {
@@ -473,7 +473,7 @@ export function moveItem(
  * @param item The item being moved
  * @param targetSlotIndex The target slot index to move the item to.  If undefined, it uses the first empty slot
  */
-export function itemMovedToPlayerShopInventory(
+export function movedItemToPlayerShopInventory(
   item: GameEntity,
   targetSlotIndex?: number
 ) {
@@ -497,6 +497,15 @@ export function itemMovedToPlayerShopInventory(
       : shopWindow.inventory.find((s) => !s.hasItem());
 
   shopWindow.inventory[targetSlot!.slotIndex].addItem(removedItem);
+
+  shopSystem.events.emit(ShopEvent.ITEM_ADDED, {
+    item,
+    targetSlotIndex: targetSlot!.slotIndex,
+    targetSlotContext: HudContext.playerShopInventory,
+    currentSlotContext: HudContext.playerInPlay,
+    currentSlotIndex: slot.slotIndex,
+    removedItemId: removedItem,
+  });
 }
 
 /**

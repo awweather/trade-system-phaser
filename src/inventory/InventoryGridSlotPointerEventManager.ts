@@ -1,5 +1,3 @@
-import { eventEmitter } from "../EventEmitter.ts";
-import { keys } from "../config/Keys.ts";
 import TradeScene from "../scenes/TradeScene.ts";
 import InventoryGridSlot from "./InventoryGridSlot.ts";
 
@@ -47,19 +45,6 @@ export default class InventoryGridSlotPointerEventManager
     if (this.itemSlot.hasItem()) {
       this.itemSlot.showItemInfo();
     }
-    // if (this.itemSlot.hasItem()) {
-    //   // Create the item info panel, store it on the scene so it can be removed on pointer out
-    //   this.scene.itemInfoPanel = ItemInfoPanel.create(
-    //     this.scene.scene,
-    //     this.item.entity
-    //   ).layout();
-
-    //   const y =
-    //     position && position === "above"
-    //       ? this.y - this.height / 2 - scene.itemInfoPanel.height / 2
-    //       : this.y + this.height / 2 + scene.itemInfoPanel.height / 2;
-
-    //   this.scene.itemInfoPanel.setX(this.x).setY(y).setDepth(205);
   }
 
   handlePointerOut(pointer: Phaser.Input.Pointer) {
@@ -94,10 +79,7 @@ export default class InventoryGridSlotPointerEventManager
       this.scene.controls.shift.isDown ||
       this.scene.controls.justDown(this.scene.controls.shift)
     ) {
-      eventEmitter.emit(
-        keys.itemSlots.CLICKED(this.itemSlot.slotType),
-        this.item.entity
-      );
+      this.itemSlot.handleSlotClick();
       this.handlePointerOut(pointer);
     }
   }
