@@ -347,10 +347,14 @@ export function itemMovedInPlay(item: GameEntity, targetSlotIndex?: number) {
   // Add the item to the new slot
   shopWindow.inPlay[targetSlot!.slotIndex].addItem(removedItem);
 
-  // Update UI
-  shopViewModel.moveItemInPlay(item, targetSlot!.slotIndex);
-  shopViewModel.removeItemFromPlayerInventory(slot!.slotIndex);
-  shopViewModel.updateShopWindow();
+  shopSystem.events.emit(ShopEvent.ITEM_ADDED, {
+    item,
+    targetSlotContext: HudContext.playerInPlay,
+    currentSlotContext: HudContext.playerShopInventory,
+    targetSlotIndex: targetSlot!.slotIndex,
+    currentSlotIndex: slot!.slotIndex,
+    removedItemId: removedItem,
+  });
 }
 
 /**
@@ -511,8 +515,10 @@ export function itemMovedToPlayerShopInventory(
  * Executes the trade and transfers items and gold between the player and the npc.
  */
 export function executeTrade() {
-  const playerCoinsInPlay = shopViewModel.playerCoinsInPlay;
-  const shopCoinsInPlay = shopViewModel.shopCoinsInPlay;
+  const playerCoinsInPlay = getGoldValueInSlots(playerEntity.shopWindow.inPlay);
+  const shopCoinsInPlay = getGoldValueInSlots(
+    playerEntity.shopWindow.npcInPlay
+  );
   const playerItemsToReceive = getPlayerItemsToReceive();
   const npcItemsToReceive = getNpcItemsToReceive();
   const shopkeeperId = playerEntity.shopWindow.tradingWithEntityId;
@@ -521,7 +527,10 @@ export function executeTrade() {
   transferItemsToNpc(npcItemsToReceive, shopkeeperId);
   applyNewGoldValues(playerCoinsInPlay, playerEntity.entityId.value);
   applyNewGoldValues(shopCoinsInPlay, shopkeeperId);
-  shopViewModel.closeShopWindow();
+
+  shopSystem.events.emit(ShopEvent.TRADE_COMPLETED, undefined);
+
+  playerEntity.removeComponent(ShopWindowComponent);
 }
 
 /**

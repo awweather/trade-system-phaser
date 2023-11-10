@@ -3,10 +3,10 @@ import { eventEmitter } from "../EventEmitter.ts";
 import { HudContext } from "../HudContext.ts";
 import { keys } from "../config/Keys.ts";
 import InventoryGridFactory from "../inventory/InventoryGridFactoryNew.ts";
-import { ShopWindowManager } from "../inventory/ShopWindowManager.ts";
 import { shopSystem } from "../main.ts";
 import TradeScene from "../scenes/TradeScene.ts";
 import ShopWindow from "./ShopWindow";
+import { ShopWindowManager } from "./ShopWindowManager.ts";
 
 export default class ShopWindowFactory {
   static create(scene: TradeScene): ShopWindow {
@@ -174,10 +174,6 @@ export default class ShopWindowFactory {
       playerCoins,
       name,
       coinsInPlay,
-      playerShopInventory,
-      playerInPlay,
-      npcInPlay,
-      npcShopInventory,
       npcCoins,
       npcName,
       npcCoinsInPlay
@@ -187,6 +183,10 @@ export default class ShopWindowFactory {
     const shopWindowManager = new ShopWindowManager(
       scene,
       shopWindow,
+      playerShopInventory,
+      playerInPlay,
+      npcInPlay,
+      npcShopInventory,
       shopSystem
     );
 

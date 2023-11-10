@@ -4,7 +4,7 @@ import { HudContext } from "../HudContext.ts";
 import ShopWindowDragManager from "../common/ShopWindowDragManager.ts";
 import { keys } from "../config/Keys.ts";
 import TradeScene from "../scenes/TradeScene.ts";
-import InventoryGrid from "./InventoryGrid.ts";
+import InventoryGridManager from "./InventoryGridManager.ts";
 import InventoryGridSlot from "./InventoryGridSlot.ts";
 import InventoryGridSlotItemManager from "./InventoryGridSlotItemManager.ts";
 import InventoryGridSlotPointerEventManager from "./InventoryGridSlotPointerEventManager.ts";
@@ -22,7 +22,10 @@ export interface InventoryGridConfig {
 }
 
 export default class InventoryGridFactory {
-  static create(scene: TradeScene, config: InventoryGridConfig): InventoryGrid {
+  static create(
+    scene: TradeScene,
+    config: InventoryGridConfig
+  ): InventoryGridManager {
     const slots = this.createSlots(scene, config.slots, config.context);
 
     const panel = this.createPanel(scene, slots, config);
@@ -64,7 +67,7 @@ export default class InventoryGridFactory {
       return slotA.slotIndex - slotB.slotIndex;
     });
 
-    return new InventoryGrid(sizer, panel, slots);
+    return new InventoryGridManager(sizer, panel, slots);
   }
 
   static createSlots(scene: TradeScene, amount: number, context: HudContext) {

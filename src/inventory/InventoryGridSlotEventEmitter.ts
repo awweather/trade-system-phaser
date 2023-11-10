@@ -1,4 +1,5 @@
 import { HudContext } from "../HudContext";
+import ItemNew from "./ItemNew.ts";
 
 // EventTypes.ts
 export const enum InventoryGridSlotEvent {
@@ -21,7 +22,7 @@ export interface DragEndedProps {
 }
 
 export interface InventoryGridSlotEventMap {
-  [InventoryGridSlotEvent.ITEM_ADDED]: Item;
+  [InventoryGridSlotEvent.ITEM_ADDED]: ItemNew;
   [InventoryGridSlotEvent.ITEM_REMOVED]: string; // Assuming itemId is a string
   [InventoryGridSlotEvent.DRAG_ENDED]: DragEndedProps;
   // ... other event payloads

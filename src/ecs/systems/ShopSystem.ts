@@ -10,7 +10,7 @@ import { ItemSlot, createItemSlots } from "../../inventory/ItemSlot.ts";
 import { playerEntity, shopkeeperEntity } from "../../main.ts";
 import ItemGenerator from "../../prefabs/ItemGenerator.ts";
 import { getGold } from "../../prefabs/Items.ts";
-import { ShopEventEmitter } from "../../shop/ShopEventEmitter.ts";
+import { ShopEvent, ShopEventEmitter } from "../../shop/ShopEventEmitter.ts";
 import {
   balanceOffer,
   executeTrade,
@@ -229,7 +229,7 @@ class ShopSystem extends System {
     });
 
     // Get all item entities from the npc's inventory
-    const shopItemEntities = getItemsFromSlots(
+    const shopkeeperItemEntities = getItemsFromSlots(
       playerEntity.shopWindow.npcInventory
     );
 
@@ -238,15 +238,21 @@ class ShopSystem extends System {
       playerEntity.shopWindow.inventory
     );
 
+    this.events.emit(ShopEvent.TRADE_INITIATED, {
+      shopkeeperName: tradingWith.descriptor.name,
+      shopkeeperItemEntities,
+      playerItemEntities,
+      playerName: playerEntity.descriptor.name,
+    });
     // Initialize shop window
-    shopViewModel.showShopWindow(
-      tradingWith.inventory,
-      tradingWith.descriptor.name,
-      shopItemEntities,
-      playerEntity.descriptor.name,
-      playerEntity.inventory,
-      playerItemEntities
-    );
+    // shopViewModel.showShopWindow(
+    //   tradingWith.inventory,
+    //   tradingWith.descriptor.name,
+    //   shopkeeperItemEntities,
+    //   playerEntity.descriptor.name,
+    //   playerEntity.inventory,
+    //   playerItemEntities
+    // );
   }
 
   execute() {

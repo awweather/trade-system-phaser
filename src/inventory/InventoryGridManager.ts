@@ -1,39 +1,63 @@
-import { eventEmitter } from "../EventEmitter.ts";
-import TradeScene from "../scenes/TradeScene.ts";
-import InventoryGrid from "./InventoryGrid.ts";
+import type Sizer from "phaser3-rex-plugins/templates/ui/sizer/Sizer";
 import {
-  DragEndedProps,
-  InventoryGridSlotEvent,
-} from "./InventoryGridSlotEventEmitter.ts";
+  GridSizer,
+  ScrollablePanel,
+} from "phaser3-rex-plugins/templates/ui/ui-components";
+import { keys } from "../config/Keys.ts";
+import InventoryGridSlot, { AddItemConfig } from "./InventoryGridSlot.ts";
+import Item from "./Item.ts";
+import ItemGridSlot from "./ItemGridSlot.ts";
 
-export class InventoryGridManager {
+export default class InventoryGridManager {
+  // The container for the inventory grid
+  scrollableContainer: ScrollablePanel;
+  // The actual inventory grid
+  grid: GridSizer;
+
   constructor(
-    private scene: TradeScene,
-    private readonly inventoryGrid: InventoryGrid
+    scrollableContainer: ScrollablePanel,
+    panel: Sizer,
+    public readonly slots: InventoryGridSlot[]
   ) {
-    inventoryGrid.slots.forEach((slot) => {
-      slot.events.on(InventoryGridSlotEvent.DRAG_ENDED, (dragEndedProps) =>
-        this.handleDragEnded(dragEndedProps)
-      );
-    });
+    this.scrollableContainer = scrollableContainer;
+    const inventoryTable = panel.getElement(keys.ui.inventoryTable) as Sizer;
+    this.grid = inventoryTable.getElement(keys.ui.inventoryGrid) as GridSizer;
   }
 
-  handleDragEnded(dragEndedProps: DragEndedProps) {
-    const { startingSlotIndex: startingSlot, landingSlotIndex: landingSlot } = dragEndedProps;
+  addItem(itemConfig: AddItemConfig, slotIndex: number): Item | null {
+    const slot =
+      slotIndex !== undefined
+        ? this.slots[slotIndex]
+        : this.slots[itemConfig.pickedUp!.slotIndex];
 
-    const currentSlot = this.inventoryGrid.getSlotAtIndex(startingSlot);
-    const landingItemSlot = this.inventoryGrid.getSlotAtIndex(landingSlot);
+    if (slot) {
+      const item = slot.addItem(itemConfig);
+      this.grid.layout();
+      return item;
+    }
 
-    const droppedInSameInventoryGrid =
-      currentSlot.slotType === landingItemSlot.slotType;
-
-    eventEmitter.emit(
-      `${landingItemSlot.slotType}_itemDropped`,
-      currentSlot.getItem()!.entity,
-      landingItemSlot.slotIndex,
-      droppedInSameInventoryGrid
-    );
+    return null;
   }
 
-  // ... other methods to manage slots, like handling drag and drop, etc.
+  removeItem(index: number) {
+    const items = this.grid.getElement("items") as ItemGridSlot[];
+    const slot = items[index];
+    slot?.removeItem();
+
+    this.grid.layout();
+  }
+
+  getItemAtIndex(index: number) {
+    const slot = this.getSlotAtIndex(index);
+
+    if (slot) {
+      return slot?.getItem();
+    }
+  }
+
+  getSlotAtIndex(index: number) {
+    const slot = this.slots[index];
+
+    return slot;
+  }
 }
