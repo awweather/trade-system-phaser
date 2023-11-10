@@ -19,10 +19,7 @@ import {
   itemMovedToPlayerShopInventory,
   itemMovedToShopInventory,
   mapInventorySlot,
-  moveItem,
-  moveItemInSameInventoryGrid,
 } from "../../shop/ShopUtilities.ts";
-import { shopViewModel } from "../../shop/ShopViewModel.ts";
 import { GameEntity } from "../GameEntity.ts";
 import { initializeEntity } from "../InitializeEntity.ts";
 import {
@@ -64,133 +61,125 @@ class ShopSystem extends System {
       }
     );
 
-    eventEmitter.on(
-      keys.items.DROPPED(HudContext.playerInPlay),
-      (
-        entity: GameEntity,
-        droppedInSlotIndex: number,
-        droppedInSameInventoryGrid: boolean
-      ) => {
-        if (droppedInSameInventoryGrid) {
-          moveItemInSameInventoryGrid(
-            entity,
-            playerEntity.shopWindow.inPlay,
-            HudContext.playerInPlay,
-            droppedInSlotIndex
-          );
+    // eventEmitter.on(
+    //   keys.items.DROPPED(HudContext.playerInPlay),
+    //   (
+    //     entity: GameEntity,
+    //     droppedInSlotIndex: number,
+    //     droppedInSameInventoryGrid: boolean
+    //   ) => {
+    //     if (droppedInSameInventoryGrid) {
+    //       moveItemInSameInventoryGrid(
+    //         entity,
+    //         playerEntity.shopWindow.inPlay,
+    //         HudContext.playerInPlay,
+    //         droppedInSlotIndex
+    //       );
 
-          return;
-        }
+    //       return;
+    //     }
 
-        moveItem(
-          entity,
-          playerEntity.shopWindow.inventory,
-          playerEntity.shopWindow.inPlay,
-          HudContext.playerInPlay,
-          droppedInSlotIndex
-        );
-      }
-    );
+    //     moveItem(
+    //       entity,
+    //       playerEntity.shopWindow.inventory,
+    //       playerEntity.shopWindow.inPlay,
+    //       HudContext.playerInPlay,
+    //       droppedInSlotIndex
+    //     );
+    //   }
+    // );
 
-    eventEmitter.on(
-      keys.items.DROPPED(HudContext.shopInPlay),
-      (
-        entity: GameEntity,
-        droppedInSlotIndex: number,
-        droppedInSameInventoryGrid: boolean
-      ) => {
-        if (droppedInSameInventoryGrid) {
-          moveItemInSameInventoryGrid(
-            entity,
-            playerEntity.shopWindow.npcInPlay,
-            HudContext.shopInPlay,
-            droppedInSlotIndex
-          );
+    // eventEmitter.on(
+    //   keys.items.DROPPED(HudContext.shopInPlay),
+    //   (
+    //     entity: GameEntity,
+    //     droppedInSlotIndex: number,
+    //     droppedInSameInventoryGrid: boolean
+    //   ) => {
+    //     if (droppedInSameInventoryGrid) {
+    //       moveItemInSameInventoryGrid(
+    //         entity,
+    //         playerEntity.shopWindow.npcInPlay,
+    //         HudContext.shopInPlay,
+    //         droppedInSlotIndex
+    //       );
 
-          return;
-        }
+    //       return;
+    //     }
 
-        moveItem(
-          entity,
-          playerEntity.shopWindow.npcInventory,
-          playerEntity.shopWindow.npcInPlay,
-          HudContext.shopInPlay,
-          droppedInSlotIndex
-        );
-      }
-    );
+    //     moveItem(
+    //       entity,
+    //       playerEntity.shopWindow.npcInventory,
+    //       playerEntity.shopWindow.npcInPlay,
+    //       HudContext.shopInPlay,
+    //       droppedInSlotIndex
+    //     );
+    //   }
+    // );
 
-    eventEmitter.on(
-      keys.items.DROPPED(HudContext.playerShopInventory),
-      (
-        entity: GameEntity,
-        droppedInSlotIndex: number,
-        droppedInSameInventoryGrid: boolean
-      ) => {
-        if (droppedInSameInventoryGrid) {
-          moveItemInSameInventoryGrid(
-            entity,
-            playerEntity.shopWindow.inventory,
-            HudContext.playerShopInventory,
-            droppedInSlotIndex
-          );
+    // eventEmitter.on(
+    //   keys.items.DROPPED(HudContext.playerShopInventory),
+    //   (
+    //     entity: GameEntity,
+    //     droppedInSlotIndex: number,
+    //     droppedInSameInventoryGrid: boolean
+    //   ) => {
+    //     if (droppedInSameInventoryGrid) {
+    //       moveItemInSameInventoryGrid(
+    //         entity,
+    //         playerEntity.shopWindow.inventory,
+    //         HudContext.playerShopInventory,
+    //         droppedInSlotIndex
+    //       );
 
-          return;
-        }
+    //       return;
+    //     }
 
-        moveItem(
-          entity,
-          playerEntity.shopWindow.inPlay,
-          playerEntity.shopWindow.inventory,
-          HudContext.playerShopInventory,
-          droppedInSlotIndex
-        );
-      }
-    );
+    //     moveItem(
+    //       entity,
+    //       playerEntity.shopWindow.inPlay,
+    //       playerEntity.shopWindow.inventory,
+    //       HudContext.playerShopInventory,
+    //       droppedInSlotIndex
+    //     );
+    //   }
+    // );
 
-    eventEmitter.on(
-      keys.items.DROPPED(HudContext.shopInventory),
-      (
-        entity: GameEntity,
-        droppedInSlotIndex: number,
-        droppedInSameInventoryGrid: boolean
-      ) => {
-        if (droppedInSameInventoryGrid) {
-          moveItemInSameInventoryGrid(
-            entity,
-            playerEntity.shopWindow.npcInventory,
-            HudContext.shopInventory,
-            droppedInSlotIndex
-          );
+    // eventEmitter.on(
+    //   keys.items.DROPPED(HudContext.shopInventory),
+    //   (
+    //     entity: GameEntity,
+    //     droppedInSlotIndex: number,
+    //     droppedInSameInventoryGrid: boolean
+    //   ) => {
+    //     if (droppedInSameInventoryGrid) {
+    //       moveItemInSameInventoryGrid(
+    //         entity,
+    //         playerEntity.shopWindow.npcInventory,
+    //         HudContext.shopInventory,
+    //         droppedInSlotIndex
+    //       );
 
-          return;
-        }
-        moveItem(
-          entity,
-          playerEntity.shopWindow.npcInPlay,
-          playerEntity.shopWindow.npcInventory,
-          HudContext.shopInventory,
-          droppedInSlotIndex
-        );
-      }
-    );
+    //       return;
+    //     }
+    //     moveItem(
+    //       entity,
+    //       playerEntity.shopWindow.npcInPlay,
+    //       playerEntity.shopWindow.npcInventory,
+    //       HudContext.shopInventory,
+    //       droppedInSlotIndex
+    //     );
+    //   }
+    // );
 
     eventEmitter.on(keys.menu.CLICKED("balanceOffer"), () => {
       balanceOffer();
     });
 
     eventEmitter.on(keys.menu.CLICKED("acceptTrade"), () => {
-      if (shopViewModel.inPlayValue < shopViewModel.shopInPlayValue) {
-        return;
-      }
-
       executeTrade();
 
       this.tradeInitiated(shopkeeperEntity.entityId.value);
-    });
-
-    eventEmitter.on(keys.menu.CLICKED("closeShop"), () => {
-      shopViewModel.closeShopWindow();
     });
 
     eventEmitter.on(keys.menu.CLICKED("trade"), (shopkeeperId: string) => {

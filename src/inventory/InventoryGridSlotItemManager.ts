@@ -1,12 +1,11 @@
 import { eventEmitter } from "../EventEmitter.ts";
 import { keys } from "../config/Keys.ts";
-import InventoryGridSlot from "./InventoryGridSlot.ts";
-import { AddItemConfig } from "./ItemGridSlot.ts";
-import ItemNew from "./ItemNew.ts";
+import InventoryGridSlot, { AddItemConfig } from "./InventoryGridSlot.ts";
+import Item from "./Item.ts";
 import ItemSpriteFactory from "./ItemSpriteFactory.ts";
 
 export default class InventoryGridSlotItemManager {
-  private item: ItemNew | null = null;
+  private item: Item | null = null;
   updateQuantity: (val: number) => void;
   qty: Phaser.GameObjects.Text | null = null;
 
@@ -58,19 +57,7 @@ export default class InventoryGridSlotItemManager {
       config.frame
     );
 
-    this.item = new ItemNew(itemSprite, config);
-
-    // this.item = new Item({
-    //   scene: this.scene,
-    //   x: this.itemSlot.slotSprite.x,
-    //   y: this.itemSlot.slotSprite.y,
-    //   texture: "icons",
-    //   frame: config.renderable.sprite.frame,
-    //   name: config.descriptor.name,
-    //   description: config.descriptor.description,
-    //   entity: config.entity,
-    //   itemId: config.itemId,
-    // });
+    this.item = new Item(itemSprite, config);
 
     // Add the new sprite to the scene
     this.scene.add.existing(itemSprite);

@@ -1,5 +1,6 @@
 import { eventEmitter } from "../EventEmitter.ts";
 import { keys } from "../config/Keys.ts";
+import TradeScene from "../scenes/TradeScene.ts";
 import InventoryGridSlot from "./InventoryGridSlot.ts";
 
 export interface HoverManager {
@@ -14,7 +15,7 @@ export default class InventoryGridSlotPointerEventManager
   implements HoverManager
 {
   constructor(
-    private readonly scene: Phaser.Scene,
+    private readonly scene: TradeScene,
     private readonly itemSlot: InventoryGridSlot
   ) {
     super();

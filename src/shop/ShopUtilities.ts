@@ -7,7 +7,6 @@ import {
   TradeIdComponent,
 } from "../ecs/components/Components.ts";
 import { getGold } from "../prefabs/Items.ts";
-import { shopViewModel } from "./ShopViewModel.ts";
 
 import { HudContext } from "../HudContext.ts";
 import { initializeEntity } from "../ecs/InitializeEntity.ts";
@@ -19,13 +18,6 @@ import {
 import { ItemSlot } from "../inventory/ItemSlot.ts";
 import { playerEntity, shopSystem, world } from "../main.ts";
 import { ShopEvent } from "./ShopEventEmitter.ts";
-
-export function calculateValueDifference(): number {
-  // Assuming shopViewModel is accessible in this scope
-  const playerValue = shopViewModel.inPlayValue;
-  const npcValue = shopViewModel.shopInPlayValue;
-  return npcValue - playerValue;
-}
 
 /**
  *
@@ -178,7 +170,7 @@ export function balancePlayerGold(
           slotIndex: slotToAddTo!.slotIndex,
         });
 
-        shopViewModel.updateShopWindow();
+        // shopViewModel.updateShopWindow();
       }
     } else {
       const { itemWithMatchingQuantityType } = getItemWithQuantityOfType(
@@ -245,7 +237,7 @@ export function balanceNpcGold(
         splitItem.addComponent<PickedUpComponent>(PickedUpComponent, {
           slotIndex: slotToAddTo!.slotIndex,
         });
-        shopViewModel.updateShopWindow();
+        // shopViewModel.updateShopWindow();
       }
     } else {
       const { itemWithMatchingQuantityType } = getItemWithQuantityOfType(
@@ -275,7 +267,7 @@ export function balanceNpcGold(
 export function itemRemovedFromPlayerInventory(slotIndex: number) {
   const slot = playerEntity.shopWindow.inventory[slotIndex];
   slot.removeItem();
-  shopViewModel.removeItemFromPlayerInventory(slotIndex);
+  // shopViewModel.removeItemFromPlayerInventory(slotIndex);
 }
 
 /**
@@ -312,10 +304,14 @@ export function itemMovedShopInPlay(
   // Add the item to the new slot
   shopWindow.npcInPlay[targetSlot!.slotIndex].addItem(removedItem);
 
-  // Update UI
-  shopViewModel.moveItemShopInPlay(item, targetSlot!.slotIndex);
-  shopViewModel.removeItemFromShopInventory(slot!.slotIndex);
-  shopViewModel.updateShopWindow();
+  shopSystem.events.emit(ShopEvent.ITEM_ADDED, {
+    item,
+    targetSlotContext: HudContext.shopInPlay,
+    currentSlotContext: HudContext.shopInventory,
+    targetSlotIndex: targetSlot!.slotIndex,
+    currentSlotIndex: slot!.slotIndex,
+    removedItemId: removedItem,
+  });
 }
 
 /**
@@ -386,10 +382,6 @@ export function itemMovedToShopInventory(
       : shopWindow.npcInventory.find((s) => !s.hasItem());
 
   shopWindow.npcInventory[targetSlot!.slotIndex].addItem(removedItem);
-
-  shopViewModel.moveItemToShopInventory(item, targetSlot!.slotIndex);
-  shopViewModel.removeItemFromShopInPlay(slot!.slotIndex, removedItem);
-  shopViewModel.updateShopWindow();
 }
 
 export function moveItemInSameInventoryGrid(
@@ -505,10 +497,6 @@ export function itemMovedToPlayerShopInventory(
       : shopWindow.inventory.find((s) => !s.hasItem());
 
   shopWindow.inventory[targetSlot!.slotIndex].addItem(removedItem);
-
-  shopViewModel.moveItemToPlayerInventory(item, targetSlot!.slotIndex);
-  shopViewModel.removeItemFromPlayerInPlay(slot!.slotIndex, removedItem);
-  shopViewModel.updateShopWindow();
 }
 
 /**
@@ -603,26 +591,27 @@ export function transferItemsToPlayer(
  * Attempts to balance an offer between the player and the npc
  */
 export function balanceOffer() {
-  const playerInPlayValue = shopViewModel.inPlayValue;
-  const npcInPlayValue = shopViewModel.shopInPlayValue;
+  const playerInPlayValue = getValueOfItemsInSlots(
+    playerEntity.shopWindow.inPlay
+  );
+  const npcInPlayValue = getValueOfItemsInSlots(
+    playerEntity.shopWindow.npcInPlay
+  );
 
   if (playerInPlayValue === npcInPlayValue) return;
 
   if (playerInPlayValue < npcInPlayValue) {
     // balance offer with the players gold
-    balanceOfferWithPlayerGold();
+    balanceOfferWithPlayerGold(npcInPlayValue - playerInPlayValue);
   } else {
-    balanceOfferWithNpcGold();
+    balanceOfferWithNpcGold(playerInPlayValue - npcInPlayValue);
   }
-
-  shopViewModel.updateShopWindow();
 }
 
 /**
  * Attempts to balance the offer using the player's gold
  */
-export function balanceOfferWithPlayerGold() {
-  const differenceInValue = calculateValueDifference();
+export function balanceOfferWithPlayerGold(differenceInValue: number) {
   const playerGoldEntities = getPlayerShopGoldEntities();
   const availableGold = calculateAvailableGold(playerGoldEntities);
 
@@ -638,9 +627,7 @@ export function balanceOfferWithPlayerGold() {
 /**
  *  Attempts to balance the offer using the npc's gold
  */
-export function balanceOfferWithNpcGold() {
-  const differenceInValue =
-    shopViewModel.inPlayValue - shopViewModel.shopInPlayValue;
+export function balanceOfferWithNpcGold(differenceInValue: number) {
   const goldEntities = getShopGoldEntities();
   const availableGold = calculateAvailableGold(goldEntities);
 

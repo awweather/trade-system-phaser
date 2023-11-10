@@ -7,7 +7,6 @@ import itemsAtlas from "../assets/items.json";
 // import itemsImage from "../assets/items.png";
 import { keys } from "../config/Keys.ts";
 import { shopkeeperEntity, world } from "../main.ts";
-import { shopViewModel } from "../shop/ShopViewModel.ts";
 import ShopWindow from "../shop/ShopWindow.ts";
 import ShopWindowFactory from "../shop/ShopWindowFactory.ts";
 
@@ -64,8 +63,6 @@ export default class TradeScene extends Phaser.Scene {
       });
 
     alignGrid.center(this.startTradeText);
-
-    shopViewModel.registerScene(this);
   }
 
   update(time: number, delta: number): void {

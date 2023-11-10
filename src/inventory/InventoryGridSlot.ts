@@ -20,6 +20,7 @@ import ItemInfoPanelManager from "./ItemInfoPanelManager.ts";
 export interface AddItemConfig {
   renderable: RenderableComponent;
   descriptor: DescriptorComponent;
+  frame: string;
   entity: GameEntity;
   pickedUp?: PickedUpComponent;
   quantity?: QuantityComponent;
