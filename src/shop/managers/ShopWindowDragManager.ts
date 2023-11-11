@@ -76,6 +76,45 @@ export default class ShopWindowDragManager implements DragManager {
 
     item.itemSprite.setScale(1.25);
 
+    item.itemSprite.on("dragenter", (obj, itemSlotSprite: OverlapSizer) => {
+      const slotContext = itemSlotSprite.getData("slotType");
+      const slotIndex = itemSlotSprite.getData("slotIndex");
+      if (getValidDropTarget(slotContext)) {
+        this.itemSlot.events.emit(InventoryGridSlotEvent.DRAG_OVER, {
+          slotIndex,
+          slotContext,
+        });
+      }
+    });
+
+    item.itemSprite.on("dragleave", (obj, itemSlotSprite: OverlapSizer) => {
+      const slotContext = itemSlotSprite.getData("slotType");
+      const slotIndex = itemSlotSprite.getData("slotIndex");
+      if (getValidDropTarget(slotContext)) {
+        this.itemSlot.events.emit(InventoryGridSlotEvent.DRAG_LEAVE, {
+          slotIndex,
+          slotContext,
+        });
+      }
+    });
+
+    item.itemSprite.on(
+      "dragend",
+      (
+        pointer: Phaser.Input.Pointer,
+        dragX: number,
+        dragY: number,
+        dropped: boolean
+      ) => {
+        if (!dropped) {
+          item!.itemSprite.x = startingX;
+          item!.itemSprite.y = startingY;
+          item.itemSprite.setScale(1);
+          this.itemSlot.slotSprite.layout();
+        }
+      }
+    );
+
     item.itemSprite.on(
       "dragend",
       (

@@ -116,6 +116,16 @@ export default class InventoryGridSlot {
     this.dragManager!.handleDrag(pointer);
   }
 
+  handlePointerOver() {
+    this.assertInitialized();
+    this.pointerEventManager?.handlePointerOver(null);
+  }
+
+  handlePointerOut() {
+    this.assertInitialized();
+    this.pointerEventManager?.handlePointerOut(null);
+  }
+
   assertInitialized() {
     if (
       !this.dragManager ||

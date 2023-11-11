@@ -9,6 +9,8 @@ export const enum InventoryGridSlotEvent {
   ITEM_CLICKED = "item_clicked",
   DRAG_STARTED = "drag_started",
   DRAG_ENDED = "drag_ended",
+  DRAG_OVER = "drag_over",
+  DRAG_LEAVE = "drag_out",
   POINTER_OVER = "pointer_over",
   POINTER_OUT = "pointer_out",
   POINTER_UP = "pointer_up",
@@ -23,6 +25,16 @@ export interface DragEndedProps {
   landingSlotContext: HudContext;
 }
 
+export interface DragOverProps {
+  slotIndex: number;
+  slotContext: HudContext;
+}
+
+export interface DragOutProps {
+  slotIndex: number;
+  slotContext: HudContext;
+}
+
 export interface ItemClickedProps {
   slotIndex: number;
   slotType: HudContext;
@@ -34,6 +46,8 @@ export interface InventoryGridSlotEventMap {
   [InventoryGridSlotEvent.ITEM_REMOVED]: string; // Assuming itemId is a string
   [InventoryGridSlotEvent.DRAG_ENDED]: DragEndedProps;
   [InventoryGridSlotEvent.ITEM_CLICKED]: ItemClickedProps;
+  [InventoryGridSlotEvent.DRAG_OVER]: DragOverProps;
+  [InventoryGridSlotEvent.DRAG_LEAVE]: DragOutProps;
   // ... other event payloads
 }
 

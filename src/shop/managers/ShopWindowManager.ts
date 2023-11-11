@@ -49,6 +49,33 @@ export class ShopWindowManager {
           moveItemInPlay(itemClickedProps.item);
         }
       );
+
+      slot.events.on(InventoryGridSlotEvent.DRAG_OVER, (dragOverProps) => {
+        const slot = this.getItemSlotFromContext(
+          dragOverProps.slotIndex,
+          dragOverProps.slotContext
+        );
+
+        if (
+          !getValidDropTarget(slot!.slotType).includes(
+            dragOverProps.slotContext
+          )
+        )
+          return;
+
+        slot!.handlePointerOver();
+      });
+
+      slot.events.on(InventoryGridSlotEvent.DRAG_LEAVE, (dragOverProps) => {
+        const slot = this.getItemSlotFromContext(
+          dragOverProps.slotIndex,
+          dragOverProps.slotContext
+        );
+
+        if (slot!.slotType !== dragOverProps.slotContext) return;
+
+        slot!.handlePointerOut();
+      });
     });
 
     playerInPlay.slots.forEach((slot) => {
@@ -62,6 +89,32 @@ export class ShopWindowManager {
           moveItemToPlayerShopInventory(itemClickedProps.item);
         }
       );
+      slot.events.on(InventoryGridSlotEvent.DRAG_OVER, (dragOverProps) => {
+        const slot = this.getItemSlotFromContext(
+          dragOverProps.slotIndex,
+          dragOverProps.slotContext
+        );
+
+        if (
+          !getValidDropTarget(slot!.slotType).includes(
+            dragOverProps.slotContext
+          )
+        )
+          return;
+
+        slot!.handlePointerOver();
+      });
+
+      slot.events.on(InventoryGridSlotEvent.DRAG_LEAVE, (dragOverProps) => {
+        const slot = this.getItemSlotFromContext(
+          dragOverProps.slotIndex,
+          dragOverProps.slotContext
+        );
+
+        if (slot!.slotType !== dragOverProps.slotContext) return;
+
+        slot!.handlePointerOut();
+      });
     });
 
     shopInventory.slots.forEach((slot) => {
@@ -382,4 +435,20 @@ function decomposeItem(item: GameEntity): AddItemConfig {
     tradeId: item.getComponent<TradeIdComponent>(TradeIdComponent),
     itemId: item.entityId.value,
   };
+}
+
+function getValidDropTarget(context: HudContext) {
+  switch (context) {
+    case HudContext.playerShopInventory:
+      return [HudContext.playerInPlay, HudContext.playerShopInventory];
+
+    case HudContext.playerInPlay:
+      return [HudContext.playerShopInventory, HudContext.playerInPlay];
+    case HudContext.shopInventory:
+      return [HudContext.shopInPlay, HudContext.shopInventory];
+    case HudContext.shopInPlay:
+      return [HudContext.shopInventory, HudContext.shopInPlay];
+    default:
+      return [];
+  }
 }
