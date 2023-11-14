@@ -371,6 +371,10 @@ export class ShopWindowManager {
       landingSlotContext
     );
 
+    if (landingSlot?.hasItem()) {
+      return;
+    }
+
     const droppedInSameContext =
       currentSlot?.slotType === landingSlot?.slotType;
 

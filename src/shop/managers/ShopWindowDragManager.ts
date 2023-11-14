@@ -106,10 +106,12 @@ export default class ShopWindowDragManager implements DragManager {
         dragY: number,
         dropped: boolean
       ) => {
+        item.itemSprite.setScale(1);
+
         if (!dropped) {
           item!.itemSprite.x = startingX;
           item!.itemSprite.y = startingY;
-          item.itemSprite.setScale(1);
+
           this.itemSlot.slotSprite.layout();
         }
       }
