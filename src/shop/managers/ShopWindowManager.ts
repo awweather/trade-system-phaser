@@ -194,7 +194,7 @@ export class ShopWindowManager {
 
     shopSystem.events.on(ShopEvent.TRADE_COMPLETED, () => {
       this.updateShopWindow();
-      this.removeAllInPlayItems();
+      this.removeAllItems();
     });
   }
 
@@ -216,9 +216,11 @@ export class ShopWindowManager {
     }
   }
 
-  removeAllInPlayItems() {
+  removeAllItems() {
     this.playerInPlay.slots.forEach((slot) => slot.removeItem());
     this.shopInPlay.slots.forEach((slot) => slot.removeItem());
+    this.playerInventory.slots.forEach((slot) => slot.removeItem());
+    this.shopInventory.slots.forEach((slot) => slot.removeItem());
   }
 
   moveItemFromShopInventory(dragEndedProps: DragEndedProps) {
@@ -403,6 +405,7 @@ export class ShopWindowManager {
 
   updateShopWindow() {
     this.shopWindow.updateShopCoins(this.shopCoins);
+    this.shopWindow.updatePlayerCoins(this.playerCoins);
     this.shopWindow.updateCoinsInPlay(this.inPlayValue);
     this.shopWindow.updateShopCoinsInPlay(this.shopInPlayValue);
   }

@@ -76,34 +76,40 @@ export default class ShopWindowDragManager implements DragManager {
 
     item.itemSprite.setScale(1.25);
 
-    item.itemSprite.on("dragenter", (obj, itemSlotSprite: OverlapSizer) => {
-      const slotContext = itemSlotSprite.getData("slotType");
-      const slotIndex = itemSlotSprite.getData("slotIndex");
-      if (getValidDropTarget(slotContext)) {
-        this.itemSlot.events.emit(InventoryGridSlotEvent.DRAG_OVER, {
-          slotIndex,
-          slotContext,
-        });
+    item.itemSprite.on(
+      "dragenter",
+      (_pointer: Phaser.Input.Pointer, itemSlotSprite: OverlapSizer) => {
+        const slotContext = itemSlotSprite.getData("slotType");
+        const slotIndex = itemSlotSprite.getData("slotIndex");
+        if (getValidDropTarget(slotContext)) {
+          this.itemSlot.events.emit(InventoryGridSlotEvent.DRAG_OVER, {
+            slotIndex,
+            slotContext,
+          });
+        }
       }
-    });
+    );
 
-    item.itemSprite.on("dragleave", (obj, itemSlotSprite: OverlapSizer) => {
-      const slotContext = itemSlotSprite.getData("slotType");
-      const slotIndex = itemSlotSprite.getData("slotIndex");
-      if (getValidDropTarget(slotContext)) {
-        this.itemSlot.events.emit(InventoryGridSlotEvent.DRAG_LEAVE, {
-          slotIndex,
-          slotContext,
-        });
+    item.itemSprite.on(
+      "dragleave",
+      (_pointer: Phaser.Input.Pointer, itemSlotSprite: OverlapSizer) => {
+        const slotContext = itemSlotSprite.getData("slotType");
+        const slotIndex = itemSlotSprite.getData("slotIndex");
+        if (getValidDropTarget(slotContext)) {
+          this.itemSlot.events.emit(InventoryGridSlotEvent.DRAG_LEAVE, {
+            slotIndex,
+            slotContext,
+          });
+        }
       }
-    });
+    );
 
     item.itemSprite.on(
       "dragend",
       (
-        pointer: Phaser.Input.Pointer,
-        dragX: number,
-        dragY: number,
+        _pointer: Phaser.Input.Pointer,
+        _dragX: number,
+        _dragY: number,
         dropped: boolean
       ) => {
         item.itemSprite.setScale(1);
@@ -120,9 +126,9 @@ export default class ShopWindowDragManager implements DragManager {
     item.itemSprite.on(
       "dragend",
       (
-        pointer: Phaser.Input.Pointer,
-        dragX: number,
-        dragY: number,
+        _pointer: Phaser.Input.Pointer,
+        _dragX: number,
+        _dragY: number,
         dropped: boolean
       ) => {
         if (!dropped) {
@@ -140,7 +146,7 @@ export default class ShopWindowDragManager implements DragManager {
       "drop",
       function (
         this: any,
-        pointer: Phaser.Input.Pointer,
+        _pointer: Phaser.Input.Pointer,
         gameObject: OverlapSizer
       ) {
         let isValidDropTarget = true;
