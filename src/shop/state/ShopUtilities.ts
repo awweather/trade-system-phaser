@@ -100,9 +100,10 @@ export function sortGoldByQuantity(goldEntities: GameEntity[]): GameEntity[] {
  */
 export function splitGoldStack(
   baseItem: GameEntity,
-  amount: number
+  amount: number,
+  context: HudContext
 ): GameEntity {
-  baseItem.quantity_mutable!.value -= amount;
+  applyNewItemQuantity(baseItem, baseItem.quantity.value - amount, context);
 
   const splitItem = getGold(amount);
   const entity = initializeEntity(splitItem);
@@ -148,13 +149,26 @@ export function balancePlayerGold(
       );
 
       if (itemWithMatchingQuantityType && slot) {
-        itemWithMatchingQuantityType.quantity_mutable.value +=
-          differenceInValue;
-        goldItem.quantity_mutable.value -= differenceInValue;
+        applyNewItemQuantity(
+          itemWithMatchingQuantityType,
+          itemWithMatchingQuantityType.quantity_mutable.value +
+            differenceInValue,
+          HudContext.playerInPlay
+        );
+
+        applyNewItemQuantity(
+          goldItem,
+          goldItem.quantity_mutable.value - differenceInValue,
+          HudContext.playerShopInventory
+        );
 
         removeItemIfQuantityZero(goldItem, shopWindow.inventory);
       } else {
-        const splitItem = splitGoldStack(goldItem, differenceInValue);
+        const splitItem = splitGoldStack(
+          goldItem,
+          differenceInValue,
+          HudContext.playerShopInventory
+        );
         // Do this so that we can call itemMovedInPlay
         shopWindow.inventory
           .find((i) => !i.hasItem())
@@ -169,8 +183,6 @@ export function balancePlayerGold(
         splitItem.addComponent<PickedUpComponent>(PickedUpComponent, {
           slotIndex: slotToAddTo!.slotIndex,
         });
-
-        // shopViewModel.updateShopWindow();
       }
     } else {
       const { itemWithMatchingQuantityType } = getItemWithQuantityOfType(
@@ -179,9 +191,17 @@ export function balancePlayerGold(
       );
 
       if (itemWithMatchingQuantityType) {
-        itemWithMatchingQuantityType.quantity_mutable.value +=
-          quantityOfGoldItem;
-        goldItem.quantity_mutable.value -= differenceInValue;
+        applyNewItemQuantity(
+          itemWithMatchingQuantityType,
+          itemWithMatchingQuantityType.quantity.value + quantityOfGoldItem,
+          HudContext.playerInPlay
+        );
+
+        applyNewItemQuantity(
+          goldItem,
+          goldItem.quantity.value - differenceInValue,
+          HudContext.playerShopInventory
+        );
 
         removeItemIfQuantityZero(goldItem, shopWindow.inventory);
       } else {
@@ -216,13 +236,25 @@ export function balanceNpcGold(
       );
 
       if (itemWithMatchingQuantityType && slot) {
-        itemWithMatchingQuantityType.quantity_mutable.value +=
-          differenceInValue;
-        goldItem.quantity_mutable.value -= differenceInValue;
+        applyNewItemQuantity(
+          itemWithMatchingQuantityType,
+          itemWithMatchingQuantityType.quantity.value + differenceInValue,
+          HudContext.shopInPlay
+        );
+
+        applyNewItemQuantity(
+          goldItem,
+          goldItem.quantity.value - differenceInValue,
+          HudContext.shopInventory
+        );
 
         removeItemIfQuantityZero(goldItem, shopWindow.npcInventory);
       } else {
-        const splitItem = splitGoldStack(goldItem, differenceInValue);
+        const splitItem = splitGoldStack(
+          goldItem,
+          differenceInValue,
+          HudContext.shopInventory
+        );
 
         shopWindow.npcInventory
           .find((i) => !i.hasItem())
@@ -237,7 +269,6 @@ export function balanceNpcGold(
         splitItem.addComponent<PickedUpComponent>(PickedUpComponent, {
           slotIndex: slotToAddTo!.slotIndex,
         });
-        // shopViewModel.updateShopWindow();
       }
     } else {
       const { itemWithMatchingQuantityType } = getItemWithQuantityOfType(
@@ -246,9 +277,17 @@ export function balanceNpcGold(
       );
 
       if (itemWithMatchingQuantityType) {
-        itemWithMatchingQuantityType.quantity_mutable.value +=
-          quantityOfGoldItem;
-        goldItem.quantity_mutable.value -= differenceInValue;
+        applyNewItemQuantity(
+          itemWithMatchingQuantityType,
+          itemWithMatchingQuantityType.quantity.value + quantityOfGoldItem,
+          HudContext.shopInventory
+        );
+
+        applyNewItemQuantity(
+          goldItem,
+          goldItem.quantity.value - differenceInValue,
+          HudContext.shopInventory
+        );
 
         removeItemIfQuantityZero(goldItem, shopWindow.npcInventory);
       } else {
@@ -257,6 +296,20 @@ export function balanceNpcGold(
     }
 
     differenceInValue -= quantityOfGoldItem;
+  });
+}
+
+export function applyNewItemQuantity(
+  item: GameEntity,
+  newQuantity: number,
+  context: HudContext
+) {
+  item.quantity_mutable.value = newQuantity;
+
+  shopSystem.events.emit(ShopEvent.QUANTITY_UPDATED, {
+    currentSlotContext: context,
+    currentSlotIndex: item.pickedUp.slotIndex,
+    newQuantity: item.quantity.value,
   });
 }
 
@@ -382,6 +435,15 @@ export function moveItemToShopInventory(
       : shopWindow.npcInventory.find((s) => !s.hasItem());
 
   shopWindow.npcInventory[targetSlot!.slotIndex].addItem(removedItem);
+
+  shopSystem.events.emit(ShopEvent.ITEM_ADDED, {
+    item,
+    targetSlotContext: HudContext.shopInventory,
+    currentSlotContext: HudContext.shopInPlay,
+    targetSlotIndex: targetSlot!.slotIndex,
+    currentSlotIndex: slot!.slotIndex,
+    removedItemId: removedItem,
+  });
 }
 
 export function moveItemInSameInventoryGrid(
@@ -582,8 +644,12 @@ export function transferItemsToPlayer(
 
     // If it's gold, let's add the quantity to an already existing gold stack (if exists)
     if (itemWithMatchingQuantityType) {
-      itemWithMatchingQuantityType.quantity_mutable.value +=
-        itemToReceive.quantity.value;
+      applyNewItemQuantity(
+        itemWithMatchingQuantityType,
+        itemWithMatchingQuantityType.quantity.value +
+          itemToReceive.quantity.value,
+        HudContext.playerShopInventory
+      );
 
       // If it has this component, it exists only in the context of the trade
       if (!itemToReceive.hasComponent(TradeIdComponent)) {
@@ -686,8 +752,12 @@ export function transferItemsToNpc(
 
     // If it's gold, let's add the quantity to an already existing gold stack (if exists)
     if (itemWithMatchingQuantityType) {
-      itemWithMatchingQuantityType.quantity_mutable.value +=
-        itemToReceive.quantity.value;
+      applyNewItemQuantity(
+        itemWithMatchingQuantityType,
+        itemWithMatchingQuantityType.quantity.value +
+          itemToReceive.quantity.value,
+        HudContext.shopInventory
+      );
 
       // If it has this component, it exists only in the context of the trade
       if (!itemToReceive.hasComponent(TradeIdComponent)) {

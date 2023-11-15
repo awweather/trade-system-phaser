@@ -289,10 +289,6 @@ class ShopSystem extends System {
       const quantity = gameEntity.quantity;
 
       // Notify subscribers that quantity value has changed
-      eventEmitter.emit(
-        keys.items.QTY_CHANGED(gameEntity.entityId.value),
-        quantity.value
-      );
     });
   }
 }

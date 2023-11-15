@@ -76,6 +76,10 @@ export default class InventoryGridSlot {
     return this.itemManager!.hasItem();
   }
 
+  updateQuantity(newQuantity: number) {
+    this.itemManager?.updateQuantity(newQuantity);
+  }
+
   setSlotIndex(slotIndex: number) {
     this.slotIndex = slotIndex;
     this.slotSprite.setData("slotIndex", slotIndex);

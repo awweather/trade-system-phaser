@@ -37,7 +37,7 @@ export default class InventoryGridSlotPointerEventManager
         this.handlePointerUp(pointer);
       });
   }
-  handlePointerOver(pointer: Phaser.Input.Pointer) {
+  handlePointerOver(_pointer: Phaser.Input.Pointer) {
     // The typings for the UI plugin don't include this.backgroundChildren
     const anyHack = this.itemSlot.slotSprite as any;
     anyHack.backgroundChildren[0].setStrokeStyle(1, 0xa08662);
@@ -47,7 +47,7 @@ export default class InventoryGridSlotPointerEventManager
     }
   }
 
-  handlePointerOut(pointer: Phaser.Input.Pointer) {
+  handlePointerOut(_pointer: Phaser.Input.Pointer) {
     // The typings for the UI plugin don't include this.backgroundChildren
     const anyHack = this.itemSlot.slotSprite as any;
     anyHack.backgroundChildren[0].setStrokeStyle(null);
@@ -67,8 +67,10 @@ export default class InventoryGridSlotPointerEventManager
     if (
       this.scene.controls.shift.isDown ||
       this.scene.controls.justDown(this.scene.controls.shift)
-    )
+    ) {
+      console.log("shuft down");
       return;
+    }
 
     this.itemSlot.handleDrag(pointer);
   }

@@ -143,6 +143,18 @@ export class ShopWindowManager {
       );
     });
 
+    shopSystem.events.on(ShopEvent.QUANTITY_UPDATED, (props) => {
+      const { currentSlotIndex, currentSlotContext, newQuantity } = props;
+      const currentSlot = this.getItemSlotFromContext(
+        currentSlotIndex,
+        currentSlotContext
+      );
+
+      currentSlot?.updateQuantity(newQuantity);
+
+      this.updateShopWindow();
+    });
+
     shopSystem.events.on(ShopEvent.ITEM_ADDED, (props) => {
       const currentSlot = this.getItemSlotFromContext(
         props.currentSlotIndex,

@@ -5,6 +5,7 @@ import { GameEntity } from "../../ecs/GameEntity.ts";
 export const enum ShopEvent {
   ITEM_ADDED = "item_added",
   ITEM_REMOVED = "item_removed",
+  QUANTITY_UPDATED = "update_quantity",
   TRADE_COMPLETED = "trade_completed",
   TRADE_INITIATED = "trade_initiated",
   DRAG_ENDED = "drag_ended",
@@ -40,11 +41,18 @@ export interface ItemAddedProps {
   removedItemId: string;
 }
 
+export interface UpdateQuantityProps {
+  currentSlotContext: HudContext;
+  currentSlotIndex: number;
+  newQuantity: number;
+}
+
 export interface ShopEventMap {
   [ShopEvent.ITEM_ADDED]: ItemAddedProps;
   [ShopEvent.ITEM_REMOVED]: string; // Assuming itemId is a string
   [ShopEvent.TRADE_INITIATED]: TradeInitiatedProps; // Assuming itemId is a string
   [ShopEvent.TRADE_COMPLETED]: undefined;
+  [ShopEvent.QUANTITY_UPDATED]: UpdateQuantityProps;
   // ... other event payloads
 }
 
