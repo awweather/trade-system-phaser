@@ -3,7 +3,6 @@ import {
   GridSizer,
   ScrollablePanel,
 } from "phaser3-rex-plugins/templates/ui/ui-components";
-import { HudContext } from "../../HudContext.ts";
 import { keys } from "../../config/Keys.ts";
 import InventoryGridSlot, { AddItemConfig } from "../ui/InventoryGridSlot.ts";
 import Item from "../ui/Item.ts";
@@ -22,22 +21,6 @@ export default class InventoryGridManager {
     this.scrollableContainer = scrollableContainer;
     const inventoryTable = panel.getElement(keys.ui.inventoryTable) as Sizer;
     this.grid = inventoryTable.getElement(keys.ui.inventoryGrid) as GridSizer;
-
-    this.slots.forEach((slot) => {
-      // slot.events.on(InventoryGridSlotEvent.DRAG_OVER, (dragOverProps) => {
-      //   const slot = this.getSlotAtIndex(dragOverProps.slotIndex);
-      //   if (
-      //     !getValidDropTarget(slot.slotType).includes(dragOverProps.slotContext)
-      //   )
-      //     return;
-      //   slot.handlePointerOver();
-      // });
-      // slot.events.on(InventoryGridSlotEvent.DRAG_LEAVE, (dragOverProps) => {
-      //   const slot = this.getSlotAtIndex(dragOverProps.slotIndex);
-      //   if (slot.slotType !== dragOverProps.slotContext) return;
-      //   slot.handlePointerOut();
-      // });
-    });
   }
 
   addItem(itemConfig: AddItemConfig, slotIndex: number): Item | null {
@@ -75,21 +58,5 @@ export default class InventoryGridManager {
     const slot = this.slots[index];
 
     return slot;
-  }
-}
-
-function getValidDropTarget(context: HudContext) {
-  switch (context) {
-    case HudContext.playerShopInventory:
-      return [HudContext.playerInPlay, HudContext.playerShopInventory];
-
-    case HudContext.playerInPlay:
-      return [HudContext.playerShopInventory, HudContext.playerInPlay];
-    case HudContext.shopInventory:
-      return [HudContext.shopInPlay, HudContext.shopInventory];
-    case HudContext.shopInPlay:
-      return [HudContext.shopInventory, HudContext.shopInPlay];
-    default:
-      return [];
   }
 }

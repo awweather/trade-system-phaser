@@ -151,14 +151,13 @@ export function balancePlayerGold(
       if (itemWithMatchingQuantityType && slot) {
         applyNewItemQuantity(
           itemWithMatchingQuantityType,
-          itemWithMatchingQuantityType.quantity_mutable.value +
-            differenceInValue,
+          itemWithMatchingQuantityType.quantity.value + differenceInValue,
           HudContext.playerInPlay
         );
 
         applyNewItemQuantity(
           goldItem,
-          goldItem.quantity_mutable.value - differenceInValue,
+          goldItem.quantity.value - differenceInValue,
           HudContext.playerShopInventory
         );
 
