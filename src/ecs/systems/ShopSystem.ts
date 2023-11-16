@@ -1,6 +1,5 @@
 import { Entity, System } from "ecsy";
 import { eventEmitter } from "../../EventEmitter.ts";
-import { HudContext } from "../../HudContext.ts";
 import { keys } from "../../config/Keys.ts";
 import {
   addToInventory,
@@ -19,17 +18,12 @@ import {
   executeTrade,
   getValueOfItemsInSlots,
   mapInventorySlot,
-  moveItemInPlay,
-  moveItemToShopInPlay,
-  moveItemToShopInventory,
-  movedItemToPlayerShopInventory,
 } from "../../shop/state/ShopUtilities.ts";
 import { GameEntity } from "../GameEntity.ts";
 import { initializeEntity } from "../InitializeEntity.ts";
 import {
   CurrencyComponent,
   InventoryComponent,
-  QuantityComponent,
   ShopWindowComponent,
   ShopkeeperComponent,
 } from "../components/Components.ts";
@@ -37,142 +31,31 @@ import {
 class ShopSystem extends System {
   public readonly events: ShopEventEmitter = new ShopEventEmitter();
   init() {
-    eventEmitter.on(
-      keys.itemSlots.CLICKED(HudContext.playerInPlay),
-      (entity: GameEntity) => {
-        movedItemToPlayerShopInventory(entity);
-      }
-    );
-
-    eventEmitter.on(
-      keys.itemSlots.CLICKED(HudContext.playerShopInventory),
-      (entity: GameEntity) => {
-        moveItemInPlay(entity);
-      }
-    );
-
-    eventEmitter.on(
-      keys.itemSlots.CLICKED(HudContext.shopInventory),
-      (entity: GameEntity) => {
-        moveItemToShopInPlay(entity);
-      }
-    );
-
-    eventEmitter.on(
-      keys.itemSlots.CLICKED(HudContext.shopInPlay),
-      (entity: GameEntity) => {
-        moveItemToShopInventory(entity);
-      }
-    );
-
     // eventEmitter.on(
-    //   keys.items.DROPPED(HudContext.playerInPlay),
-    //   (
-    //     entity: GameEntity,
-    //     droppedInSlotIndex: number,
-    //     droppedInSameInventoryGrid: boolean
-    //   ) => {
-    //     if (droppedInSameInventoryGrid) {
-    //       moveItemInSameInventoryGrid(
-    //         entity,
-    //         playerEntity.shopWindow.inPlay,
-    //         HudContext.playerInPlay,
-    //         droppedInSlotIndex
-    //       );
-
-    //       return;
-    //     }
-
-    //     moveItem(
-    //       entity,
-    //       playerEntity.shopWindow.inventory,
-    //       playerEntity.shopWindow.inPlay,
-    //       HudContext.playerInPlay,
-    //       droppedInSlotIndex
-    //     );
+    //   keys.itemSlots.CLICKED(HudContext.playerInPlay),
+    //   (entity: GameEntity) => {
+    //     movedItemToPlayerShopInventory(entity);
     //   }
     // );
 
     // eventEmitter.on(
-    //   keys.items.DROPPED(HudContext.shopInPlay),
-    //   (
-    //     entity: GameEntity,
-    //     droppedInSlotIndex: number,
-    //     droppedInSameInventoryGrid: boolean
-    //   ) => {
-    //     if (droppedInSameInventoryGrid) {
-    //       moveItemInSameInventoryGrid(
-    //         entity,
-    //         playerEntity.shopWindow.npcInPlay,
-    //         HudContext.shopInPlay,
-    //         droppedInSlotIndex
-    //       );
-
-    //       return;
-    //     }
-
-    //     moveItem(
-    //       entity,
-    //       playerEntity.shopWindow.npcInventory,
-    //       playerEntity.shopWindow.npcInPlay,
-    //       HudContext.shopInPlay,
-    //       droppedInSlotIndex
-    //     );
+    //   keys.itemSlots.CLICKED(HudContext.playerShopInventory),
+    //   (entity: GameEntity) => {
+    //     moveItemInPlay(entity);
     //   }
     // );
 
     // eventEmitter.on(
-    //   keys.items.DROPPED(HudContext.playerShopInventory),
-    //   (
-    //     entity: GameEntity,
-    //     droppedInSlotIndex: number,
-    //     droppedInSameInventoryGrid: boolean
-    //   ) => {
-    //     if (droppedInSameInventoryGrid) {
-    //       moveItemInSameInventoryGrid(
-    //         entity,
-    //         playerEntity.shopWindow.inventory,
-    //         HudContext.playerShopInventory,
-    //         droppedInSlotIndex
-    //       );
-
-    //       return;
-    //     }
-
-    //     moveItem(
-    //       entity,
-    //       playerEntity.shopWindow.inPlay,
-    //       playerEntity.shopWindow.inventory,
-    //       HudContext.playerShopInventory,
-    //       droppedInSlotIndex
-    //     );
+    //   keys.itemSlots.CLICKED(HudContext.shopInventory),
+    //   (entity: GameEntity) => {
+    //     moveItemToShopInPlay(entity);
     //   }
     // );
 
     // eventEmitter.on(
-    //   keys.items.DROPPED(HudContext.shopInventory),
-    //   (
-    //     entity: GameEntity,
-    //     droppedInSlotIndex: number,
-    //     droppedInSameInventoryGrid: boolean
-    //   ) => {
-    //     if (droppedInSameInventoryGrid) {
-    //       moveItemInSameInventoryGrid(
-    //         entity,
-    //         playerEntity.shopWindow.npcInventory,
-    //         HudContext.shopInventory,
-    //         droppedInSlotIndex
-    //       );
-
-    //       return;
-    //     }
-    //     moveItem(
-    //       entity,
-    //       playerEntity.shopWindow.npcInPlay,
-    //       playerEntity.shopWindow.npcInventory,
-    //       HudContext.shopInventory,
-    //       droppedInSlotIndex
-    //     );
+    //   keys.itemSlots.CLICKED(HudContext.shopInPlay),
+    //   (entity: GameEntity) => {
+    //     moveItemToShopInventory(entity);
     //   }
     // );
 
@@ -246,15 +129,6 @@ class ShopSystem extends System {
       playerItemEntities,
       playerName: playerEntity.descriptor.name,
     });
-    // Initialize shop window
-    // shopViewModel.showShopWindow(
-    //   tradingWith.inventory,
-    //   tradingWith.descriptor.name,
-    //   shopkeeperItemEntities,
-    //   playerEntity.descriptor.name,
-    //   playerEntity.inventory,
-    //   playerItemEntities
-    // );
   }
 
   execute() {
@@ -280,16 +154,6 @@ class ShopSystem extends System {
       const goldEntity = initializeEntity(goldItem);
       addToInventory(gameEntity, goldEntity);
     });
-
-    /**
-     * This query runs whenever the quantity component on an item changes
-     */
-    this.queries.quantity.changed!.forEach((entity: Entity) => {
-      const gameEntity = entity as GameEntity;
-      const quantity = gameEntity.quantity;
-
-      // Notify subscribers that quantity value has changed
-    });
   }
 }
 
@@ -298,12 +162,6 @@ ShopSystem.queries = {
     components: [ShopkeeperComponent, InventoryComponent],
     listen: {
       added: true,
-    },
-  },
-  quantity: {
-    components: [QuantityComponent],
-    listen: {
-      changed: true,
     },
   },
 };

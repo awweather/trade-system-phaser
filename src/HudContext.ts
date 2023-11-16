@@ -4,5 +4,4 @@ export enum HudContext {
   playerShopInventory,
   playerInPlay,
   shopInPlay,
-  insignia,
 }
