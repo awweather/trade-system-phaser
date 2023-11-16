@@ -2,7 +2,13 @@ import TradeScene from "../../scenes/TradeScene.ts";
 import InventoryGridSlot from "../ui/InventoryGridSlot.ts";
 import ItemInfoPanelFactory from "../ui/ItemInfoPanelFactory.ts";
 
-export default class ItemInfoPanelManager {
+export interface ItemInfoPanelManager {
+  showItemInfoPanel(): void;
+}
+
+export default class ShopWindowItemInfoPanelManager
+  implements ItemInfoPanelManager
+{
   constructor(
     private readonly scene: TradeScene,
     private readonly itemSlot: InventoryGridSlot

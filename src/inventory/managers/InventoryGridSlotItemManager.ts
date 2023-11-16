@@ -4,7 +4,15 @@ import InventoryGridSlot, { AddItemConfig } from "../ui/InventoryGridSlot.ts";
 import Item from "../ui/Item.ts";
 import ItemSpriteFactory from "../ui/ItemSpriteFactory.ts";
 
-export default class InventoryGridSlotItemManager {
+export interface ItemManager {
+  addItem(config: AddItemConfig): Item;
+  updateQuantity(val: number): void;
+  removeItem(): string;
+  hasItem(): boolean;
+  getItem(): Item | null;
+}
+
+export default class InventoryGridSlotItemManager implements ItemManager {
   private item: Item | null = null;
   updateQuantity: (val: number) => void;
   qty: Phaser.GameObjects.Text | null = null;

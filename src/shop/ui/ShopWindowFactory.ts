@@ -90,7 +90,7 @@ export default class ShopWindowFactory {
       fontSize: `12px`,
     });
 
-    const npcCoins = scene.add.text(0, 0, "2,000g", {
+    const npcCoins = scene.add.text(0, 0, "0g", {
       fontSize: `12px`,
     });
 
@@ -163,11 +163,11 @@ export default class ShopWindowFactory {
 
     actionBar.add(acceptButton).add(balanceOfferButton).add(closeWindowButton);
 
-    verticalSizer.add(horizontalSizer);
-    verticalSizer.add(actionBar);
-
-    verticalSizer.setVisible(false);
-    verticalSizer.layout();
+    verticalSizer
+      .add(horizontalSizer)
+      .add(actionBar)
+      .setVisible(false)
+      .layout();
 
     const shopWindow = new ShopWindow(
       verticalSizer,
@@ -180,7 +180,7 @@ export default class ShopWindowFactory {
     );
 
     alignGrid.center(shopWindow.sizer);
-    const shopWindowManager = new ShopWindowManager(
+    new ShopWindowManager(
       scene,
       shopWindow,
       playerShopInventory,

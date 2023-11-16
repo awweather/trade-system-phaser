@@ -7,7 +7,7 @@ import ShopWindowDragManager from "../../shop/managers/ShopWindowDragManager.ts"
 import InventoryGridManager from "../managers/InventoryGridManager.ts";
 import InventoryGridSlotItemManager from "../managers/InventoryGridSlotItemManager.ts";
 import InventoryGridSlotPointerEventManager from "../managers/InventoryGridSlotPointerEventManager.ts";
-import ItemInfoPanelManager from "../managers/ItemInfoPanelManager.ts";
+import ShopWindowItemInfoPanelManager from "../managers/ShopWindowItemInfoPanelManager.ts";
 import InventoryGridSlot from "./InventoryGridSlot.ts";
 
 export interface InventoryGridConfig {
@@ -90,7 +90,7 @@ export default class InventoryGridFactory {
         new InventoryGridSlotItemManager(scene, slot),
         new ShopWindowDragManager(scene, slot),
         new InventoryGridSlotPointerEventManager(scene, slot),
-        new ItemInfoPanelManager(scene, slot)
+        new ShopWindowItemInfoPanelManager(scene, slot)
       );
 
       slots.push(slot);

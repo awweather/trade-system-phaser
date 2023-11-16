@@ -8,9 +8,7 @@ import InventoryGridSlot, { AddItemConfig } from "../ui/InventoryGridSlot.ts";
 import Item from "../ui/Item.ts";
 
 export default class InventoryGridManager {
-  // The container for the inventory grid
   scrollableContainer: ScrollablePanel;
-  // The actual inventory grid
   grid: GridSizer;
 
   constructor(
@@ -26,8 +24,8 @@ export default class InventoryGridManager {
   addItem(itemConfig: AddItemConfig, slotIndex: number): Item | null {
     const slot =
       slotIndex !== undefined
-        ? this.slots[slotIndex]
-        : this.slots[itemConfig.pickedUp!.slotIndex];
+        ? this.getSlotAtIndex(slotIndex)
+        : this.getSlotAtIndex(itemConfig.pickedUp!.slotIndex);
 
     if (slot) {
       const item = slot.addItem(itemConfig);
@@ -36,22 +34,6 @@ export default class InventoryGridManager {
     }
 
     return null;
-  }
-
-  removeItem(index: number) {
-    const items = this.grid.getElement("items") as InventoryGridSlot[];
-    const slot = items[index];
-    slot?.removeItem();
-
-    this.grid.layout();
-  }
-
-  getItemAtIndex(index: number) {
-    const slot = this.getSlotAtIndex(index);
-
-    if (slot) {
-      return slot?.getItem();
-    }
   }
 
   getSlotAtIndex(index: number) {

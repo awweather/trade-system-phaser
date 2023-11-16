@@ -37,7 +37,8 @@ export default class TradeScene extends Phaser.Scene {
   }
 
   create() {
-    this.shopWindow = ShopWindowFactory.create(this);
+    ShopWindowFactory.create(this);
+
     this.controls = new Controls(
       this.input.keyboard!.createCursorKeys(),
       this.cameras.main,

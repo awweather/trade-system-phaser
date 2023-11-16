@@ -47,22 +47,18 @@ export default class ShopWindow {
     shopCoins: number
   ): void {
     this.updateShopName(shopName);
-
+    this.updatePlayerName(playerName);
     this.updatePlayerCoins(playerCoins);
     this.updateShopCoins(shopCoins);
-
-    // this.playerInventoryGrid.grid
-    //   .getChildren()
-    //   .forEach((child: any) => child.setDepth(1));
-    // this.shopInventoryGrid.grid
-    //   .getChildren()
-    //   .forEach((child: any) => child.setDepth(1));
-
     this.open();
   }
 
   updateShopCoins(amount: number) {
     this.shopCoins.setText(`${amount}g`);
+  }
+
+  updatePlayerName(name: string) {
+    this.playerName.setText(name);
   }
 
   updatePlayerCoins(amount: number) {

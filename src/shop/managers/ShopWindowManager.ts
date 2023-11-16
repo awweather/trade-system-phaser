@@ -29,7 +29,7 @@ import ShopWindow from "../ui/ShopWindow.ts";
 
 export class ShopWindowManager {
   constructor(
-    private scene: TradeScene,
+    private readonly scene: TradeScene,
     private readonly shopWindow: ShopWindow,
     private readonly playerInventory: InventoryGridManager,
     private readonly playerInPlay: InventoryGridManager,
@@ -51,10 +51,8 @@ export class ShopWindowManager {
       );
 
       slot.events.on(InventoryGridSlotEvent.DRAG_OVER, (dragOverProps) => {
-        const slot = this.getItemSlotFromContext(
-          dragOverProps.slotIndex,
-          dragOverProps.slotContext
-        );
+        const { slotContext, slotIndex } = dragOverProps;
+        const slot = this.getItemSlotFromContext(slotIndex, slotContext);
 
         if (
           !getValidDropTarget(slot!.slotType).includes(
@@ -63,18 +61,16 @@ export class ShopWindowManager {
         )
           return;
 
-        slot!.handlePointerOver();
+        slot!.handlePointerOver(this.scene.input.activePointer);
       });
 
-      slot.events.on(InventoryGridSlotEvent.DRAG_LEAVE, (dragOverProps) => {
-        const slot = this.getItemSlotFromContext(
-          dragOverProps.slotIndex,
-          dragOverProps.slotContext
-        );
+      slot.events.on(InventoryGridSlotEvent.DRAG_LEAVE, (dragLeaveProps) => {
+        const { slotContext, slotIndex } = dragLeaveProps;
+        const slot = this.getItemSlotFromContext(slotIndex, slotContext);
 
-        if (slot!.slotType !== dragOverProps.slotContext) return;
+        if (slot!.slotType !== slotContext) return;
 
-        slot!.handlePointerOut();
+        slot!.handlePointerOut(this.scene.input.activePointer);
       });
     });
 
@@ -90,30 +86,21 @@ export class ShopWindowManager {
         }
       );
       slot.events.on(InventoryGridSlotEvent.DRAG_OVER, (dragOverProps) => {
-        const slot = this.getItemSlotFromContext(
-          dragOverProps.slotIndex,
-          dragOverProps.slotContext
-        );
+        const { slotContext, slotIndex } = dragOverProps;
+        const slot = this.getItemSlotFromContext(slotIndex, slotContext);
 
-        if (
-          !getValidDropTarget(slot!.slotType).includes(
-            dragOverProps.slotContext
-          )
-        )
-          return;
+        if (!getValidDropTarget(slot!.slotType).includes(slotContext)) return;
 
-        slot!.handlePointerOver();
+        slot!.handlePointerOver(this.scene.input.activePointer);
       });
 
-      slot.events.on(InventoryGridSlotEvent.DRAG_LEAVE, (dragOverProps) => {
-        const slot = this.getItemSlotFromContext(
-          dragOverProps.slotIndex,
-          dragOverProps.slotContext
-        );
+      slot.events.on(InventoryGridSlotEvent.DRAG_LEAVE, (dragLeaveProps) => {
+        const { slotContext, slotIndex } = dragLeaveProps;
+        const slot = this.getItemSlotFromContext(slotIndex, slotContext);
 
-        if (slot!.slotType !== dragOverProps.slotContext) return;
+        if (slot!.slotType !== slotContext) return;
 
-        slot!.handlePointerOut();
+        slot!.handlePointerOut(this.scene.input.activePointer);
       });
     });
 
@@ -156,13 +143,20 @@ export class ShopWindowManager {
     });
 
     shopSystem.events.on(ShopEvent.ITEM_ADDED, (props) => {
+      const {
+        currentSlotContext,
+        currentSlotIndex,
+        targetSlotContext,
+        targetSlotIndex,
+      } = props;
+
       const currentSlot = this.getItemSlotFromContext(
-        props.currentSlotIndex,
-        props.currentSlotContext
+        currentSlotIndex,
+        currentSlotContext
       );
       const landingSlot = this.getItemSlotFromContext(
-        props.targetSlotIndex,
-        props.targetSlotContext
+        targetSlotIndex,
+        targetSlotContext
       );
 
       currentSlot?.removeItem();

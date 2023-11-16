@@ -1,7 +1,7 @@
 import TradeScene from "../../scenes/TradeScene.ts";
 import InventoryGridSlot from "../ui/InventoryGridSlot.ts";
 
-export interface HoverManager {
+export interface PointerEventManager {
   handlePointerOver: (pointer: Phaser.Input.Pointer) => void;
   handlePointerOut: (pointer: Phaser.Input.Pointer) => void;
   handlePointerDown: (pointer: Phaser.Input.Pointer) => void;
@@ -9,15 +9,12 @@ export interface HoverManager {
 }
 
 export default class InventoryGridSlotPointerEventManager
-  extends Phaser.Events.EventEmitter
-  implements HoverManager
+  implements PointerEventManager
 {
   constructor(
     private readonly scene: TradeScene,
     private readonly itemSlot: InventoryGridSlot
   ) {
-    super();
-
     itemSlot.slotSprite
       .setInteractive({
         dropZone: true,

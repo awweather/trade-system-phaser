@@ -13,9 +13,9 @@ import {
   InventoryGridSlotEvent,
   InventoryGridSlotEventEmitter,
 } from "../events/InventoryGridSlotEventEmitter.ts";
-import InventoryGridSlotItemManager from "../managers/InventoryGridSlotItemManager.ts";
-import InventoryGridSlotPointerEventManager from "../managers/InventoryGridSlotPointerEventManager.ts";
-import ItemInfoPanelManager from "../managers/ItemInfoPanelManager.ts";
+import { ItemManager } from "../managers/InventoryGridSlotItemManager.ts";
+import { PointerEventManager } from "../managers/InventoryGridSlotPointerEventManager.ts";
+import { ItemInfoPanelManager } from "../managers/ShopWindowItemInfoPanelManager.ts";
 
 export interface AddItemConfig {
   renderable: RenderableComponent;
@@ -29,13 +29,14 @@ export interface AddItemConfig {
 }
 
 /**
- * This class contains the UI logic for the ItemSlot
- * Used for all inventory grids
+ * The core class for all inventory slots
+ * This class can be composed by constructing managers to handle the item, drag, pointer events, and item hover
+ * Functionality can be extended by adding additional managers
  */
 export default class InventoryGridSlot {
-  private itemManager: InventoryGridSlotItemManager | undefined;
+  private itemManager: ItemManager | undefined;
   private dragManager: DragManager | undefined;
-  private pointerEventManager: InventoryGridSlotPointerEventManager | undefined;
+  private pointerEventManager: PointerEventManager | undefined;
   private itemInfoPanelManager: ItemInfoPanelManager | undefined;
   public readonly events: InventoryGridSlotEventEmitter =
     new InventoryGridSlotEventEmitter();
@@ -92,9 +93,9 @@ export default class InventoryGridSlot {
   }
 
   registerManagers(
-    itemManager: InventoryGridSlotItemManager,
+    itemManager: ItemManager,
     dragManager: DragManager,
-    pointerEventManager: InventoryGridSlotPointerEventManager,
+    pointerEventManager: PointerEventManager,
     itemInfoPanelManager: ItemInfoPanelManager
   ) {
     this.itemManager = itemManager;
@@ -120,14 +121,14 @@ export default class InventoryGridSlot {
     this.dragManager!.handleDrag(pointer);
   }
 
-  handlePointerOver() {
+  handlePointerOver(pointer: Phaser.Input.Pointer) {
     this.assertInitialized();
-    this.pointerEventManager?.handlePointerOver(null);
+    this.pointerEventManager?.handlePointerOver(pointer);
   }
 
-  handlePointerOut() {
+  handlePointerOut(pointer: Phaser.Input.Pointer) {
     this.assertInitialized();
-    this.pointerEventManager?.handlePointerOut(null);
+    this.pointerEventManager?.handlePointerOut(pointer);
   }
 
   assertInitialized() {
